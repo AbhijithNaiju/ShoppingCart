@@ -26,26 +26,30 @@
                     </div>
                 </cfif>
             </cfif>
+            <cfset subCategoryData = adminObject.getSubCategories()>
             <div class="categoryBody m-auto border p-3">
-                <div class="categoryHeading d-flex justify-content-between my-2">
-                    <h3 class="">CATEGORIES</h3>
-                    <button class="btn btn-success" onclick="openModal(0)">ADD</button>
-                </div>
-                <div class="d-flex flex-column">
-                    <cfset categoryData = adminObject.getCategories()>
-                    <cfoutput>
-                        <cfloop query="categoryData">
+                <cfoutput>
+                    <div class="categoryHeading d-flex justify-content-between my-2">
+                        <cfif subCategoryData.recordCount>
+                            <h3 class="">#subCategoryData.fldSubCategoryName#</h3>
+                        <cfelse>
+                            <h3 class="">Empty</h3>
+                        </cfif>
+                        <button class="btn btn-success" onclick="openModal(0)">ADD</button>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <cfloop query="subCategoryData">
                             <div class="categoryItem d-flex justify-content-between align-items-center">
-                                <div>#categoryData.fldCategoryName#</div>
+                                <div>#subCategoryData.fldCategoryName#</div>
                                 <div class="d-flex w-50 justify-content-between">
-                                    <button class="btn btn-primary" onclick="openModal(this)" value="#categoryData.fldCategory_ID#">Edit</button>
-                                    <button class="btn btn-danger" onclick="deleteCategory(this)"  value="#categoryData.fldCategory_ID#">Delete</button>
-                                    <a href="subcategory.cfm?categoryId=#categoryData.fldCategory_ID#" class="btn btn-success">Open</a>
+                                    <button class="btn btn-primary" onclick="openModal(this)" value="#subCategoryData.fldCategory_ID#">Edit</button>
+                                    <button class="btn btn-danger" onclick="deleteCategory(this)"  value="#subCategoryData.fldCategory_ID#">Delete</button>
+                                    <a href="subcategory.cfm?categoryId=#subCategoryData.fldCategory_ID#" class="btn btn-success">Open</a>
                                 </div>
                             </div>
                         </cfloop>
-                    </cfoutput>
-                </div>
+                    </div>
+                </cfoutput>
             </div>
             <div id="addModal" class="displayNone">
                 <form method="post" id="modalForm" class="modalBody mx-auto p-3 d-flex flex-column">

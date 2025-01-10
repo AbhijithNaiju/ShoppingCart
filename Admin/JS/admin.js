@@ -7,7 +7,7 @@ function loginValidate()
     error = false;
     if(!userName.trim().length)
     {
-        $("#userNameError").text("Please enter email Or phone number");
+        $("#userNameError").text("Please enter email or phone number");
         error = true
     }
     if(!password.trim().length)
@@ -30,4 +30,55 @@ function logout()
 			}
 		});
 	}
+}
+
+function openModal(categoryId)
+{
+    $("#addModal").removeClass("displayNone")
+    if(categoryId.value)
+    {
+        let editFieldValue=categoryId.parentElement.previousElementSibling.innerHTML;
+        $("#modalHeading").text("Edit");
+        $("#categoryActionBtn").val(categoryId.value);
+        $("#categoryName").val(editFieldValue);
+        $("#categoryActionBtn").text("EDIT");
+
+    }
+    else
+    {
+        $("#modalHeading").text("Add");
+        $("#categoryActionBtn").val(0);
+        $("#categoryActionBtn").text("ADD");
+    }
+}
+function closeModal()
+{
+    $("#addModal").addClass("displayNone")
+    $("#modalForm")[0].reset();
+}
+
+function  deleteCategory(categoryId)
+{
+    if(confirm("This will delete the category and its contents. Confirm delete?"))
+    {
+        $.ajax({
+            type:"POST",
+            url:"./Components/admin.cfc?method=deleteCategory",
+            data:{categoryId:categoryId.value},
+            success: function(result) {
+                if(result)
+                {
+                    categoryId.parentElement.parentElement.remove();
+                }
+                else
+                {
+                    alert("Error occured while deleteing");
+                }
+            },
+            error:function()
+            {
+                alert("An error occured")
+            }
+        });
+    }
 }
