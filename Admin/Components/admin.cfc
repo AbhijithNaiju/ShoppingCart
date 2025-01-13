@@ -1,7 +1,7 @@
 <cfcomponent>
     <cffunction  name="adminLogin">
-        <cfargument  name="userName">
-        <cfargument  name="password">
+        <cfargument  name="userName" required="true">
+        <cfargument  name="password" required="true">
 
         <cfset local.structResult = structNew()>
         <cfquery name="local.qryAdminData">
@@ -36,10 +36,9 @@
         </cfif>
         <cfreturn local.structResult>
     </cffunction>
+
     <cffunction  name="logOut"  access="remote">
-
         <cfset structClear(session)>
-
         <cfreturn true>
     </cffunction>
 
@@ -56,61 +55,29 @@
         <cfreturn local.categoryData>
     </cffunction>
 
-    <cffunction  name="getSubCategories" returType="query">
-        <cfargument  name="categoryId">
-        <cfquery name="local.subCategoryData">
+    <cffunction  name="editCategory">
+        <cfargument  name="categoryName" required = "true">
+        <cfargument  name="categoryId" required = "true">
+
+        <cfset local.structResult = structNew()>
+        
+        <cfquery name = "local.checkExistResult">
             SELECT
-                fldCategoryName,
-                fldSubCategoryName,
-                fldSubCategory_ID
+                fldCategory_ID
             FROM
-                tblSubCategory sc
-            RIGHT JOIN
-                tblCategory c
-            ON
-                sc.fldCategoryId = c.fldCategory_ID
+                tblCategory
             WHERE
-
-                AND
-                sc.fldActive = 1;
-        </cfquery>
-        <cfreturn local.subCategoryData>
-    </cffunction>
-
-    <cffunction  name="isValueExist">
-        <cfargument  name="searchTable">
-        <cfargument  name="searchItem">
-        <cfargument  name="searchValue">
-
-        <cfquery name = "local.qryCheckItemExist">
-            SELECT
-                *
-            FROM
-                #arguments.searchTable#
-            WHERE
-                #arguments.searchItem# = <cfqueryparam value="#arguments.searchValue#" cfSqlType="varchar">
+                fldCategoryName = <cfqueryparam value="#trim(arguments.categoryName)#" cfSqlType="varchar">
                 AND
                 fldActive = 1;
         </cfquery>
 
-        <cfreturn local.qryCheckItemExist>
-    </cffunction>
-
-    <cffunction  name="editCategory">
-        <cfargument  name="categoryName">
-        <cfargument  name="categoryId">
-
-        <cfset local.structResult = structNew()>
-        
-        <cfset local.checkExistResult = isValueExist(
-                                                    searchTable = "tblCategory",
-                                                    searchItem = "fldCategoryName",
-                                                    searchValue = trim(arguments.categoryName)
-                                                    )>
-        <cfif local.checkExistResult.fldCategory_ID EQ trim(arguments.categoryName)>
-            <cfset local.structResult["success"] = true>
-        <cfelseif local.checkExistResult.recordCount>
-            <cfset local.structResult["error"] = "Category name #arguments.categoryName# already exists">
+        <cfif local.checkExistResult.recordCount>
+            <cfif local.checkExistResult.fldCategory_ID EQ arguments.categoryId>
+                <cfset local.structResult["success"] = true>
+            <cfelse>
+                <cfset local.structResult["error"] = "Category name #arguments.categoryName# already exists">
+            </cfif>
         <cfelse>
             <cfif arguments.categoryId>
                 <cfquery name="local.categoryAdd">
@@ -141,7 +108,7 @@
     </cffunction>
 
     <cffunction  name="deleteCategory" access="remote" returnformat = "plain">
-        <cfargument  name="categoryId">
+        <cfargument  name="categoryId" required = "true">
 
         <cfquery>
             UPDATE
@@ -156,47 +123,133 @@
         <cfreturn true>
     </cffunction>
 
-        <cffunction  name="editSubCategory">
-        <cfargument  name="categoryName">
-        <cfargument  name="categoryId">
+    <cffunction  name="getSubCategories" returType="query" access= "remote" returnFormat = "JSON">
+        <cfargument  name="categoryId" required="true">
+
+        <cfset local.subcategoryStruct = structNew()>
+        <cfquery name="local.subCategoryData">
+            SELECT
+                fldSubCategoryName,
+                fldSubCategory_ID
+            FROM
+                tblSubCategory
+            WHERE
+                fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                AND
+                fldActive = 1;
+        </cfquery>
+        <cfloop query="local.subCategoryData">
+            <cfset local.subcategoryStruct[local.subCategoryData.fldSubCategory_ID] = local.subCategoryData.fldSubCategoryName>
+        </cfloop>
+        <cfreturn local.subcategoryStruct>
+    </cffunction>
+
+    <cffunction  name="editSubCategory">
+        <cfargument  name="categoryId" required ="true">
+        <cfargument  name="subCategoryName" required ="true">
+        <cfargument  name="subCategoryId" requred = "true">
 
         <cfset local.structResult = structNew()>
         
-        <cfset local.checkExistResult = isValueExist(
-                                                    searchTable = "tblCategory",
-                                                    searchItem = "fldCategoryName",
-                                                    searchValue = trim(arguments.categoryName)
-                                                    )>
-        <cfif local.checkExistResult.fldCategory_ID EQ trim(arguments.categoryName)>
-            <cfset local.structResult["success"] = true>
-        <cfelseif local.checkExistResult.recordCount>
-            <cfset local.structResult["error"] = "Category name #arguments.categoryName# already exists">
+        <cfquery name = "local.checkExistResult">
+            SELECT
+                fldSubCategory_ID
+            FROM
+                tblSubCategory
+            WHERE
+                fldSubCategoryName = <cfqueryparam value="#trim(arguments.subCategoryName)#" cfSqlType="varchar">
+                AND
+                fldcategoryId = <cfqueryparam value="#arguments.categoryId#" cfSqlType="integer">
+                AND
+                fldActive = 1;
+        </cfquery>
+
+        <cfif local.checkExistResult.recordCount>
+            <cfif local.checkExistResult.fldSubCategory_ID EQ arguments.subCategoryId>
+                <cfset local.structResult["success"] = true>
+            <cfelse>
+                <cfset local.structResult["error"] = "Category name #arguments.subCategoryName# already exists">
+            </cfif>
         <cfelse>
-            <cfif arguments.categoryId>
-                <cfquery name="local.categoryAdd">
+            <cfif arguments.subCategoryId>
+                <cfquery name="local.subCategoryAdd">
                     UPDATE
-                        tblCategory
+                        tblSubCategory
                     SET
-                        fldCategoryName = <cfqueryparam value = "#trim(arguments.categoryName)#" cfSqlType="varchar">,
+                        fldcategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">,
+                        fldSubCategoryName = <cfqueryparam value = "#trim(arguments.subCategoryName)#" cfSqlType="varchar">,
                         fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="varchar">
                     WHERE
-                        fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">
+                        fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType="integer">;
                 </cfquery>
             <cfelse>
                 <cfquery name="local.categoryUpdate">
                     INSERT INTO
-                        tblCategory
+                        tblSubCategory
                     (
-                        fldCategoryName,
+                        fldcategoryId,
+                        fldSubCategoryName,
                         fldCreatedBy
                     )
                     VALUES(
-                        <cfqueryparam value = "#trim(arguments.categoryName)#" cfSqlType="varchar">,
+                        <cfqueryparam value = "#arguments.categoryId#" cfSqlType="varchar">,
+                        <cfqueryparam value = "#trim(arguments.subCategoryName)#" cfSqlType="varchar">,
                         <cfqueryparam value = "#session.userId#" cfSqlType="varchar">
                     )
                 </cfquery>
             </cfif>
         </cfif>
         <cfreturn local.structResult>
+    </cffunction>
+
+    <cffunction  name="deleteSubCategory" access="remote" returnformat = "plain">
+        <cfargument  name="subCategoryId" required = "true">
+
+        <cfquery>
+            UPDATE
+                tblSubCategory
+            SET
+                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="varchar">,
+                fldactive = 0
+            WHERE
+                fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType="integer">
+        </cfquery>
+
+        <cfreturn true>
+    </cffunction>
+
+    <cffunction  name="getProducts" returType="query">
+        <cfargument  name="subCategoryId" required="true">
+
+        <cfquery name="local.productData">
+            SELECT
+                fldProductName,
+                fldProduct_ID
+            FROM
+                tblProduct
+            WHERE
+                fldSubCategoryId = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType = "integer">
+                AND
+                fldActive = 1;
+        </cfquery>
+
+        <cfreturn local.productData>
+    </cffunction>
+    <cffunction  name="getCategoryData">
+        <cfargument  name="subCategoryId" required="true">
+        <cfquery name="local.categoryData">
+            SELECT
+                fldCategoryName,
+                fldCategoryID
+            FROM
+                tblSubCategory tsc
+            LEFT JOIN
+                tblCategory  tc
+            ON
+                tsc.fldCategoryId = tc.fldCategory_ID
+            WHERE
+                tsc.fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType = "integer">
+        </cfquery>
+        <cfreturn local.categoryData>
     </cffunction>
 </cfcomponent>

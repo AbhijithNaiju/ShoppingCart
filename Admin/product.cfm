@@ -1,55 +1,40 @@
 <cfinclude  template="./header.cfm">
-<cfif structKeyExists(url, "CategoryId") AND len(url.CategoryId)>
+<cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId)>
     <cfset adminObject = createObject("component","components.admin")>
     <div class="mainBody">
-        <cfif structKeyExists(form, "modalSubCatSubmit")>
-            <cfset resultStruct = adminObject.editSubCategory(
-                                                                categoryId=form.formCategoryId,
-                                                                subCategoryName=form.subCategoryName,
-                                                                subCategoryId=form.modalSubCatSubmit
-                                                            )>
-            <cfif structKeyExists(resultStruct, "error")>
-                <div class="errorMessage text-center">
-                    <cfoutput>
-                    #resultStruct.error#
-                    </cfoutput>
-                </div>
-            </cfif>
-        </cfif>
-        <cfset subCategoryData = adminObject.getSubCategories(categoryId = url.categoryId)>
+        <cfset productData = adminObject.getProducts(subCategoryId = url.subCategoryId)>
+        <cfset categoryData = adminObject.getcategoryData(subCategoryId = url.subCategoryId)>
         <div class="categoryBody m-auto border p-3">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
-                    <cfif structKeyExists(url, "categoryName")>
-                        <h3 class="">#url.categoryName#</h3>
+                    <cfif structKeyExists(url, "subCategoryName")>
+                        <h3 class="">#url.subCategoryName#</h3>
                     </cfif>
                     <button 
                         class="btn btn-success" 
-                        onclick="openSubCategoryModal({
-                                                        CategoryId:#url.categoryId#
-                                                    })">
+                        onclick="openProductModal({categoryId:#categoryData.fldCategoryID#,subCategoryId:#url.subCategoryId#})">
                         ADD
                     </button>
                 </div>
                 <div class="d-flex flex-column categoryList">
-                    <cfloop collection="#subCategoryData#" item="subCatoryId">
+                    <cfloop query="productData">
                         <div class="categoryItem d-flex justify-content-between align-items-center">
-                            <div>#subCategoryData[subCatoryId]#</div>
+                            <div>#productData.fldSubCategoryName#</div>
                             <div class="d-flex w-50 justify-content-between">
                                 <button 
                                     class="btn btn-primary" 
-                                    onclick=openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subCatoryId#,subCategoryName:"#subCategoryData[subCatoryId]#"})
-                                    value="#subCatoryId#">
+                                    onclick=openProductModal({CategoryId:#categoryData.fldCategoryID#,subCategoryId:#productData.fldSubCategory_ID#,subCategoryName:"#productData.fldSubCategoryName#"})
+                                    value="#productData.fldSubCategory_ID#">
                                     Edit
                                 </button>
                                 <button 
                                     class="btn btn-danger" 
-                                    onclick="deleteSubCategory(this)" 
-                                    value="#subCatoryId#">
+                                    onclick="deleteCategory(this)" 
+                                    value="#productData.fldSubCategory_ID#">
                                     Delete
                                 </button>
                                 <a 
-                                    href="product.cfm?subCategoryId=#subCatoryId#&subCategoryName=#subCategoryData[subCatoryId]#"
+                                    href="product.cfm?subCategoryId=#productData.fldSubCategory_ID#" 
                                     class="btn btn-success">
                                     Open
                                 </a>
@@ -60,23 +45,27 @@
             </cfoutput>
         </div>
         <cfset categoryData = adminObject.getCategories()>
+        <cfset subCategoryData = adminObject.getSubCategories(categoryid=categoryData.fldCategory_ID)>
         <div id="addModal" class="displayNone">
             <form method="post" id="modalForm" class="subCategoryModalBody mx-auto p-3 d-flex flex-column">
                 <h4 id="modalHeading"></h4>
                 <div class = "form-group">
                     <cfoutput>
-                        <select name="formCategoryId" id = "categorySelect" class = "form-control" required>
+                        <select name="formCategoryId" id = "categorySelect" onchange="addSubcategories(this.value)" class = "form-control" required>
                             <cfloop query="categoryData">
                                 <option value="#categoryData.fldCategory_ID#">
                                     #categoryData.fldcategoryName#
                                 </option>
                             </cfloop>
                         </select>
+                        <select name="formSubCategoryId" id = "subCategorySelect" class = "form-control" required>
+
+                        </select>
                     </cfoutput>
                     </div>
                 <div class = "form-group" >
-                    <label for="subCategoryName">Sub Category Name</label>
-                    <input type="text" id="subCategoryName" name="subCategoryName" class="form-control my-3" required>
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" name="productName" class="form-control my-3" required>
                 </div>
                 <div class="d-flex justify-content-around mt-auto">
                     <button type="button" class="btn btn-secondary w-50 mx-1" onclick="closeModal()">Close</button>
@@ -88,4 +77,4 @@
 <cfelse>
     <cflocation  url="./index.cfm" addtoken=false>
 </cfif>
-<cfinclude  template="footer.cfm">
+<cfinclude  template="./footer.cfm">

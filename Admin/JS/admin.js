@@ -24,7 +24,7 @@ function logout()
 	{
 		$.ajax({
 			type:"POST",
-			url:"./Components/admin.cfc?method=logOut",
+			url:"./components/admin.cfc?method=logOut",
 			success: function() {
 				location.reload();
 			}
@@ -32,24 +32,93 @@ function logout()
 	}
 }
 
-function openModal(categoryId)
+function openCategoryModal(categoryData)
 {
     $("#addModal").removeClass("displayNone")
-    if(categoryId.value)
+    if(categoryData.id)
     {
-        let editFieldValue=categoryId.parentElement.previousElementSibling.innerHTML;
-        $("#modalHeading").text("Edit");
-        $("#categoryActionBtn").val(categoryId.value);
-        $("#categoryName").val(editFieldValue);
-        $("#categoryActionBtn").text("EDIT");
+        $("#modalHeading").text("Edit category");
+        $("#modalCategorySubmit").val(categoryData.id);
+        $("#categoryName").val(categoryData.name);
+        $("#modalCategorySubmit").text("EDIT");
 
     }
     else
     {
-        $("#modalHeading").text("Add");
-        $("#categoryActionBtn").val(0);
-        $("#categoryActionBtn").text("ADD");
+        $("#modalHeading").text("Add category");
+        $("#modalCategorySubmit").val(0);
+        $("#modalCategorySubmit").text("ADD");
     }
+}
+function openSubCategoryModal(subCategoryData)
+{
+    $("#addModal").removeClass("displayNone")
+    $("#categorySelect").val(subCategoryData.CategoryId);
+    if(subCategoryData.subCategoryId)
+    {
+        $("#modalHeading").text("Edit Sub Category");
+        $("#modalSubCatSubmit").val(subCategoryData.subCategoryId);
+        $("#subCategoryName").val(subCategoryData.subCategoryName);
+        $("#modalSubCatSubmit").text("EDIT");
+    }
+    else
+    {
+        $("#modalHeading").text("Add Sub Category");
+        $("#modalSubCatSubmit").val(0);
+        $("#modalSubCatSubmit").text("ADD");
+    }
+}
+function openProductModal(productData)
+{
+    $("#addModal").removeClass("displayNone")
+    $("#categorySelect").val(productData.categoryId);
+    addSubcategories(productData.categoryId);
+    $("#subCategorySelect").val(productData.subCategoryId);
+    if(productData.subCategoryId)
+    {
+        $("#modalHeading").text("Edit Sub Category");
+        $("#modalSubCatSubmit").val(productData.subCategoryId);
+        $("#subCategoryName").val(productData.subCategoryName);
+        $("#modalSubCatSubmit").text("EDIT");
+    }
+    else
+    {
+        $("#modalHeading").text("Add Sub Category");
+        $("#modalSubCatSubmit").val(0);
+        $("#modalSubCatSubmit").text("ADD");
+    }
+}
+function addSubcategories(categoryId)
+{
+    $("#subCategorySelect").empty();
+    $.ajax({
+        type:"POST",
+        url:"./components/admin.cfc?method=getSubcategories",
+        data:{categoryId:categoryId},
+        success: function(result) {
+            if(result)
+            {
+                resultJson=JSON.parse(result);
+                const jsonKeys=Object.keys(resultJson);
+                for(i=0;i<jsonKeys.length;i++)
+                {
+                    subContactId=jsonKeys[i];
+                    var optionObj = document.createElement('option');
+                    optionObj.innerHTML=resultJson[subContactId];
+                    optionObj.value=subContactId;
+                    document.getElementById("subCategorySelect").appendChild(optionObj);
+                }
+            }
+            else
+            {
+                alert("Error occured while deleteing");
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
 }
 function closeModal()
 {
@@ -63,12 +132,37 @@ function  deleteCategory(categoryId)
     {
         $.ajax({
             type:"POST",
-            url:"./Components/admin.cfc?method=deleteCategory",
+            url:"./components/admin.cfc?method=deleteCategory",
             data:{categoryId:categoryId.value},
             success: function(result) {
                 if(result)
                 {
                     categoryId.parentElement.parentElement.remove();
+                }
+                else
+                {
+                    alert("Error occured while deleteing");
+                }
+            },
+            error:function()
+            {
+                alert("An error occured")
+            }
+        });
+    }
+}
+function  deleteSubCategory(deleteButton)
+{
+    if(confirm("This will delete the sub category and its contents. Confirm delete?"))
+    {
+        $.ajax({
+            type:"POST",
+            url:"./components/admin.cfc?method=deleteSubCategory",
+            data:{subCategoryId:deleteButton.value},
+            success: function(result) {
+                if(result)
+                {
+                    deleteButton.parentElement.parentElement.remove();
                 }
                 else
                 {
