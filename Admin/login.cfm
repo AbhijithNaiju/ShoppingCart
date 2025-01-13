@@ -3,20 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../Style/admin.css">
-        <link rel="stylesheet" href="../Style/bootstrap.min.css">
+        <link rel="stylesheet" href="style/adminStyle.css">
+        <link rel="stylesheet" href="../style/bootstrap.min.css">
         <title>Document</title>
     </head>
     <body>
-        <cfset adminObject = createObject("component","components.admin")>
-        <div class="header">
-            <a href="#" class="logo">
-                <img src="../Assets/Images/SHOPPING CART_transparent-.png">
-            </a>
-            <!-- <button class="logOutBtn">
-                Logout
-            </button> -->
-        </div>
+        <cfset currentTemplate = listLast(GetCurrentTemplatePath(),'\')>
+        <cfinclude  template="./header.cfm">
         <div class="mainBody">
             <form method="post" class="loginForm" onSubmit="return loginValidate()">
                 <div class="formHeader">
@@ -33,23 +26,24 @@
                     <span class="errorMessage" id ="passwordError"></span>
                 </div>
                 <input type="submit" id="" class="btn btn-success" name="submitBtn">
-
+                
                 <cfif structKeyExists(form,"submitBtn")>
+                    <cfset adminObject = createObject("component","components.admin")>
                     <cfset local.loginResult = adminObject.adminLogin(
-                                                                username = form.userName,
-                                                                password = form.password
-                                                                )>
-                    <cfif structKeyExists(local, "loginResult") AND structKeyExists(local.loginResult, "error")>
-                        <cfoutput>
-                            <div class="errorMessage loginError">
-                                #local.loginResult.error#
-                            </div>
-                        </cfoutput>
+                        username = form.userName,
+                        password = form.password
+                        )>
+                        <cfif structKeyExists(local, "loginResult") AND structKeyExists(local.loginResult, "error")>
+                            <cfoutput>
+                                <div class="errorMessage loginError">
+                                    #local.loginResult.error#
+                                </div>
+                            </cfoutput>
+                        </cfif>
                     </cfif>
-                </cfif>
-            </form>
+                </form>
         </div>
-        <script src="./JS/jquery-3.7.1.js"></script>
-        <script src="./JS/admin.js"></script>
+        <script src="../js/jquery-3.7.1.js"></script>
+        <script src="./js/admin.js"></script>
     </body>
 </html>
