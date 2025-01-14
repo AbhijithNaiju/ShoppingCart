@@ -38,7 +38,7 @@
                             <div class="d-flex w-50 justify-content-between">
                                 <button 
                                     class="btn btn-primary" 
-                                    onclick=openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subCatoryId#,subCategoryName:"#subCategoryData[subCatoryId]#"})
+                                    onclick="openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subCatoryId#,subCategoryName:'#subCategoryData[subCatoryId]#'})"
                                     value="#subCatoryId#">
                                     Edit
                                 </button>

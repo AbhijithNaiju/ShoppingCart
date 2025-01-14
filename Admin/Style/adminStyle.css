@@ -118,7 +118,7 @@ body
     width: 35%;
     max-height: 90%;
 }
-#addModal
+#addModal,#imageModal
 {
     position: absolute;
     width: 100%;
@@ -126,24 +126,68 @@ body
     background-color: #ebebeb8c;
     display: flex;
 }
+#imageModal>div
+{
+    width: 50%;
+    height: 50%;
+}
+.carousel-inner
+{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.carouselButtons
+{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: auto;
+}
 .displayNone
 {
     display: none !important;
 }
-.categoryModalBody
+.productModalBody,.subCategoryModalBody,.categoryModalBody
 {
     width: 30%;
     background-color: #fff;
+    max-height: 90%;
+}
+.categoryModalBody
+{
     height: 50%;
 }
 .subCategoryModalBody
 {
-    width: 30%;
-    background-color: #fff;
     height: 60%;
 }
 .categoryList
 {
     max-height: 90%;
+}
+.productModalScroll
+{
+    height: 81%;
     overflow-y: scroll;
+}
+.thumbnailImage
+{
+    height: 50px;
+    width: 50px;
+    margin: 10px;
+    border: none;
+}
+.thumbnailImage img
+{
+    width: 100%;
+    height: 100%;
+}
+.productName
+{
+    font-size: 18px;
+}
+.brandName
+{
+    font-size: 12px;
 }

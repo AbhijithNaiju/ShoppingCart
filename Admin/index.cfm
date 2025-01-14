@@ -29,7 +29,7 @@
                         <div class="d-flex w-50 justify-content-between">
                             <button 
                                 class="btn btn-primary" 
-                                onclick=openCategoryModal({id:#categoryData.fldCategory_ID#,name:"#categoryData.fldCategoryName#"})
+                                onclick="openCategoryModal({categoryId:#categoryData.fldCategory_ID#,categoryName:'#categoryData.fldCategoryName#'})"
                                 value="#categoryData.fldCategory_ID#">
                                 Edit
                             </button>

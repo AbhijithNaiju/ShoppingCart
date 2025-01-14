@@ -35,11 +35,11 @@ function logout()
 function openCategoryModal(categoryData)
 {
     $("#addModal").removeClass("displayNone")
-    if(categoryData.id)
+    if(categoryData.categoryId)
     {
         $("#modalHeading").text("Edit category");
-        $("#modalCategorySubmit").val(categoryData.id);
-        $("#categoryName").val(categoryData.name);
+        $("#modalCategorySubmit").val(categoryData.categoryId);
+        $("#categoryName").val(categoryData.categoryName);
         $("#modalCategorySubmit").text("EDIT");
 
     }
@@ -72,23 +72,47 @@ function openProductModal(productData)
 {
     $("#addModal").removeClass("displayNone")
     $("#categorySelect").val(productData.categoryId);
-    addSubcategories(productData.categoryId);
-    $("#subCategorySelect").val(productData.subCategoryId);
-    if(productData.subCategoryId)
+    listSubcategories(productData.categoryId,productData.subCategoryId);
+    if(productData.productId)
     {
-        $("#modalHeading").text("Edit Sub Category");
-        $("#modalSubCatSubmit").val(productData.subCategoryId);
-        $("#subCategoryName").val(productData.subCategoryName);
-        $("#modalSubCatSubmit").text("EDIT");
+        $("#modalHeading").text("Edit Product");
+        $("#productId").val(productData.productId);
+        $("#modalProductSubmit").text("EDIT");
+        $("#productImages").removeAttr("required")
+        $.ajax({
+            type:"POST",
+            url:"./components/admin.cfc?method=getProductDetails",
+            data:{productId:productData.productId},
+            success: function(result) {
+                if(result)
+                {
+                    productDetails=JSON.parse(result);
+                    $("#brandSelect").val(productDetails.brandId);
+                    $("#productName").val(productDetails.productName);
+                    $("#productDescription").val(productDetails.productDescription);
+                    $("#productPrice").val(productDetails.price);
+                    $("#productTax").val(productDetails.tax);
+                }
+                else
+                {
+                    alert("Error occured");
+                }
+            },
+            error:function()
+            {
+                alert("An error occured")
+            }
+        });
     }
     else
     {
-        $("#modalHeading").text("Add Sub Category");
-        $("#modalSubCatSubmit").val(0);
-        $("#modalSubCatSubmit").text("ADD");
+        $("#modalHeading").text("Add Product");
+        $("#productId").val(0);
+        $("#modalProductSubmit").text("ADD");
+        $("#productImages").attr("required","required");
     }
 }
-function addSubcategories(categoryId)
+function listSubcategories(categoryId,subCategoryId)
 {
     $("#subCategorySelect").empty();
     $.ajax({
@@ -98,20 +122,26 @@ function addSubcategories(categoryId)
         success: function(result) {
             if(result)
             {
-                resultJson=JSON.parse(result);
-                const jsonKeys=Object.keys(resultJson);
+                subContactDetails=JSON.parse(result);
+                const jsonKeys=Object.keys(subContactDetails);
                 for(i=0;i<jsonKeys.length;i++)
                 {
                     subContactId=jsonKeys[i];
                     var optionObj = document.createElement('option');
-                    optionObj.innerHTML=resultJson[subContactId];
+                    optionObj.innerHTML=subContactDetails[subContactId];
                     optionObj.value=subContactId;
                     document.getElementById("subCategorySelect").appendChild(optionObj);
+
+                    if(subCategoryId)
+                        $("#subCategorySelect").val(subCategoryId);
+                    else
+                        $("#subCategorySelect").val(0);
+
                 }
             }
             else
             {
-                alert("Error occured while deleteing");
+                alert("Error occured while getting subcategory");
             }
         },
         error:function()
@@ -119,6 +149,31 @@ function addSubcategories(categoryId)
             alert("An error occured")
         }
     });
+}
+function productSubmit()
+{
+    event.preventDefault();
+    productData = new FormData(document.getElementById("modalForm"))
+    $.ajax({
+        type: "POST",
+        url: "./components/admin.cfc?method=addOrEditProduct",
+        data: productData,
+        processData: false,
+        contentType: false,
+        success: function(result) {
+            resultJson=JSON.parse(result);
+            if(resultJson.error){
+                $("#modalError").text(resultJson.error);
+            }
+            else
+            {
+                closeModal();
+                location.reload();
+            }
+        }
+    });
+    return false
+
 }
 function closeModal()
 {
@@ -175,4 +230,155 @@ function  deleteSubCategory(deleteButton)
             }
         });
     }
+}
+function  deleteProduct(deleteButton)
+{
+    if(confirm("This will delete the sub category and its contents. Confirm delete?"))
+    {
+        $.ajax({
+            type:"POST",
+            url:"./components/admin.cfc?method=deleteProduct",
+            data:{productId:deleteButton.value},
+            success: function(result) {
+                if(result)
+                {
+                    deleteButton.parentElement.parentElement.remove();
+                }
+                else
+                {
+                    alert("Error occured while deleteing");
+                }
+            },
+            error:function()
+            {
+                alert("An error occured")
+            }
+        });
+    }
+}
+function openImageModal(productData)
+{
+    $("#imageModal").removeClass("displayNone");
+    listProductImages(productData.productId)
+}
+function closeImageModal()
+{
+    $("#imageModal").addClass("displayNone");
+}
+function listProductImages(productId)
+{
+    $.ajax({
+        type:"POST",
+        url:"./components/admin.cfc?method=getProductImages",
+        data:{productId:productId},
+        success: function(result) {
+            if(result)
+            {
+                productImages=JSON.parse(result);
+                const jsonKeys=Object.keys(productImages);
+                active=1;
+                for(i=0;i<jsonKeys.length;i++)
+                {
+                    imageId=jsonKeys[i];
+                    var slideBody = document.createElement('div');
+                    slideBody.classList.add("carousel-item");
+
+                    var slideImage = document.createElement('img');
+                    slideImage.classList.add("d-block");
+                    slideImage.classList.add("w-100");
+                    slideImage.src="../assets/productImages/"+productImages[imageId]
+                    slideBody.appendChild(slideImage);
+                    if(active)
+                    {
+                        slideBody.classList.add("active");
+                        active=0;
+                    }
+                    else
+                    {
+                        // const buttonParent = `
+                        // <div>
+                        //     <button value='${imageId}' class="btn btn-danger">DELETE</button>
+                        //     <button value='${imageId}' class="btn btn-success">Make Default</button>
+                        // </div>`;
+                        deleteButton=document.createElement('button');
+                        deleteButton.value=imageId
+                        deleteButton.classList.add("btn");
+                        deleteButton.classList.add("btn-danger");
+                        deleteButton.innerHTML="DELETE"
+                        deleteButton.setAttribute("onclick","deleteImage(this)")
+
+                        makeDefault=document.createElement('button');
+                        makeDefault.value=imageId
+                        makeDefault.classList.add("btn");
+                        makeDefault.classList.add("btn-success");
+                        makeDefault.innerHTML="Make Default"
+                        makeDefault.setAttribute("onclick","setDefaultImage(this)")
+
+                        buttonParent=document.createElement('div');
+                        buttonParent.classList.add("carouselButtons");
+                        buttonParent.appendChild(deleteButton);
+                        buttonParent.appendChild(makeDefault);
+
+                        slideBody.appendChild(buttonParent);
+
+                    }
+                    document.getElementById("carouselInner").appendChild(slideBody);
+                    console.log(slideBody)
+                }
+            }
+            else
+            {
+                alert("Error occured while getting subcategory");
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
+}
+function deleteImage(imageId)
+{
+    $.ajax({
+        type:"POST",
+        url:"./components/admin.cfc?method=deleteImage",
+        data:{imageId:imageId.value},
+        success: function(result) {
+            if(result)
+            {
+                imageId.parentElement.parentElement.remove();
+                location.reload()
+            }
+            else
+            {
+                alert("Error occured while deleteing");
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
+}
+function setDefaultImage(imageId)
+{
+    $.ajax({
+        type:"POST",
+        url:"./components/admin.cfc?method=setDefaultImage",
+        data:{imageId:imageId.value},
+        success: function(result) {
+            if(result)
+            {
+                alert("success")
+            }
+            else
+            {
+                alert("Error occured while deleteing");
+            }
+        },
+        error:function()
+        {
+            alert("An error occured")
+        }
+    });
 }
