@@ -1,7 +1,7 @@
 <cfcomponent>
-    <cffunction  name="adminLogin">
-        <cfargument  name="userName" required="true">
-        <cfargument  name="password" required="true">
+    <cffunction  name="adminLogin" returntype="struct">
+        <cfargument  name="userName" required="true" type="string">
+        <cfargument  name="password" required="true" type="string">
 
         <cfset local.structResult = structNew()>
         <cfquery name="local.qryAdminData">
@@ -37,12 +37,12 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="logOut"  access="remote">
+    <cffunction  name="logOut" returntype="boolean" access="remote">
         <cfset structClear(session)>
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="getCategories" returType="query">
+    <cffunction  name="getCategories" returnType="query">
         <cfquery name="local.categoryData">
             SELECT
                 fldCategoryName,
@@ -55,9 +55,9 @@
         <cfreturn local.categoryData>
     </cffunction>
 
-    <cffunction  name="editCategory">
-        <cfargument  name="categoryName" required = "true">
-        <cfargument  name="categoryId" required = "true">
+    <cffunction  name="editCategory" returntype="struct">
+        <cfargument  name="categoryName" required = "true" type="string">
+        <cfargument  name="categoryId" required = "true" type="integer">
 
         <cfset local.structResult = structNew()>
         
@@ -107,8 +107,8 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="deleteCategory" access="remote" returnformat = "plain">
-        <cfargument  name="categoryId" required = "true">
+    <cffunction  name="deleteCategory" access="remote" returntype="boolean" returnformat="plain">
+        <cfargument  name="categoryId" required = "true" type="integers">
 
         <cfquery>
             UPDATE
@@ -123,8 +123,8 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="getSubCategories" returType="query" access= "remote" returnFormat = "JSON">
-        <cfargument  name="categoryId" required="true">
+    <cffunction  name="getSubCategories" returnType="struct" access= "remote" returnFormat = "JSON">
+        <cfargument  name="categoryId" required="true" type="integer">
 
         <cfset local.subcategoryStruct = structNew()>
         <cfquery name="local.subCategoryData">
@@ -144,7 +144,7 @@
         <cfreturn local.subcategoryStruct>
     </cffunction>
 
-    <cffunction  name="editSubCategory">
+    <cffunction  name="editSubCategory" returntype="struct">
         <cfargument  name="categoryId" required ="true">
         <cfargument  name="subCategoryName" required ="true">
         <cfargument  name="subCategoryId" requred = "true">
@@ -203,7 +203,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="deleteSubCategory" access="remote" returnformat = "plain">
+    <cffunction  name="deleteSubCategory" access="remote" returnformat = "plain" returntype="struct">
         <cfargument  name="subCategoryId" required = "true">
 
         <cfquery>
@@ -275,7 +275,7 @@
         <cfset local.resultStruct["price"] = local.productData.fldPrice>
         <cfreturn local.resultStruct>
     </cffunction>
-    <cffunction  name="getCategoryData">
+    <cffunction  name="getCategoryData" returntype="query">
         <cfargument  name="subCategoryId" required="true">
         <cfquery name="local.categoryData">
             SELECT
@@ -293,7 +293,7 @@
         <cfreturn local.categoryData>
     </cffunction>
     
-    <cffunction  name="getBrands">
+    <cffunction  name="getBrands" returntype="query">
         <cfquery name = "local.brandData">
             SELECT
                 fldBrandName,
@@ -306,7 +306,7 @@
         <cfreturn local.brandData>
     </cffunction>
 
-    <cffunction  name="addOrEditProduct" access = "remote" returnformat = "JSON" >
+    <cffunction  name="addOrEditProduct" access = "remote" returnformat = "JSON" returntype="struct">
         <cfargument  name="formBrandId" required = "true">
         <cfargument  name="formSubCategoryId" required = "true">
         <cfargument  name="productDescription" required = "true">
@@ -410,7 +410,7 @@
         </cfif>
         <cfreturn local.structResult>
     </cffunction>
-    <cffunction  name="deleteProduct" access="remote">
+    <cffunction  name="deleteProduct" access="remote" returntype="boolean" returnfoemat="plain">
         <cfargument  name="productId" required = "true">
 
         <cfquery>
@@ -425,7 +425,7 @@
 
         <cfreturn true>
     </cffunction>
-    <cffunction  name="deleteImage" access="remote">
+    <cffunction  name="deleteImage" access="remote" returntype="boolean" returnformat="plain">
         <cfargument  name="imageId" required = "true">
 
         <cfquery>

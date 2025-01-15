@@ -54,12 +54,23 @@
         <form method="post" id="modalForm" class="categoryModalBody mx-auto p-3 d-flex flex-column">
             <h4 id="modalHeading"></h4>
             <div>
-                <label for="categoryName">CategoryName</label>
+                <label for="categoryName">
+                    CategoryName
+                </label>
                 <input type="text" id="categoryName" name="categoryName" class="form-control my-3" required>
             </div>
             <div class="d-flex justify-content-around mt-auto">
-                <button type="button" class="btn btn-secondary w-50 mx-1" onclick="closeModal()">Close</button>
-                <button class="btn btn-success w-50 mx-1" id="modalCategorySubmit" name = "modalCategorySubmit"></button>
+                <button 
+                    type="button" 
+                    class="btn btn-secondary w-50 mx-1" 
+                    onclick="closeModal()">
+                    Close
+                </button>
+                <button 
+                    class="btn btn-success w-50 mx-1" 
+                    id="modalCategorySubmit" 
+                    name = "modalCategorySubmit">
+                </button>
             </div>
         </form>
     </div>
