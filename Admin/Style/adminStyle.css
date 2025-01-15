@@ -128,8 +128,8 @@ body
 }
 #imageModal>div
 {
-    width: 50%;
-    height: 50%;
+    width: 40%;
+    height: 95%;
 }
 .carousel-inner
 {
@@ -140,9 +140,15 @@ body
 .carouselButtons
 {
     position: absolute;
-    top: 0;
-    left: 50%;
-    right: auto;
+    top: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.carouselButtons>button
+{
+    margin: 0 5px;
+    width: 25%;
 }
 .displayNone
 {
@@ -190,4 +196,18 @@ body
 .brandName
 {
     font-size: 12px;
+}
+.carousel-item
+{
+    height: 100%;
+}
+.carousel-item>img
+{
+    height: 100%;
+    width: fit-content;
+}
+.imageModalClose
+{
+    right: 10px;
+    top:10px;
 }

@@ -8,7 +8,9 @@
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
                     <cfif structKeyExists(url, "subCategoryName")>
-                        <h3 class="">#url.subCategoryName#</h3>
+                        <a href="./subcategory.cfm?categoryId=#categoryData.fldCategoryID#" class = "test-decoration-none text-dark">
+                            <h3 class=""> #url.subCategoryName#</h3>
+                        </a>
                     </cfif>
                     <button 
                         class="btn btn-success" 
@@ -101,11 +103,11 @@
                     </div>
                     <div class = "form-group" >
                         <label for="productPrice">Product Price</label>
-                        <input type="number" id="productPrice" name="productPrice" class="form-control" required>
+                        <input type="number" step="0.01" id="productPrice" name="productPrice" class="form-control" required>
                     </div>
                     <div class = "form-group" >
                         <label for="productTax">Product Tax</label>
-                        <input type="number" id="productTax" name="productTax" class="form-control" required>
+                        <input type="number" step="0.01" id="productTax" name="productTax" class="form-control" required>
                     </div>
                     <div class = "form-group" >
                         <label for="productImages">Product Images</label>
@@ -125,15 +127,18 @@
                 <div class="carousel-inner" id="carouselInner">
                 </div>
                 <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="carousel-control-prev-icon bg-dark btn" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                 </a>
                 <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="carousel-control-next-icon bg-dark btn" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
             </div>
-
+            <button 
+                class="position-absolute imageModalClose btn btn-danger"
+                onclick="closeImageModal()"
+                >Close X</button>
         </div>
     </div>
 <cfelse>

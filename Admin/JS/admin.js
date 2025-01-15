@@ -267,6 +267,8 @@ function closeImageModal()
 }
 function listProductImages(productId)
 {
+    var carouselInner = document.getElementById("carouselInner");
+    carouselInner.innerHTML="";
     $.ajax({
         type:"POST",
         url:"./components/admin.cfc?method=getProductImages",
@@ -275,55 +277,33 @@ function listProductImages(productId)
             if(result)
             {
                 productImages=JSON.parse(result);
-                const jsonKeys=Object.keys(productImages);
-                active=1;
-                for(i=0;i<jsonKeys.length;i++)
+
+                defaultImageKey=Object.keys(productImages.defaultImage);
+                let slideBody = `
+                <div class="carousel-item active">
+                    <img src="../assets/productImages/${productImages.defaultImage[defaultImageKey]}" class="d-block w-100">
+                </div>`;
+                $("#carouselInner").append(slideBody)
+                
+                if(productImages.remainingImages)
                 {
-                    imageId=jsonKeys[i];
-                    var slideBody = document.createElement('div');
-                    slideBody.classList.add("carousel-item");
 
-                    var slideImage = document.createElement('img');
-                    slideImage.classList.add("d-block");
-                    slideImage.classList.add("w-100");
-                    slideImage.src="../assets/productImages/"+productImages[imageId]
-                    slideBody.appendChild(slideImage);
-                    if(active)
-                    {
-                        slideBody.classList.add("active");
-                        active=0;
+                    const jsonKeys=Object.keys(productImages.remainingImages);
+                    for(i=0;i<jsonKeys.length;i++)
+                {
+                    remainingImageId=jsonKeys[i];
+                    let slideBody = `
+                    <div class="carousel-item">
+                    <img src="../assets/productImages/${productImages.remainingImages[remainingImageId]}" class="d-block w-100">
+                        <div class="carouselButtons">
+                            <button onclick="deleteImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">DELETE</button>
+                            <button onclick="setDefaultImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">
+                                Make Default
+                            </button>
+                        </div>
+                        </div>`;
+                        $("#carouselInner").append(slideBody)
                     }
-                    else
-                    {
-                        // const buttonParent = `
-                        // <div>
-                        //     <button value='${imageId}' class="btn btn-danger">DELETE</button>
-                        //     <button value='${imageId}' class="btn btn-success">Make Default</button>
-                        // </div>`;
-                        deleteButton=document.createElement('button');
-                        deleteButton.value=imageId
-                        deleteButton.classList.add("btn");
-                        deleteButton.classList.add("btn-danger");
-                        deleteButton.innerHTML="DELETE"
-                        deleteButton.setAttribute("onclick","deleteImage(this)")
-
-                        makeDefault=document.createElement('button');
-                        makeDefault.value=imageId
-                        makeDefault.classList.add("btn");
-                        makeDefault.classList.add("btn-success");
-                        makeDefault.innerHTML="Make Default"
-                        makeDefault.setAttribute("onclick","setDefaultImage(this)")
-
-                        buttonParent=document.createElement('div');
-                        buttonParent.classList.add("carouselButtons");
-                        buttonParent.appendChild(deleteButton);
-                        buttonParent.appendChild(makeDefault);
-
-                        slideBody.appendChild(buttonParent);
-
-                    }
-                    document.getElementById("carouselInner").appendChild(slideBody);
-                    console.log(slideBody)
                 }
             }
             else
@@ -337,17 +317,17 @@ function listProductImages(productId)
         }
     });
 }
-function deleteImage(imageId)
+function deleteImage(imageDetails)
 {
     $.ajax({
         type:"POST",
         url:"./components/admin.cfc?method=deleteImage",
-        data:{imageId:imageId.value},
+        data:{imageId:imageDetails.imageId},
         success: function(result) {
             if(result)
             {
-                imageId.parentElement.parentElement.remove();
-                location.reload()
+                listProductImages(imageDetails.productId)
+                
             }
             else
             {
@@ -360,20 +340,20 @@ function deleteImage(imageId)
         }
     });
 }
-function setDefaultImage(imageId)
+function setDefaultImage(imageDetails)
 {
     $.ajax({
         type:"POST",
         url:"./components/admin.cfc?method=setDefaultImage",
-        data:{imageId:imageId.value},
-        success: function(result) {
-            if(result)
+        data:{imageId:imageDetails.imageId,productId:imageDetails.productId},
+        success: function(productId) {
+            if(productId)
             {
-                alert("success")
+                listProductImages(imageDetails.productId)
             }
             else
             {
-                alert("Error occured while deleteing");
+                alert("Error occured while Setting default");
             }
         },
         error:function()

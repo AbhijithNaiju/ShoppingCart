@@ -12,7 +12,7 @@
             <a href="../admin/index.cfm" class="logo">
                 <img src="../admin/Assets/Images/shopping cart_transparent.png">
             </a>
-            <cfset headerRequired = ["index.cfm","subcategory.cfm"]>
+            <cfset headerRequired = ["index.cfm","subcategory.cfm","product.cfm"]>
             <cfset currentTemplate = listLast(CGI.PATH_TRANSLATED,'\')>
             <cfif arrayFindNoCase(headerRequired, currentTemplate)>
                 <div class="logOutBtn">

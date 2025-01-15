@@ -351,31 +351,14 @@
                         fldProductName = <cfqueryparam value='#trim(arguments.productName)#' cfsqltype="varchar">,
                         fldBrandId = <cfqueryparam value='#arguments.formBrandId#' cfsqltype="integer">,
                         fldDescription = <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
-                        fldPrice = <cfqueryparam value='#arguments.productPrice#' cfsqltype="numeric">,
-                        fldTax = <cfqueryparam value='#arguments.productTax#' cfsqltype="numeric">,
+                        fldPrice = <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
+                        fldTax = <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
                         fldUpdatedBy = <cfqueryparam value='#session.userId#' cfsqltype="integer">
                     WHERE 
                         fldProduct_ID = <cfqueryparam value='#arguments.productId#' cfsqltype="integer">
                 </cfquery>
-                <cfloop array="#local.fileNames#" item="local.fileArrayItem" index="local.fileArrayIndex">
-                    <cfquery>
-                        INSERT INTO 
-                            tblProductImages
-                        (
-                            fldProductId,
-                            fldImageFileName,
-                            fldDefaultImage,
-                            fldCreatedBy
-                        )
-                        VALUES
-                        (
-                            <cfqueryparam value='#local.arguments.productId#' cfsqltype="integer">,
-                            <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,
-                            0,
-                            <cfqueryparam value='#session.userId#' cfsqltype="integer">
-                        )
-                    </cfquery>
-                </cfloop>
+                <cfset local.defaultImage = 0>
+                <cfset local.productid = arguments.productId>
             <cfelse>
                 <cfquery result="local.productResult">
                     INSERT INTO
@@ -395,36 +378,35 @@
                         <cfqueryparam value='#trim(arguments.productName)#' cfsqltype="varchar">,
                         <cfqueryparam value='#arguments.formBrandId#' cfsqltype="integer">,
                         <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
-                        <cfqueryparam value='#arguments.productPrice#' cfsqltype="numeric">,
-                        <cfqueryparam value='#arguments.productTax#' cfsqltype="numeric">,
+                        <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
+                        <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
                         <cfqueryparam value='#session.userId#' cfsqltype="integer">
                     )
                 </cfquery>
+                <cfset local.defaultImage = 1>
+                <cfset local.productid = local.productResult.generatedkey>
 
-                <cfloop array="#local.fileNames#" item="local.fileArrayItem" index="local.fileArrayIndex">
-                    <cfquery>
-                        INSERT INTO 
-                            tblProductImages
-                        (
-                            fldProductId,
-                            fldImageFileName,
-                            fldDefaultImage,
-                            fldCreatedBy
-                        )
-                        VALUES
-                        (
-                            <cfqueryparam value='#local.productResult.GENERATEDKEY#' cfsqltype="integer">,
-                            <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,
-                            <cfif local.fileArrayIndex EQ 1>
-                                1,
-                            <cfelse>
-                                0,
-                            </cfif>
-                            <cfqueryparam value='#session.userId#' cfsqltype="integer">
-                        )
-                    </cfquery>
-                </cfloop>
             </cfif>
+            <cfloop array="#local.fileNames#" item="local.fileArrayItem" >
+                <cfquery>
+                    INSERT INTO 
+                        tblProductImages
+                    (
+                        fldProductId,
+                        fldImageFileName,
+                        fldDefaultImage,
+                        fldCreatedBy
+                    )
+                    VALUES
+                    (
+                        <cfqueryparam value='#local.productid#' cfsqltype="integer">,
+                        <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,
+                        <cfqueryparam value='#local.defaultImage#' cfsqltype="varchar">,
+                        <cfqueryparam value='#session.userId#' cfsqltype="integer">
+                    )
+                </cfquery>
+                <cfset local.defaultImage = 0>
+            </cfloop>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>
@@ -459,60 +441,53 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="setDefaultImage" access="remote">
+    <cffunction  name="setDefaultImage" access="remote" returnformat = "plain">
         <cfargument  name="imageId" required = "true">
+        <cfargument  name="productId" required = "true">
 
-        <cfquery name="local.ProductImages">
-            SELECT
-                fldProductId
-            FROM
-                tblProductImages
-            WHERE
-                fldProductImage_ID = <cfqueryparam value="#arguments.imageId#" cfsqltype="NUMERIC">
-            ORDER BY
-                fldDefaultImage DESC
-        </cfquery>
         <cfquery>
             UPDATE
                 tblProductImages
             SET
                 fldDefaultImage = 0,
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="varchar">,
-                fldactive = 0
+                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="varchar">
             WHERE
-                fldProductId = <cfqueryparam value = "#local.ProductImages.fldProductId#" cfSqlType="varchar">;
+                fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType="varchar">;
         </cfquery>
         <cfquery>
             UPDATE
                 tblProductImages
             SET
                 fldDefaultImage = 1,
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="varchar">,
-                fldactive = 0
+                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="varchar">
             WHERE
                 fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="varchar">;
         </cfquery>
 
-        <cfreturn true>
+        <cfreturn arguments.productId>
     </cffunction>
 
     <cffunction  name="getProductImages" returntype="struct" access="remote" returnformat="JSON">
         <cfargument  name="productId">
-        <cfset local.resultStruct = structNew()>
+
+        <cfset local.resultStruct = structNew("Ordered")>
         <cfquery name="local.ProductImages">
             SELECT
                 fldProductImage_ID,
-                fldImageFileName
+                fldImageFileName,
+                fldDefaultImage
             FROM
                 tblProductImages
             WHERE
                 fldProductId = <cfqueryparam value="#arguments.productId#" cfsqltype="NUMERIC">
                 AND fldActive = 1
-            ORDER BY
-                fldDefaultImage DESC
         </cfquery>
         <cfloop query="local.ProductImages">
-            <cfset local.resultStruct[local.ProductImages.fldProductImage_ID]=local.ProductImages.fldImageFileName>
+            <cfif local.ProductImages.fldDefaultImage EQ 1>    
+                <cfset local.resultStruct["defaultImage"][local.ProductImages.fldProductImage_ID]=local.ProductImages.fldImageFileName>
+            <cfelse>
+                <cfset local.resultStruct["remainingImages"][local.ProductImages.fldProductImage_ID]=local.ProductImages.fldImageFileName>
+            </cfif>
         </cfloop>
         <cfreturn local.resultStruct>
     </cffunction>
