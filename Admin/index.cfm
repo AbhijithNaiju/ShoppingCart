@@ -1,9 +1,8 @@
 <cfinclude  template="./header.cfm">
-<cfset adminObject = createObject("component","components.admin")>
 
 <div class="mainBody">
     <cfif structKeyExists(form, "modalCategorySubmit")>
-        <cfset resultStruct = adminObject.editCategory(
+        <cfset resultStruct = application.adminObject.editCategory(
                                                         categoryName=form.categoryName,
                                                         categoryId=form.modalCategorySubmit
                                                     )>
@@ -21,7 +20,7 @@
             <button class="btn btn-success" onclick="openCategoryModal(0)">ADD</button>
         </div>
         <div class="d-flex flex-column">
-            <cfset categoryData = adminObject.getCategories()>
+            <cfset categoryData = application.adminObject.getCategories()>
             <cfoutput>
                 <cfloop query="categoryData">
                     <div class="categoryItem d-flex justify-content-between align-items-center">

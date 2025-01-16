@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style/user.css">
-        <link rel="stylesheet" href="./style/bootstrap.min.css">
+        <link rel="stylesheet" href="../style/bootstrap.min.css">
         <title>Shopping Cart</title>
     </head>
     <body>
@@ -12,14 +12,14 @@
             <a href="../index.cfm" class="logo">
                 <img src="../assets/Images/shopping cart_transparent.png">
             </a>
-            <cfset logOutRequired = ["index.cfm"]>
-            <cfset currentTemplate = listLast(CGI.PATH_TRANSLATED,'\')>
-            <cfif arrayFindNoCase(logOutRequired, currentTemplate)>
+            <cfset excludedPages = ["/login.cfm","/missingpage.cfm","/errorpage.cfm","/signup.cfm"]>
+            
+            <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
                 <div class="logOutBtn">
                     <button class="" onclick="logout()">
                         Logout
                     </button>
-                    <img src="./assets/Images/icons8-logout-24.png" alt="">
+                    <img src="./assets/images/icons8-logout-24.png" alt="image not found">
                 </div>
             </cfif> 
         </div>

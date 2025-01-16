@@ -1,9 +1,8 @@
 <cfinclude  template="./header.cfm">
 <cfif structKeyExists(url, "CategoryId") AND len(url.CategoryId)>
-    <cfset adminObject = createObject("component","components.admin")>
     <div class="mainBody">
         <cfif structKeyExists(form, "modalSubCatSubmit")>
-            <cfset resultStruct = adminObject.editSubCategory(
+            <cfset resultStruct = application.adminObject.editSubCategory(
                                                                 categoryId=form.formCategoryId,
                                                                 subCategoryName=form.subCategoryName,
                                                                 subCategoryId=form.modalSubCatSubmit
@@ -16,7 +15,7 @@
                 </div>
             </cfif>
         </cfif>
-        <cfset subCategoryData = adminObject.getSubCategories(categoryId = url.categoryId)>
+        <cfset subCategoryData = application.adminObject.getSubCategories(categoryId = url.categoryId)>
         <div class="categoryBody m-auto border p-3">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
@@ -59,7 +58,7 @@
                 </div>
             </cfoutput>
         </div>
-        <cfset categoryData = adminObject.getCategories()>
+        <cfset categoryData = application.adminObject.getCategories()>
         <div id="addModal" class="displayNone">
             <form method="post" id="modalForm" class="subCategoryModalBody mx-auto p-3 d-flex flex-column">
                 <h4 id="modalHeading"></h4>

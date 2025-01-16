@@ -17,8 +17,7 @@
         <input type="submit" id="" class="btn btn-success" name="submitBtn">
 
         <cfif structKeyExists(form,"submitBtn")>
-            <cfset adminObject = createObject("component","components.admin")>
-            <cfset local.loginResult = adminObject.adminLogin(
+            <cfset local.loginResult = application.adminObject.adminLogin(
                 username = form.userName,
                 password = form.password
                 )>

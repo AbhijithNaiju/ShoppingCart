@@ -1,9 +1,8 @@
 <cfinclude  template="./header.cfm">
 <cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId)>
-    <cfset adminObject = createObject("component","components.admin")>
     <div class="mainBody">
-        <cfset productData = adminObject.getProducts(subCategoryId = url.subCategoryId)>
-        <cfset categoryData = adminObject.getcategoryData(subCategoryId = url.subCategoryId)>
+        <cfset productData = application.adminObject.getProducts(subCategoryId = url.subCategoryId)>
+        <cfset categoryData = application.adminObject.getcategoryData(subCategoryId = url.subCategoryId)>
         <div class="categoryBody m-auto border p-3">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
@@ -58,9 +57,9 @@
                 </div>
             </cfoutput>
         </div>
-        <cfset categoryData = adminObject.getCategories()>
-        <cfset brandData = adminObject.getBrands()>
-        <cfset subCategoryData = adminObject.getSubCategories(categoryid=categoryData.fldCategory_ID)>
+        <cfset categoryList = application.adminObject.getCategories()>
+        <cfset brandData = application.adminObject.getBrands()>
+        <cfset subCategoryData = application.adminObject.getSubCategories(categoryid=categoryData.fldCategoryID)>
         <div id="addModal" class="displayNone">
             <form 
                 method="post" 
@@ -74,9 +73,9 @@
                         <cfoutput>
                             <label for="categorySelect">Category Name</label>
                             <select name="formCategoryId" id = "categorySelect" onchange="listSubcategories(this.value)" class = "form-control" required>
-                                <cfloop query="categoryData">
-                                    <option value="#categoryData.fldCategory_ID#">
-                                        #categoryData.fldcategoryName#
+                                <cfloop query="categoryList">
+                                    <option value="#categoryList.fldCategory_ID#">
+                                        #categoryList.fldcategoryName#
                                     </option>
                                 </cfloop>
                             </select>
@@ -123,7 +122,7 @@
             </form>
         </div>
         <div id="imageModal" class="displayNone align-items-center justify-content-center">
-            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+            <div id="carouselExampleControls" class="carousel" data-ride="carousel">
                 <div class="carousel-inner" id="carouselInner">
                 </div>
                 <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -138,7 +137,9 @@
             <button 
                 class="position-absolute imageModalClose btn btn-danger"
                 onclick="closeImageModal()"
-                >Close X</button>
+            >
+                Close X
+            </button>
         </div>
     </div>
 <cfelse>

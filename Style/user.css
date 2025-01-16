@@ -12,12 +12,12 @@ body
 }
 .header
 {
-    padding: 5px 10px;
+    padding: 0px 10px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 10%;
+    height: 9%;
 }
 .logo
 {
@@ -61,34 +61,13 @@ body
     font-size: 22px;
     padding: 10px 0;
 }
-#userName,#password
-{
-    background: #fff;
-    height: 33px;
-    padding: 0 10px;
-}
-#submitBtn
-{
-    border: 2px solid #666;
-    background-color: #fff;
-    padding: 8px 0;
-    box-sizing: border-box;
-}
-.loginForm input
-{
-    border-radius: 4px;
-    margin-top: 10px;
-}
 .errorMessage
 {
     color: #f00;
     font-size: 12px;
     margin: 5px;
-}
-.loginError
-{
     margin: auto;
-}
+}   
 .logOutBtn button
 {
     border: none;

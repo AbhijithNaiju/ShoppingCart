@@ -24,7 +24,7 @@ function logout()
 	{
 		$.ajax({
 			type:"POST",
-			url:"./components/admin.cfc?method=logOut",
+			url:"components/admin.cfc?method=logOut",
 			success: function() {
 				location.reload();
 			}
@@ -81,7 +81,7 @@ function openProductModal(productData)
         $("#productImages").removeAttr("required")
         $.ajax({
             type:"POST",
-            url:"./components/admin.cfc?method=getProductDetails",
+            url:"components/admin.cfc?method=getProductDetails",
             data:{productId:productData.productId},
             success: function(result) {
                 if(result)
@@ -117,7 +117,7 @@ function listSubcategories(categoryId,subCategoryId)
     $("#subCategorySelect").empty();
     $.ajax({
         type:"POST",
-        url:"./components/admin.cfc?method=getSubcategories",
+        url:"components/admin.cfc?method=getSubcategories",
         data:{categoryId:categoryId},
         success: function(result) {
             if(result)
@@ -156,7 +156,7 @@ function productSubmit()
     productData = new FormData(document.getElementById("modalForm"))
     $.ajax({
         type: "POST",
-        url: "./components/admin.cfc?method=addOrEditProduct",
+        url: "components/admin.cfc?method=addOrEditProduct",
         data: productData,
         processData: false,
         contentType: false,
@@ -187,7 +187,7 @@ function  deleteCategory(categoryId)
     {
         $.ajax({
             type:"POST",
-            url:"./components/admin.cfc?method=deleteCategory",
+            url:"components/admin.cfc?method=deleteCategory",
             data:{categoryId:categoryId.value},
             success: function(result) {
                 if(result)
@@ -212,7 +212,7 @@ function  deleteSubCategory(deleteButton)
     {
         $.ajax({
             type:"POST",
-            url:"./components/admin.cfc?method=deleteSubCategory",
+            url:"components/admin.cfc?method=deleteSubCategory",
             data:{subCategoryId:deleteButton.value},
             success: function(result) {
                 if(result)
@@ -237,7 +237,7 @@ function  deleteProduct(deleteButton)
     {
         $.ajax({
             type:"POST",
-            url:"./components/admin.cfc?method=deleteProduct",
+            url:"components/admin.cfc?method=deleteProduct",
             data:{productId:deleteButton.value},
             success: function(result) {
                 if(result)
@@ -271,7 +271,7 @@ function listProductImages(productId)
     carouselInner.innerHTML="";
     $.ajax({
         type:"POST",
-        url:"./components/admin.cfc?method=getProductImages",
+        url:"components/admin.cfc?method=getProductImages",
         data:{productId:productId},
         success: function(result) {
             if(result)
@@ -321,7 +321,7 @@ function deleteImage(imageDetails)
 {
     $.ajax({
         type:"POST",
-        url:"./components/admin.cfc?method=deleteImage",
+        url:"components/admin.cfc?method=deleteImage",
         data:{imageId:imageDetails.imageId},
         success: function(result) {
             if(result)
@@ -344,10 +344,10 @@ function setDefaultImage(imageDetails)
 {
     $.ajax({
         type:"POST",
-        url:"./components/admin.cfc?method=setDefaultImage",
+        url:"components/admin.cfc?method=setDefaultImage",
         data:{imageId:imageDetails.imageId,productId:imageDetails.productId},
-        success: function(productId) {
-            if(productId)
+        success: function(result) {
+            if(result)
             {
                 listProductImages(imageDetails.productId)
             }

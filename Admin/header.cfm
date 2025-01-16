@@ -9,18 +9,17 @@
     </head>
     <body>
         <div class="header bg-success">
-            <a href="../index.cfm" class="logo">
-                <img src="../admin/assets/Images/shopping cart_transparent.png">
+            <a href="../admin/index.cfm" class="logo">
+                <img src="../assets/Images/shopping cart_transparent.png">
             </a>
-            <cfset excludedPages = ["login.cfm"]>
-            <cfset currentTemplate = listLast(CGI.script_name ,'/')>
+            <cfset excludedPages = ["/admin/login.cfm"]>
             
-            <cfif NOT arrayFindNoCase(excludedPages, currentTemplate)>
+            <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
                 <div class="logOutBtn">
                     <button class="" onclick="logout()">
                         Logout
                     </button>
-                    <img src="./assets/images/icons8-logout-24.png" alt="image not found">
+                    <img src="../assets/images/icons8-logout-24.png" alt="image not found">
                 </div>
             </cfif> 
         </div>

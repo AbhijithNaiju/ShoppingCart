@@ -174,7 +174,7 @@ body
 }
 .productModalScroll
 {
-    height: 81%;
+    height: 80%;
     overflow-y: scroll;
 }
 .thumbnailImage
