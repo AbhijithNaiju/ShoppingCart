@@ -8,15 +8,13 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="onRequestStart"> 
+    <cffunction  name="onRequestStart" returnType="boolean"> 
         <cfargument  name="requestedPage">
-<!---   <cfif listfirst(CGI.script_name,'/') EQ admin>
-            <cflocation url="../admin/login.cfm" addtoken ="false"> 
-        </cfif>  --->
+
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
-        <cfset local.publicPages = ["/admin/login.cfm","/login.cfm","/signup.cfm","/errorpage.cfm"]>
+        <cfset local.publicPages = ["/admin/login.cfm","/login.cfm","/signup.cfm","/errorpage.cfm","/index.cfm","/category.cfm"]>
         <cfif arrayFindNoCase(local.publicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
             <cfreturn true>
         <cfelse>
@@ -25,6 +23,7 @@
             <cfelse>
                 <cflocation url="login.cfm" addtoken ="false"> 
             </cfif>
+
         </cfif>
     </cffunction>
 

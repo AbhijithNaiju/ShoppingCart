@@ -18,42 +18,48 @@
                     </button>
                 </div>
                 <div class="d-flex flex-column categoryList">
-                    <cfloop query="productData">
-                        <div class="productItem my-2 border p-1 justify-content-between align-items-center">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <div class="productName">#productData.fldProductName#</div>
-                                    <div class="brandName">#productData.fldBrandName#</div>
+                    <cfif productData.recordCount>
+                        <cfloop query="productData">
+                            <div class="productItem my-2 border p-1 justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="productName">#productData.fldProductName#</div>
+                                        <div class="brandName">#productData.fldBrandName#</div>
+                                    </div>
+                                    <div>#productData.fldprice#</div>
+                                    <button 
+                                        class="thumbnailImage"
+                                        onclick="openImageModal({productId:'#productData.fldProduct_ID#'})"
+                                    >
+                                        <img 
+                                            src="../assets/productimages/#productData.fldImageFileName#" 
+                                            alt="Image not found" 
+                                            class="">
+                                    </button>
                                 </div>
-                                <div>#productData.fldprice#</div>
-                                <button 
-                                    class="thumbnailImage"
-                                    onclick="openImageModal({productId:'#productData.fldProduct_ID#'})"
-                                >
-                                    <img 
-                                        src="../assets/productimages/#productData.fldImageFileName#" 
-                                        alt="Image not found" 
-                                        class="">
-                                </button>
+                                <div class="d-flex justify-content-between">
+                                    <button 
+                                        class="btn btn-secondary w-50" 
+                                        onclick="openProductModal({categoryId:#categoryData.fldCategoryID#,subCategoryId:#url.subCategoryId#,productId:#productData.fldProduct_ID#})"
+                                        value="#productData.fldProduct_ID#"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button 
+                                        class="btn btn-secondary w-50" 
+                                        onclick="deleteProduct(this)" 
+                                        value="#productData.fldProduct_ID#"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <button 
-                                    class="btn btn-secondary w-50" 
-                                    onclick="openProductModal({categoryId:#categoryData.fldCategoryID#,subCategoryId:#url.subCategoryId#,productId:#productData.fldProduct_ID#})"
-                                    value="#productData.fldProduct_ID#"
-                                >
-                                    Edit
-                                </button>
-                                <button 
-                                    class="btn btn-secondary w-50" 
-                                    onclick="deleteProduct(this)" 
-                                    value="#productData.fldProduct_ID#"
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                        </cfloop>
+                    <cfelse>
+                        <div class="categoryItem d-flex justify-content-between align-items-center">
+                            No Products Found
                         </div>
-                    </cfloop>
+                    </cfif>
                 </div>
             </cfoutput>
         </div>

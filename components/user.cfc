@@ -110,8 +110,73 @@
 
         <cfreturn local.structResult>
     </cffunction>
+
     <cffunction  name="logOut" returntype="boolean" access="remote">
         <cfset structClear(session)>
         <cfreturn true>
+    </cffunction>
+
+    <cffunction name = "getAllCategories" returntype = "query">
+        <cfquery  name = "local.getAllCategories">
+            SELECT 
+                fldCategory_ID AS categoryId,
+                fldCategoryName AS categoryName
+            FROM
+                tblCategory
+            WHERE
+                fldActive=1;
+        </cfquery>
+        <cfreturn local.getAllCategories>
+    </cffunction>
+
+    <cffunction name = "getAllSubcategories" returntype = "query">
+        <cfquery  name = "local.getAllSubcategories">
+            SELECT 
+                fldSubcategory_ID AS subcategoryId,
+                fldSubcategoryName AS subcategoryName,
+                fldCategoryId AS categoryId
+            FROM
+                tblSubCategory
+            WHERE
+                fldActive=1;
+        </cfquery>
+        <cfreturn local.getAllSubcategories>
+    </cffunction>
+    <cffunction name = "getRandomProducts" returntype = "query">
+        <cfquery  name = "local.getRandomProducts">
+            SELECT 
+                P.fldProduct_ID AS productId,
+                P.fldproductName AS productName,
+                P.fldPrice AS productPrice,
+                B.fldBrandName AS brandName,
+                PI.fldImageFileName AS imageFileName
+            FROM
+                tblProduct P
+            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
+            WHERE
+                P.fldActive=1
+            ORDER BY RAND() 
+            LIMIT 8
+        </cfquery>
+        <cfreturn local.getRandomProducts>
+    </cffunction>
+
+    <cffunction name = "getCategoryProducts" returntype = "query">
+        <cfquery  name = "local.getCategoryProducts">
+            SELECT 
+                P.fldProduct_ID AS productId,
+                P.fldproductName AS productName,
+                P.fldPrice AS productPrice,
+                B.fldBrandName AS brandName,
+                PI.fldImageFileName AS imageFileName
+            FROM
+                tblProduct P
+            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
+            WHERE
+                P.fldActive=1
+        </cfquery>
+        <cfreturn local.getCategoryProducts>
     </cffunction>
 </cfcomponent>

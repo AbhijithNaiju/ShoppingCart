@@ -22,6 +22,7 @@
         <div class="d-flex flex-column">
             <cfset categoryData = application.adminObject.getCategories()>
             <cfoutput>
+            <cfif categoryData.recordCount>
                 <cfloop query="categoryData">
                     <div class="categoryItem d-flex justify-content-between align-items-center">
                         <div>#categoryData.fldCategoryName#</div>
@@ -46,6 +47,11 @@
                         </div>
                     </div>
                 </cfloop>
+            <cfelse>
+                <div class="categoryItem d-flex justify-content-between align-items-center">
+                    No Category Found
+                </div>
+            </cfif>
             </cfoutput>
         </div>
     </div>

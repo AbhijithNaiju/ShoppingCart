@@ -17,7 +17,10 @@ body
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 9%;
+    height: 10%;
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 .logo
 {
@@ -68,23 +71,101 @@ body
     margin: 5px;
     margin: auto;
 }   
-.logOutBtn button
+.menuButtons button
 {
     border: none;
-    border-radius: 4px;
     background: none;
     color: #fff;
     font-weight: bold;
     font-size: 18px;
-    padding: 0 10px;
-    margin-left: auto;
+    padding: 3px 10px;
+    margin: 0 4px;
 }
-.logOutBtn button:focus
+.menuButtons a:hover
+{
+    color: #fff;
+    text-decoration: none;
+}
+
+.menuButtons button:focus
 {
     outline: none;
 }
-.logOutBtn
+.menuButtons
 {
     display: flex;
     align-items: center;
+}
+.displayNone
+{
+    display: none;
+}
+#loginModal
+{
+    background-color: rgba(216, 216, 216, 0.616);
+    height: 90%;
+}
+#loginForm
+{
+    width: 35%;
+    background-color: #fff;
+}
+.searchBar
+{
+    width: 50%;
+}
+.categoryNav
+{
+    background-color: rgb(228, 228, 228);
+    padding: 5px 0;
+}
+.navCategoryName:hover
+{
+    color: #000000;
+    text-decoration: none;
+}
+.navCategoryName
+{
+    color: #000000;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+.navCategory {
+    position: relative;
+    display: inline-block;
+}
+  
+.navCategory .categoryDropDown {
+visibility: hidden;
+background-color: rgb(228, 228, 228);
+color: #000000;
+text-align: center;
+padding: 5px 0;
+border-radius: 6px;
+width: fit-content;
+min-width: 120px;
+top: 100%;
+left: 50%;
+margin-left: -60px;
+position: absolute;
+z-index: 1;
+height: auto;
+}
+
+.navCategory:hover .categoryDropDown {
+visibility: visible;
+}
+.navSubcategoryName
+{
+    color: #000000;
+}
+.randomProducts
+{
+    width: 20%;
+    height: 40vh;
+}
+.randomProducts img
+{
+    width: 50%;
+    height: 60%;
 }

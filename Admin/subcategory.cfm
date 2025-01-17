@@ -31,30 +31,36 @@
                     </button>
                 </div>
                 <div class="d-flex flex-column categoryList">
-                    <cfloop collection="#subCategoryData#" item="subCatoryId">
-                        <div class="categoryItem d-flex justify-content-between align-items-center">
-                            <div>#subCategoryData[subCatoryId]#</div>
-                            <div class="d-flex w-50 justify-content-between">
-                                <button 
-                                    class="btn btn-primary" 
-                                    onclick="openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subCatoryId#,subCategoryName:'#subCategoryData[subCatoryId]#'})"
-                                    value="#subCatoryId#">
-                                    Edit
-                                </button>
-                                <button 
-                                    class="btn btn-danger" 
-                                    onclick="deleteSubCategory(this)" 
-                                    value="#subCatoryId#">
-                                    Delete
-                                </button>
-                                <a 
-                                    href="product.cfm?subCategoryId=#subCatoryId#&subCategoryName=#subCategoryData[subCatoryId]#"
-                                    class="btn btn-success">
-                                    Open
-                                </a>
+                    <cfif structCount(subCategoryData)>
+                        <cfloop collection="#subCategoryData#" item="subCatoryId">
+                            <div class="categoryItem d-flex justify-content-between align-items-center">
+                                <div>#subCategoryData[subCatoryId]#</div>
+                                <div class="d-flex w-50 justify-content-between">
+                                    <button 
+                                        class="btn btn-primary" 
+                                        onclick="openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subCatoryId#,subCategoryName:'#subCategoryData[subCatoryId]#'})"
+                                        value="#subCatoryId#">
+                                        Edit
+                                    </button>
+                                    <button 
+                                        class="btn btn-danger" 
+                                        onclick="deleteSubCategory(this)" 
+                                        value="#subCatoryId#">
+                                        Delete
+                                    </button>
+                                    <a 
+                                        href="product.cfm?subCategoryId=#subCatoryId#&subCategoryName=#subCategoryData[subCatoryId]#"
+                                        class="btn btn-success">
+                                        Open
+                                    </a>
+                                </div>
                             </div>
+                        </cfloop>
+                    <cfelse>
+                        <div class="categoryItem d-flex justify-content-between align-items-center">
+                            No Subcategory Found
                         </div>
-                    </cfloop>
+                    </cfif>
                 </div>
             </cfoutput>
         </div>
