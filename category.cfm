@@ -1,24 +1,42 @@
 <cfinclude  template="userHeader.cfm">
 <cfif structKeyExists(url, "catId")>
+    <cfset categoryProducts = application.userObject.getCategoryProducts(categoryId=url.catId)>
+    <cfset subcategories = application.userObject.getAllSubcategories(categoryId=url.catId)>
     <cfoutput>
-        <cfset categoryProducts = application.userObject.getCategoryProducts()>
-        <div class="h-50 border-dark">
-            <h1>
-                Random Products
-            </h1>
-            <div class="d-flex flex-wrap m-2 justify-content-around">
-                <cfloop query = "categoryProducts">
-                    <a 
-                        href="product.cfm?proId=#categoryProducts.productId#" 
-                        class="randomProducts border border-dark m-2 p-2 d-flex flex-column align-items-center"
-                    >
-                        <img src="./assets/productimages/#categoryProducts.imageFileName#"></img>
-                        <h6>#categoryProducts.productName#</h6>
-                        <p>#categoryProducts.brandName#</p>
-                    </a>
-                </cfloop>
-            </div>
-            </div>
+        <div class="m-2">
+            <cfloop query="subcategories">
+                <cfquery  name = "subcategoryProducts" dbtype="query">
+                    SELECT 
+                        *
+                    FROM
+                        categoryProducts
+                    WHERE
+                        subCategoryId = #subcategories.subcategoryId#
+                </cfquery>
+                <cfif subcategoryProducts.recordCount>
+                    <h3>
+                        <a href="./subcategory.cfm?subcatId=#subcategories.subcategoryId#">
+                            #subcategories.subcategoryName#
+                        </a>
+                    </h3>
+                    <div class="productListingParent m-3">
+                        <cfloop query = "subcategoryProducts">
+                            <a 
+                            href="product.cfm?prodId=#subcategoryProducts.productId#" 
+                            class="randomProducts p-3 d-flex flex-column align-items-center border"
+                            >
+                                <img src="./assets/productimages/#subcategoryProducts.imageFileName#"></img>
+                                <div class="w-100 my-2">
+                                    <h6>#subcategoryProducts.productName#</h6>
+                                    <p>#subcategoryProducts.brandName#</p>
+                                    <p class="mt-auto">Rs : #subcategoryProducts.productPrice + subcategoryProducts.productTax#</p>
+                                </div>
+                            </a>
+                        </cfloop>
+                    </div>
+                </cfif>
+            </cfloop>
+        </div>
     </cfoutput>
 </cfif>
 <cfinclude  template="userFooter.cfm">

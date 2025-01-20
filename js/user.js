@@ -11,14 +11,14 @@ function logout(){
 	}
 }
 
-function openLoginModal(){
-	$("#loginModal").removeClass("displayNone")
-}
+// function openLoginModal(){
+// 	$("#loginModal").removeClass("displayNone")
+// }
 
-function closeLoginModal(){
-	$("#loginModal").addClass("displayNone")
-    $("#modalForm")[0].reset();
-}
+// function closeLoginModal(){
+// 	$("#loginModal").addClass("displayNone")
+//     $("#modalForm")[0].reset();
+// }
 
 function userLogin(){
 	$.ajax({

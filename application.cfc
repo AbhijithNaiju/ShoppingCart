@@ -14,7 +14,7 @@
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
-        <cfset local.publicPages = ["/admin/login.cfm","/login.cfm","/signup.cfm","/errorpage.cfm","/index.cfm","/category.cfm"]>
+        <cfset local.publicPages = ["/admin/login.cfm","/login.cfm","/signup.cfm","/errorpage.cfm","/index.cfm","/category.cfm","/subcategory.cfm","/product.cfm"]>
         <cfif arrayFindNoCase(local.publicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
             <cfreturn true>
         <cfelse>

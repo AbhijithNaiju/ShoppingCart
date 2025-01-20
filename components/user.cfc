@@ -130,6 +130,7 @@
     </cffunction>
 
     <cffunction name = "getAllSubcategories" returntype = "query">
+        <cfargument  name = "categoryId" type = "integer" required = "false">
         <cfquery  name = "local.getAllSubcategories">
             SELECT 
                 fldSubcategory_ID AS subcategoryId,
@@ -138,22 +139,31 @@
             FROM
                 tblSubCategory
             WHERE
-                fldActive=1;
+                fldActive=1
+            <cfif structKeyExists(arguments,"categoryId")>
+                AND fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+            </cfif>
         </cfquery>
         <cfreturn local.getAllSubcategories>
     </cffunction>
+    
     <cffunction name = "getRandomProducts" returntype = "query">
         <cfquery  name = "local.getRandomProducts">
             SELECT 
                 P.fldProduct_ID AS productId,
                 P.fldproductName AS productName,
                 P.fldPrice AS productPrice,
+                P.fldTax AS productTax,
                 B.fldBrandName AS brandName,
-                PI.fldImageFileName AS imageFileName
+                PI.fldImageFileName AS imageFileName,
+                SC.fldsubCategoryName,
+                SC.fldSubcategory_ID
             FROM
                 tblProduct P
             LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
+            INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
+            INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
             WHERE
                 P.fldActive=1
             ORDER BY RAND() 
@@ -163,20 +173,62 @@
     </cffunction>
 
     <cffunction name = "getCategoryProducts" returntype = "query">
+        <cfargument  name = "categoryId" type = "integer" required = "true">
         <cfquery  name = "local.getCategoryProducts">
             SELECT 
                 P.fldProduct_ID AS productId,
                 P.fldproductName AS productName,
                 P.fldPrice AS productPrice,
+                P.fldTax AS productTax,
                 B.fldBrandName AS brandName,
-                PI.fldImageFileName AS imageFileName
+                PI.fldImageFileName AS imageFileName,
+                fldSubcategoryId AS subCategoryId
             FROM
                 tblProduct P
             LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
+            INNER JOIN 
+                    tblSubcategory SC 
+                    ON 
+                    P.fldSubcategoryId = SC.fldSubcategory_ID
+                    AND
+                    SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                    AND
+                    SC.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
             WHERE
                 P.fldActive=1
         </cfquery>
         <cfreturn local.getCategoryProducts>
+    </cffunction>
+    <cffunction name = "getSubcategoryProducts" returntype = "query">
+        <cfargument  name = "subcategoryId" type = "integer" required = "true">
+        <cfargument  name = "ascSort" type = "integer" required = "false">
+        <cfargument  name = "descSort" type = "integer" required = "false">
+        <cfquery  name = "local.getProducts">
+            SELECT 
+                P.fldProduct_ID AS productId,
+                P.fldproductName AS productName,
+                P.fldPrice AS productPrice,
+                P.fldTax AS productTax,
+                P.fldSubcategoryId AS subCategoryId,
+                B.fldBrandName AS brandName,
+                PI.fldImageFileName AS imageFileName,
+                SC.fldSubcategoryName AS subcategoryName
+            FROM
+                tblProduct P
+            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
+            LEFT JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID
+            WHERE
+                P.fldActive=1
+                AND
+                P.fldSubcategoryId = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
+            <cfif structKeyExists(arguments, "ascSort")>
+                
+            <cfelseif structKeyExists(arguments, "descSort")>
+
+            </cfif>
+        </cfquery>
+        <cfreturn local.getProducts>
     </cffunction>
 </cfcomponent>

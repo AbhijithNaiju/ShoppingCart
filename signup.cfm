@@ -82,6 +82,10 @@
             </cfoutput>
         </cfif>
         <input type="submit" id="" class="btn btn-success" name="signupButton">
+        <div class="d-flex my-2">
+            Already have an account ? 
+            <a href="./login.cfm">Login</a>
+        </div>
     </form>
 </div>
 <cfinclude  template="userFooter.cfm">

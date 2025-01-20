@@ -36,9 +36,9 @@
                             </button>
                             <img src="./assets/images/icons8-logout-24.png" alt="image not found">
                     <cfelse>
-                            <button onclick="openLoginModal()">
+                            <a href="./login.cfm">
                                 Login
-                            </button>
+                            </a>
                     </cfif>
                 </div>
             </cfif> 
