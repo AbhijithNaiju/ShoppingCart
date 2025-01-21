@@ -7,7 +7,7 @@
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
                     <cfif structKeyExists(url, "subCategoryName")>
-                        <a href="./subcategory.cfm?categoryId=#categoryData.fldCategoryID#" class = "test-decoration-none text-dark">
+                        <a href="./productListing.cfm?categoryId=#categoryData.fldCategoryID#" class = "test-decoration-none text-dark">
                             <h3 class=""> #url.subCategoryName#</h3>
                         </a>
                     </cfif>

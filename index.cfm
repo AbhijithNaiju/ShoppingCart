@@ -12,7 +12,7 @@
                 <div class="categoryDropDown d-flex flex-column">
                     <cfloop query="subcategories">
                         <cfif categories.categoryId EQ subcategories.categoryId>
-                            <a href="subcategory.cfm?subcatId=#subcategories.subcategoryId#" class="navSubcategoryName btn">
+                            <a href="productListing.cfm?subcatId=#subcategories.subcategoryId#" class="navSubcategoryName btn">
                                 #subcategories.subcategoryName#
                             </a>
                         </cfif>
@@ -28,7 +28,7 @@
         <div class="productListingParent m-3">
             <cfloop query = "randomProducts">
                 <a 
-                    href="product.cfm?prodId=#randomProducts.productId#" 
+                    href="product.cfm?productId=#randomProducts.productId#" 
                     class="randomProducts p-3 d-flex flex-column align-items-center border"
                 >
                     <img src="./assets/productimages/#randomProducts.imageFileName#"></img>

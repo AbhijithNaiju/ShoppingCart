@@ -14,16 +14,20 @@
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
-        <cfset local.publicPages = ["/admin/login.cfm","/login.cfm","/signup.cfm","/errorpage.cfm","/index.cfm","/category.cfm","/subcategory.cfm","/product.cfm"]>
-        <cfif arrayFindNoCase(local.publicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
-            <cfreturn true>
-        <cfelse>
-            <cfif listfirst(CGI.script_name,'/') EQ "admin">
-                <cflocation url="../admin/login.cfm" addtoken ="false"> 
+        <cfif listfirst(CGI.script_name,'/') EQ "admin">
+            <cfset local.adminPublicPages = ["/admin/login.cfm"]>
+            <cfif arrayFindNoCase(local.adminPublicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
+                <cfreturn true>
             <cfelse>
-                <cflocation url="login.cfm" addtoken ="false"> 
+                <cflocation url="../admin/login.cfm" addtoken ="false"> 
             </cfif>
-
+        <cfelse>
+            <cfset local.userRestrictedPages = ["/order.cfm","/cart.cfm"]>
+            <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) AND NOT structKeyExists(session, "userId")>
+                <cflocation url="/login.cfm" addtoken ="false"> 
+            <cfelse>
+                <cfreturn true>
+            </cfif>
         </cfif>
     </cffunction>
 

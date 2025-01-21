@@ -15,14 +15,14 @@
                 </cfquery>
                 <cfif subcategoryProducts.recordCount>
                     <h3>
-                        <a href="./subcategory.cfm?subcatId=#subcategories.subcategoryId#">
+                        <a href="./productListing.cfm?subcatId=#subcategories.subcategoryId#">
                             #subcategories.subcategoryName#
                         </a>
                     </h3>
                     <div class="productListingParent m-3">
                         <cfloop query = "subcategoryProducts">
                             <a 
-                            href="product.cfm?prodId=#subcategoryProducts.productId#" 
+                            href="product.cfm?productId=#subcategoryProducts.productId#" 
                             class="randomProducts p-3 d-flex flex-column align-items-center border"
                             >
                                 <img src="./assets/productimages/#subcategoryProducts.imageFileName#"></img>

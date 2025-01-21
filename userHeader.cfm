@@ -16,12 +16,20 @@
             
             <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
                 <div class="searchBar">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <form class="input-group" action="productlisting.cfm">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            name="searchValue" 
+                            placeholder="Search" 
+                            aria-label="Search" 
+                            aria-describedby="basic-addon2"
+                            required
+                        >
                         <div class="input-group-append">
-                            <button class="btn  btn-outline-light" type="button">Search</button>
+                            <button class="btn  btn-outline-light" type="submit">Search</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
                     <div class="menuButtons">
                     <button>
