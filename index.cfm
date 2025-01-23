@@ -1,21 +1,27 @@
 <cfinclude  template="./userHeader.cfm">
 <cfset categories = application.userObject.getAllCategories()>
-<cfset subcategories = application.userObject.getAllSubcategories()>
+<cfset allSubcategories = application.userObject.getAllSubcategories()>
 <cfset randomProducts = application.userObject.getRandomProducts()>
 <cfoutput>
-    <div class="categoryNav d-flex justify-content-around">
+    <div class="categoryNav d-flex justify-content-around px-3">
         <cfloop query="categories">
             <div  class = "navCategory" >
                 <a href="category.cfm?catId=#categories.categoryId#" class = "navCategoryName" >
                 #categories.categoryName#
                 </a>
+                <cfquery  name = "subcategories" dbtype="query">
+                SELECT 
+                    *
+                FROM
+                    allSubcategories
+                WHERE
+                    categoryId = #categories.categoryId#
+                </cfquery>
                 <div class="categoryDropDown d-flex flex-column">
                     <cfloop query="subcategories">
-                        <cfif categories.categoryId EQ subcategories.categoryId>
-                            <a href="productListing.cfm?subcatId=#subcategories.subcategoryId#" class="navSubcategoryName btn">
-                                #subcategories.subcategoryName#
-                            </a>
-                        </cfif>
+                        <a href="productListing.cfm?subcatId=#subcategories.subcategoryId#" class="navSubcategoryName btn">
+                            #subcategories.subcategoryName#
+                        </a>
                     </cfloop>
                 </div>
             </div>

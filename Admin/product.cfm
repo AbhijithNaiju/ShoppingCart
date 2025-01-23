@@ -7,7 +7,7 @@
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
                     <cfif structKeyExists(url, "subCategoryName")>
-                        <a href="./productListing.cfm?categoryId=#categoryData.fldCategoryID#" class = "test-decoration-none text-dark">
+                        <a href="./subcategory.cfm?categoryId=#categoryData.fldCategoryID#" class = "test-decoration-none text-dark">
                             <h3 class=""> #url.subCategoryName#</h3>
                         </a>
                     </cfif>
@@ -133,11 +133,9 @@
                 </div>
                 <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
                     <span class="carousel-control-prev-icon bg-dark btn" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
                 </a>
                 <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
                     <span class="carousel-control-next-icon bg-dark btn" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
                 </a>
             </div>
             <button 

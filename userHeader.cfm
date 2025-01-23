@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style/user.css">
-        <link rel="stylesheet" href="../style/bootstrap.min.css">
+        <link rel="stylesheet" href="../style/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <title>Shopping Cart</title>
     </head>
     <body>
@@ -21,7 +21,7 @@
                             type="text" 
                             class="form-control" 
                             name="searchValue" 
-                            placeholder="Search" 
+                            placeholder="" 
                             aria-label="Search" 
                             aria-describedby="basic-addon2"
                             required
@@ -31,23 +31,18 @@
                         </div>
                     </form>
                 </div>
-                    <div class="menuButtons">
-                    <button>
+                <div class="menuButtons">
+                    <button id="profileBtn">
                         Profile
                     </button>
-                    <button>
-                        Cart
+                    <div class="cartButton">
+                        <button id="cartBtn">
+                            Cart
+                        </button>
+                        <span class="badge" id="cartCount"></span>
+                    </div>
+                    <button  id="logoutBtn">
                     </button>
-                    <cfif structKeyExists(session, "userId")>
-                            <button onclick="logout()">
-                                Logout
-                            </button>
-                            <img src="./assets/images/icons8-logout-24.png" alt="image not found">
-                    <cfelse>
-                            <a href="./login.cfm">
-                                Login
-                            </a>
-                    </cfif>
                 </div>
             </cfif> 
         </div>

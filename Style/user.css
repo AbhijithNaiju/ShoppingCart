@@ -18,7 +18,7 @@ body{
     height: 10%;
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 1;
 }
 .logo{
     text-decoration: none;
@@ -69,11 +69,8 @@ body{
     font-weight: bold;
     font-size: 18px;
     padding: 3px 10px;
-    margin: 0 4px;
-}
-.menuButtons a:hover{
-    color: #fff;
     text-decoration: none;
+    margin: 0 10px;
 }
 
 .menuButtons button:focus{
@@ -84,11 +81,32 @@ body{
     align-items: center;
 }
 .displayNone{
-    display: none;
+    display: none !important;
+}
+.cartButton{
+    border: 1px solid #fff;
+    position: relative;
+}
+.cartButton .badge {
+    position: absolute;
+    top: -10px;
+    right: -8px;
+    padding: 3px 5px;
+    border-radius: 50%;
+    background: rgb(15, 15, 15);
+    color: rgb(255, 255, 255);
+    font-size: 10px;
 }
 #loginModal{
-    background-color: rgba(216, 216, 216, 0.616);
-    height: 90%;
+    background-color: rgba(216, 216, 216, 0.815);
+    height: 100%;
+    width: 100%;
+    top: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
 }
 #loginForm{
     width: 35%;
@@ -99,7 +117,6 @@ body{
 }
 .categoryNav{
     background-color: rgb(228, 228, 228);
-    padding: 5px 0;
 }
 .navCategoryName:hover{
     color: #000000;
@@ -109,31 +126,35 @@ body{
     color: #000000;
     text-transform: uppercase;
     font-weight: 500;
+    text-decoration: none;
 }
 .navCategory {
     position: relative;
     display: inline-block;
+    width: fit-content;
+    min-width: 10%;
+    text-align: center;
 }
   
 .navCategory .categoryDropDown {
-visibility: hidden;
-background-color: rgb(228, 228, 228);
-color: #000000;
-text-align: center;
-padding: 5px 0;
-border-radius: 6px;
-width: fit-content;
-min-width: 120px;
-top: 100%;
-left: 50%;
-margin-left: -60px;
-position: absolute;
-z-index: 1;
-height: auto;
+    visibility: hidden;
+    background-color: rgb(228, 228, 228);
+    color: #000000;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    width: fit-content;
+    min-width: 120px;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+    position: absolute;
+    z-index: 1;
+    height: auto;
 }
 
 .navCategory:hover .categoryDropDown {
-visibility: visible;
+    visibility: visible;
 }
 .navSubcategoryName{
     color: #000000;
@@ -141,13 +162,14 @@ visibility: visible;
 .randomProducts{
     width: 100%;
     height: 40vh;
-    color: #000000;
+    text-decoration: none;
+    color: #000000; 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-.randomProducts:hover{
-    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .randomProducts h6{
     text-overflow: ellipsis;
@@ -171,8 +193,9 @@ visibility: visible;
     width: 40%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
 }
 .productBody{
     height: 90%;
@@ -187,14 +210,36 @@ visibility: visible;
     display: flex;
 }
 .carousel-item>img{
-    height: 80%;
+    height: 90%;
     max-width: 80%;
     margin: auto;
 }
 #carouselExampleIndicators{
-    height: 80%;
+    height: 70%;
     width: 80%;
 }
 .productDetails{
-
+    width: 60%;
+}
+.carousel-control-prev-icon,.carousel-control-next-icon{
+    background-color: #747474;
+}
+.productNavLinks a{
+    max-width: 25%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0px 5px;
+    font-size: 12px;
+}
+.description{
+    font-size: 12px;
+    max-height: 20vh;
+    overflow-y: scroll;
+    text-overflow: ellipsis;
+}
+.price
+{
+    font-size: 20px;
+    font-weight: bold;
 }

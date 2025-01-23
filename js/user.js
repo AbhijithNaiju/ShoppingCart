@@ -1,3 +1,33 @@
+setHeader();
+function setHeader(){
+	$.ajax({
+		type:"POST",
+		url:"components/user.cfc?method=headerDetails",
+		success: function(result) {
+			headerDetails=JSON.parse(result)
+			if(headerDetails.sessionExist){
+				$("#cartCount").show()
+				$("#cartCount").text(headerDetails.cartCount)
+				$("#logoutBtn").text("Logout")
+				$("#cartBtn").attr('onclick','location.href="cartPage.cfm"')
+				$("#logoutBtn").attr('onclick','logout()')
+				$("#profileBtn").click(function(){
+					// open profile
+				})
+			}
+			else{
+				emptyHeader();
+			}
+		}
+	});
+}
+function emptyHeader(){
+	$("#logoutBtn").text("Login")
+	$("#cartCount").hide()
+	$("#cartBtn").attr('onclick','location.href = "login.cfm?redirect=cart"')
+	$("#profileBtn").attr('onclick','location.href = "login.cfm"')
+	$("#logoutBtn").attr('onclick','location.href = "login.cfm"')
+}
 function logout(){
 	if(confirm("You will log out of this page and need to authenticate again to login"))
 	{
@@ -5,12 +35,11 @@ function logout(){
 			type:"POST",
 			url:"components/user.cfc?method=logOut",
 			success: function() {
-				location.reload();
+				emptyHeader();
 			}
 		});
 	}
 }
-
 
 function filterProduct(currentData){
 	let minValue = $("#filterMin").val()
@@ -29,7 +58,9 @@ function filterProduct(currentData){
 			success: function(result) {
 				$('#productListingParent').empty();
 				productsJson=JSON.parse(result)
+				count=0;
 				productsJson.forEach(productData => {
+					count++;
 					let productBody = `
 					<a 
                         href="product.cfm?productId=${productData.productId}" 
@@ -58,3 +89,32 @@ function setFilter(range){
 $('.filterInput').change(function(){
 	$('[name=filterRadio]').prop('checked',false);
 });
+
+$(document).ready(function(){
+	if(document.getElementById("productListingParent")){
+		showLess();
+	}
+  });
+
+function showMore(){
+	showButton=document.getElementById("showButton");
+	showButton.innerHTML="Show less"
+	showButton.onclick=function() {showLess()};
+	productElements=document.getElementById("productListingParent").children;
+	for(i=0;i<productElements.length;i++){
+		if(i>=8){
+			productElements[i].classList.remove("displayNone");
+		}
+	}
+}
+function showLess() {
+	showButton=document.getElementById("showButton");
+	showButton.innerHTML="Show More"
+	showButton.onclick=function() {showMore()};
+	productElements=document.getElementById("productListingParent").children;
+	for(i=0;i<productElements.length;i++){
+		if(i>=8){
+			productElements[i].classList.add("displayNone");
+		}
+	}
+}	

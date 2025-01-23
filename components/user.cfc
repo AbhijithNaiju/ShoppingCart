@@ -200,6 +200,23 @@
         </cfquery>
         <cfreturn local.getCategoryProducts>
     </cffunction>
+    <cffunction name = "headerDetails" returntype = "struct" access = "remote" returnformat = "json">
+        <cfif structKeyExists(session,"userId")>
+            <cfset local.resultStruct["sessionExist"] = true>
+            <cfquery  name = "local.getCartCount">
+                SELECT 
+                    count(fldCart_ID) AS cartCount
+                FROM
+                    tblCart
+                WHERE
+                    fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+            </cfquery>
+            <cfset local.resultStruct["cartCount"] = local.getCartCount.cartCount>
+        <cfelse>
+            <cfset local.resultStruct["sessionExist"] = false>
+        </cfif>
+        <cfreturn local.resultStruct>
+    </cffunction>
     <cffunction name = "getProductList" returntype = "array" access = "remote" returnformat = "json">
         <cfargument  name = "subcategoryId" type = "integer" required = "false">
         <cfargument  name = "searchValue" type = "string" required = "false">
@@ -257,9 +274,50 @@
 
         <cfreturn local.getProducts.resultSet>
     </cffunction>
-    <cffunction name = "getProductDetails" returntype = "query">
+    <cffunction name = "getProductDetails" returntype = "array">
         <cfargument  name = "productId" type = "integer" required = "true">
-            
-        <cfreturn >
+            <cfquery  name = "local.productDetails" returnType="struct">
+                SELECT 
+                    P.fldproductName AS productName,
+                    P.fldDescription AS description,
+                    P.fldPrice AS productPrice,
+                    P.fldTax AS productTax,
+                    B.fldBrandName AS brandName,
+                    PI.fldImageFileName AS imageFileName,
+                    PI.fldDefaultImage AS defaultImage,
+                    P.fldSubcategoryId AS subCategoryId,
+                    C.fldCategoryname AS categoryName,
+                    C.fldCategory_ID AS categoryId,
+                    SC.fldSubcategoryname AS SubcategoryName
+                FROM
+                    tblProduct P
+                LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
+                INNER JOIN 
+                        tblSubcategory SC 
+                        ON 
+                        P.fldSubcategoryId = SC.fldSubcategory_ID
+                        AND
+                        SC.fldActive = 1
+                INNER JOIN 
+                        tblCategory C
+                        ON 
+                        SC.fldCategoryId = C.fldCategory_ID
+                        AND
+                        C.fldActive = 1
+                LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldActive=1
+                WHERE
+                    P.fldActive=1
+                    AND
+                    P.fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
+            </cfquery>
+        <cfreturn local.productDetails.resultSet>
+    </cffunction>
+    <cffunction name = "addToCart" returntype = "struct">
+        <cfargument  name = "productid" type = "integer" required = "true">
+
+        <cfset local.resultStruct = structNew()>
+        <cfset local.resultStruct["success"] = true>
+        <cfdump  var="#local.resultStruct#">
+        <cfreturn local.resultStruct>
     </cffunction>
 </cfcomponent>

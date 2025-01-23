@@ -40,7 +40,7 @@
                                 Delete
                             </button>
                             <a 
-                                href="productListing.cfm?categoryId=#categoryData.fldCategory_ID#&categoryName=#categoryData.fldCategoryName#" 
+                                href="subcategory.cfm?categoryId=#categoryData.fldCategory_ID#&categoryName=#categoryData.fldCategoryName#" 
                                 class="btn btn-success">
                                 Open
                             </a>

@@ -5,7 +5,22 @@
         password = form.password
         )>
     <cfif structKeyExists(local.loginResult,"success")>
-        <cflocation url="index.cfm" addtoken="false">
+        <cfif structKeyExists(url, "redirect")>
+
+            <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
+                <cfif url.redirect EQ "cart">
+                    <cfset addTocart = application.userObject.addToCart(url.productId)>
+                <cfelseif url.redirect EQ "order">
+                    <cflocation  url="./orderPage.cfm?productId=#url.productId#" addtoken="no">
+                </cfif>
+            </cfif>
+            <cfif url.redirect EQ "cart">
+                <cflocation  url="./cartPage.cfm" addtoken="no">
+            </cfif>
+
+        <cfelse>
+            <cflocation url="index.cfm" addtoken="false">
+        </cfif>
     </cfif>
 </cfif>
 
@@ -15,12 +30,12 @@
         <div class="formHeader">
             User Login
         </div>
-        <div class="form-group">
+        <div class="form-group my-3">
             <label for="userName">User name</label>
             <input type="text" class="form-control" id="userName" name="userName" placeholder="Username" required>
             <span class="errorMessage"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group my-3">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             <span class="errorMessage"></span>
