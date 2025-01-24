@@ -44,10 +44,16 @@ function logOut(){
 	}
 }
 
+function clearFilter(currentData)
+{
+	setFilter({min:'',max:''});
+	$('[name=filterRadio]').prop('checked',false);
+	filterProduct(currentData);
+}
+
 function filterProduct(currentData){
 	let minValue = $("#filterMin").val()
 	let maxValue = $("#filterMax").val()
-	if(minValue || maxValue){
 		$.ajax({
 			type:"POST",
 			url:"components/user.cfc?method=getProductList",
@@ -81,7 +87,7 @@ function filterProduct(currentData){
 				});
 			}
 		});
-	}
+	$(".dropdown-toggle").dropdown('toggle');
 }
 
 function setFilter(range){
@@ -89,7 +95,7 @@ function setFilter(range){
 	$('#filterMax').val(range.max)
 }
 
-$('.filterInput').change(function(){
+$('.filterInput').click(function(){
 	$('[name=filterRadio]').prop('checked',false);
 });
 
@@ -121,3 +127,17 @@ function showLess() {
 		}
 	}
 }	
+
+function addToCart(productId){
+	$.ajax({
+		type:"POST",
+		url:"components/user.cfc?method=addToCart",
+		data:{productId:productId},
+		success: function(result) {
+			addToCartResult=JSON.parse(result)
+			if(addToCartResult.redirect){
+				location.href="login.cfm?redirect=cart&productId="+productId
+			}
+		}
+	});
+}

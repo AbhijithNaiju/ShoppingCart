@@ -119,32 +119,21 @@
         <cfreturn local.logOutResult>
     </cffunction>
 
-    <cffunction name = "getAllCategories" returntype = "query">
-        <cfquery  name = "local.getAllCategories">
-            SELECT 
-                fldCategory_ID AS categoryId,
-                fldCategoryName AS categoryName
-            FROM
-                tblCategory
-            WHERE
-                fldActive=1;
-        </cfquery>
-        <cfreturn local.getAllCategories>
-    </cffunction>
-
     <cffunction name = "getAllSubcategories" returntype = "query">
         <cfargument  name = "categoryId" type = "integer" required = "false">
         <cfquery  name = "local.getAllSubcategories">
             SELECT 
                 SC.fldSubcategory_ID AS subcategoryId,
                 SC.fldSubcategoryName AS subcategoryName,
-                SC.fldCategoryId AS categoryId
+                C.fldCategory_ID AS categoryId,
+                C.fldCategoryName AS categoryName
             FROM
-                tblSubCategory SC
+                tblCategory C
+            LEFT JOIN tblSubCategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
             WHERE
-                SC.fldActive=1
+                C.fldActive=1
             <cfif structKeyExists(arguments,"categoryId")>
-                AND fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                AND SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
             </cfif>
         </cfquery>
         <cfreturn local.getAllSubcategories>
@@ -160,7 +149,8 @@
                 P.fldTax AS productTax,
                 B.fldBrandName AS brandName,
                 PI.fldImageFileName AS imageFileName,
-                fldSubcategoryId AS subCategoryId
+                fldSubcategoryId AS subcategoryId,
+                fldSubcategoryName AS subcategoryName
             FROM
                 tblProduct P
             LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
@@ -301,7 +291,7 @@
         <cfreturn local.productDetails.resultSet>
     </cffunction>
 
-    <cffunction name = "addToCart" returntype = "struct">
+    <cffunction name = "addToCart" returntype = "struct" returnformat = "json" access="remote">
         <cfargument  name = "productid" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>

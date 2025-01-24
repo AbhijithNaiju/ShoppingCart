@@ -1,35 +1,6 @@
 <cfinclude  template="./userHeader.cfm">
-<cfset categories = application.userObject.getAllCategories()>
-<cfset allSubcategories = application.userObject.getAllSubcategories()>
 <cfset randomProducts = application.userObject.getCategoryProducts()>
 <cfoutput>
-    <div class="categoryNav d-flex justify-content-around px-3 py-1 border">
-        <cfloop query="categories">
-            <div  class = "navCategory" >
-                <a href="category.cfm?catId=#categories.categoryId#" class = "navCategoryName" >
-                    #categories.categoryName#
-                </a>
-                <cfquery  name = "subcategories" dbtype="query">
-                    SELECT 
-                        *
-                    FROM
-                        allSubcategories
-                    WHERE
-                        categoryId = #categories.categoryId#
-                </cfquery>
-                <div class="categoryDropDown d-flex flex-column ">
-                    <cfloop query="subcategories">
-                        <a 
-                            href="productListing.cfm?subcatId=#subcategories.subcategoryId#" 
-                            class="navSubcategoryName btn border"
-                        >
-                            #subcategories.subcategoryName#
-                        </a>
-                    </cfloop>
-                </div>
-            </div>
-        </cfloop>
-    </div>
     <div class="">
         <h3>
             Random Products

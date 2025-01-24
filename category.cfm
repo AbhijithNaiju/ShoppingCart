@@ -1,25 +1,29 @@
 <cfinclude  template="userHeader.cfm">
 <cfif structKeyExists(url, "catId") AND isNumeric(url.catId)>
     <cfset categoryProducts = application.userObject.getCategoryProducts(categoryId=url.catId)>
-    <cfset subcategories = application.userObject.getAllSubcategories(categoryId=url.catId)>
     <div class="m-2">
-        <cfloop query="subcategories">
+        <cfloop query="categoryProducts" group="subcategoryId">
             <cfquery  name = "subcategoryProducts" dbtype="query">
                 SELECT 
-                    *
+                    productId,
+                    imageFileName,
+                    productName,
+                    brandName,
+                    productPrice,
+                    productTax
                 FROM
                     categoryProducts
                 WHERE
-                    subCategoryId = #subcategories.subcategoryId#
+                    subCategoryId = #categoryProducts.subcategoryId#
             </cfquery>
             <cfif subcategoryProducts.recordCount>
                 <div class = "d-flex justify-content-between align-items-center mx-3">
                     <cfoutput>
                         <h3>
-                            #subcategories.subcategoryName#
+                            #categoryProducts.subcategoryName#
                         </h3>
                         <a 
-                            href="./productListing.cfm?subcatId=#subcategories.subcategoryId#"
+                            href="./productListing.cfm?subcatId=#categoryProducts.subcategoryId#"
                             class = "subCategoryLink btn border" 
                         >
                             View all

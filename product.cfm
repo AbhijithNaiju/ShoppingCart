@@ -1,15 +1,5 @@
 <cfinclude  template="./userHeader.cfm">
 <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
-    <cfif structKeyExists(form, "addToCart")>
-        <cfif structKeyExists(session, "userId")>
-            <cfset addToCartResult = application.userObject.addToCart(url.productId)>
-            <cfif structKeyExists(addToCartResult, "success")>
-                <cflocation  url="/cartPage.cfm" addtoken="no">
-            </cfif>
-        <cfelse>
-            <cflocation  url="/login.cfm?redirect=cart&productId=#url.productId#" addtoken="no">
-        </cfif>
-    </cfif>
     <cfif structKeyExists(form, "buyNow")>
         <cfif structKeyExists(session, "userId")>
             <cflocation  url="/orderPage.cfm?productId=#url.productId#" addtoken="no">
@@ -41,10 +31,11 @@
                             </button>
                         </cfif>
                     </div>
-                    <form method="post">
+                    <div>
                         <button 
                             class="btn btn-warning"
                             name="addToCart"
+                            onclick="addToCart(#url.productId#)"
                         >
                             ADD  TO CART
                         </button>
@@ -54,7 +45,7 @@
                         >
                             BUY NOW
                         </button>
-                    </form>
+                    </div>
                 </div>
                 <div class="productDetails my-3 mx-2 px-2 py-3 border">
                     <div class="productNavLinks d-flex">
