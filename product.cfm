@@ -74,24 +74,27 @@
                             #productDetails[1].productName#
                         </a>
                     </div>
-                    <h3 class="productName">
-                        #productDetails[1].productName#
-                    </h3>
-                    <p>
-                        #productDetails[1].brandName#
-                    </p>
-                    Description :
-                    <div class="description">
-                          #productDetails[1].description#
-  
-                    </div>
-                    <div >
-                        <span class="price my-2">
-                            <i class="fa-solid fa-indian-rupee-sign"></i> #productDetails[1].productPrice + productDetails[1].productTax#
-                        </span>
-                        <span>
-                            (#productDetails[1].productPrice# + #productDetails[1].productTax#)
-                        </span>
+                    <div class = "m-3" >
+                        <h3 class="productName">
+                            #productDetails[1].productName#
+                        </h3>
+                        <p>
+                            #productDetails[1].brandName#
+                        </p>
+                        Description :
+                        <div class="description m-1">
+                            #productDetails[1].description#
+    
+                        </div>
+                        <div class = " my-2" >
+                            <span 
+                                class="price" 
+                                title="#productDetails[1].productPrice# + #productDetails[1].productTax#"
+                            >
+                                <i class="fa-solid fa-indian-rupee-sign"></i> 
+                                #productDetails[1].productPrice + productDetails[1].productTax#
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

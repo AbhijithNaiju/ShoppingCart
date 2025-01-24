@@ -8,9 +8,9 @@ function setHeader(){
 			if(headerDetails.sessionExist){
 				$("#cartCount").show()
 				$("#cartCount").text(headerDetails.cartCount)
-				$("#logoutBtn").text("Logout")
+				$("#logOutBtn").text("Logout")
 				$("#cartBtn").attr('onclick','location.href="cartPage.cfm"')
-				$("#logoutBtn").attr('onclick','logout()')
+				$("#logOutBtn").attr('onclick','logOut()')
 				$("#profileBtn").click(function(){
 					// open profile
 				})
@@ -22,20 +22,23 @@ function setHeader(){
 	});
 }
 function emptyHeader(){
-	$("#logoutBtn").text("Login")
+	$("#logOutBtn").text("Login")
 	$("#cartCount").hide()
 	$("#cartBtn").attr('onclick','location.href = "login.cfm?redirect=cart"')
 	$("#profileBtn").attr('onclick','location.href = "login.cfm"')
-	$("#logoutBtn").attr('onclick','location.href = "login.cfm"')
+	$("#logOutBtn").attr('onclick','location.href = "login.cfm"')
 }
-function logout(){
+function logOut(){
 	if(confirm("You will log out of this page and need to authenticate again to login"))
 	{
 		$.ajax({
 			type:"POST",
 			url:"components/user.cfc?method=logOut",
-			success: function() {
-				emptyHeader();
+			success: function(result) {
+				logOutResult=JSON.parse(result)
+				if(logOutResult.success){
+					emptyHeader();
+				}
 			}
 		});
 	}
@@ -91,7 +94,7 @@ $('.filterInput').change(function(){
 });
 
 $(document).ready(function(){
-	if(document.getElementById("productListingParent")){
+	if(document.getElementsByClassName("randomProducts")){
 		showLess();
 	}
   });
@@ -100,9 +103,9 @@ function showMore(){
 	showButton=document.getElementById("showButton");
 	showButton.innerHTML="Show less"
 	showButton.onclick=function() {showLess()};
-	productElements=document.getElementById("productListingParent").children;
+	productElements=document.getElementsByClassName("randomProducts");
 	for(i=0;i<productElements.length;i++){
-		if(i>=8){
+		if(i>=10){
 			productElements[i].classList.remove("displayNone");
 		}
 	}
@@ -111,9 +114,9 @@ function showLess() {
 	showButton=document.getElementById("showButton");
 	showButton.innerHTML="Show More"
 	showButton.onclick=function() {showMore()};
-	productElements=document.getElementById("productListingParent").children;
+	productElements=document.getElementsByClassName("randomProducts");
 	for(i=0;i<productElements.length;i++){
-		if(i>=8){
+		if(i>=10){
 			productElements[i].classList.add("displayNone");
 		}
 	}

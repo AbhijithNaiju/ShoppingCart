@@ -97,7 +97,7 @@
                         </a>
                     </cfloop>
                 </div>
-                <cfif arrayLen(productList) GT 8>
+                <cfif arrayLen(productList) GT 10>
                     <div class="d-flex justify-content-center">
                         <button class="btn border" id="showButton" onclick="showMore()">Show more</button>
                     </div>

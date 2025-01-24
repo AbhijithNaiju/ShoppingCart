@@ -13,15 +13,21 @@
                     subCategoryId = #subcategories.subcategoryId#
             </cfquery>
             <cfif subcategoryProducts.recordCount>
-                <h3>
+                <div class = "d-flex justify-content-between align-items-center mx-3">
                     <cfoutput>
-                        <a href="./productListing.cfm?subcatId=#subcategories.subcategoryId#">
+                        <h3>
                             #subcategories.subcategoryName#
+                        </h3>
+                        <a 
+                            href="./productListing.cfm?subcatId=#subcategories.subcategoryId#"
+                            class = "subCategoryLink btn border" 
+                        >
+                            View all
                         </a>
                     </cfoutput>
-                </h3>
+                </div>
                 <div class="productListingParent m-3">
-                    <cfoutput query = "subcategoryProducts" maxRows=4>
+                    <cfoutput query = "subcategoryProducts" maxRows=5>
                         <a 
                         href="product.cfm?productId=#subcategoryProducts.productId#" 
                         class="randomProducts p-3 d-flex flex-column align-items-center border"

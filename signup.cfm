@@ -18,8 +18,8 @@
         <div class="formHeader">
             User Login
         </div>
-        <div class="form-group">
-            <label for="userName">First name</label>
+        <div class="form-group my-2">
+            <label for="firstName">First name</label>
             <input 
                 type="text" 
                 class="form-control" 
@@ -29,8 +29,8 @@
                 required
             >
         </div>
-        <div class="form-group">
-            <label for="userName">Last name</label>
+        <div class="form-group my-2">
+            <label for="lastName">Last name</label>
             <input 
                 type="text" 
                 class="form-control" 
@@ -40,8 +40,8 @@
                 required
             >
         </div>
-        <div class="form-group">
-            <label for="userName">Email Id</label>
+        <div class="form-group my-2">
+            <label for="emailId">Email Id</label>
             <input 
                 type="email" 
                 class="form-control" 
@@ -51,18 +51,19 @@
                 required
             >
         </div>
-        <div class="form-group">
-            <label for="userName">Phone</label>
+        <div class="form-group my-2">
+            <label for="phoneNumber">Phone</label>
             <input 
                 type="tel" 
                 class="form-control" 
                 id="phoneNumber" 
                 name="phoneNumber" 
-                placeholder="Phone" 
+                placeholder="Phone"
+                maxlength="15"
                 required
             >
         </div>
-        <div class="form-group">
+        <div class="form-group my-2">
             <label for="password">Password</label>
             <input 
                 type="password" 

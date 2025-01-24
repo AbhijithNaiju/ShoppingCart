@@ -18,7 +18,7 @@ function loginValidate()
     if(error)
         return false
 }
-function logout()
+function logOut()
 {
 	if(confirm("You will log out of this page and need to authenticate again to login"))
 	{

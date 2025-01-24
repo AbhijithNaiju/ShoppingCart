@@ -41,7 +41,7 @@
                         </button>
                         <span class="badge" id="cartCount"></span>
                     </div>
-                    <button  id="logoutBtn">
+                    <button  id="logOutBtn">
                     </button>
                 </div>
             </cfif> 

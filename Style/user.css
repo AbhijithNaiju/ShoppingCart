@@ -116,7 +116,9 @@ body{
     width: 50%;
 }
 .categoryNav{
-    background-color: rgb(228, 228, 228);
+    position: sticky;
+    top: 10%;
+    background-color: #fff;
 }
 .navCategoryName:hover{
     color: #000000;
@@ -138,7 +140,7 @@ body{
   
 .navCategory .categoryDropDown {
     visibility: hidden;
-    background-color: rgb(228, 228, 228);
+    background-color: #fff;
     color: #000000;
     text-align: center;
     padding: 5px 0;
@@ -152,7 +154,11 @@ body{
     z-index: 1;
     height: auto;
 }
-
+.subCategoryLink
+{
+    color: #000000;
+    text-decoration: none;
+}
 .navCategory:hover .categoryDropDown {
     visibility: visible;
 }
@@ -184,8 +190,7 @@ body{
 }
 .productListingParent{
     display: grid;
-    grid-template-columns: auto auto auto auto;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     box-sizing: border-box;
     gap: 10px;
 }
@@ -240,6 +245,6 @@ body{
 }
 .price
 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
 }
