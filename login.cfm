@@ -10,6 +10,7 @@
             <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
                 <cfif url.redirect EQ "cart">
                     <cfset addTocart = application.userObject.addToCart(url.productId)>
+                    <cflocation  url="./product.cfm?productId=#url.productId#" addtoken="no">
                 <cfelseif url.redirect EQ "order">
                     <cflocation  url="./orderPage.cfm?productId=#url.productId#" addtoken="no">
                 </cfif>
@@ -50,7 +51,7 @@
         <input type="submit" id="" class="btn btn-success" name="loginBtn">
         <div class="d-flex my-2">
             Dont have an account ? 
-            <a href="./signup.cfm">Signup</a>
+            <a href="./signup.cfm" class = "mx-1" >Signup</a>
         </div>
     </form>
 </div>

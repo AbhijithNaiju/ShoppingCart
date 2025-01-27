@@ -1,6 +1,6 @@
 <cfinclude  template="userHeader.cfm">
 <cfif structKeyExists(url, "searchValue") OR ( structKeyExists(url, "subcatId") AND isNumeric(url.subcatId))>
-
+    <cfset arrayProductId = arrayNew(1)>
     <cfif structKeyExists(url, "sortOrder") AND structKeyExists(url, "searchvalue")>
         <cfset productList = application.userObject.getProductList(
                                                                             searchValue=url.searchValue,
@@ -10,6 +10,7 @@
         <cfset productList = application.userObject.getProductList(
                                                                             searchValue=url.searchValue
                                                                         )>
+        
     <cfelseif structKeyExists(url, "sortOrder") AND structKeyExists(url, "subcatId")>
         <cfset productList = application.userObject.getProductList(
                                                                             sortOrder=url.sortOrder,
@@ -19,6 +20,18 @@
         <cfset productList = application.userObject.getProductList(
                                                                             subcategoryId=url.subcatId
                                                                         )>
+    </cfif>
+    <cfif structKeyExists(url, "subcatId")>
+        <cfset subcatId = url.subcatId>
+        <cfset searchValue = 0>
+    <cfelseif structKeyExists(url, "searchValue")>
+        <cfset searchValue = url.searchValue>
+        <cfset subcatId = 0>
+    </cfif>
+    <cfif structKeyExists(url, "sortOrder")>
+        <cfset sortOrder = url.sortOrder>
+    <cfelse>
+        <cfset sortOrder = 0>
     </cfif>
     <cfoutput>
         <div class="m-2">
@@ -77,47 +90,34 @@
                             >
                             <label for="filter3">10000-15000</label>
                         </li>
-                        <li class="d-flex flex-column align-items-center">
+                        <li class="d-flex flex-column align-items-center my-1">
                             <input type="number" id="filterMin" placeholder="Min" class="form-control filterInput">
                             TO
                             <input type="number" id="filterMax" placeholder="Max" class="form-control filterInput">
                         </li>
                         <li>
-                        <button 
-                            class = "btn w-100 border my-1" 
-                            onclick="clearFilter({
-                                                    <cfif structKeyexists(url,"subcatId")>
-                                                        subcategoryId:'#url.subcatId#',
-                                                    <cfelseif structKeyexists(url,"sortOrder")>
-                                                        searchValue:'#url.searchValue#',
-                                                    </cfif>
-                                                    <cfif structKeyexists(url,"sortOrder")>
-                                                        sortOrder:'#url.sortOrder#'
-                                                    </cfif>
-                                                })"
-                        >
-                            Clear
-                        </button>
-                        <button 
-                            class="btn w-100 border my-1"
-                            onclick="filterProduct({
-                                                    <cfif structKeyexists(url,"subcatId")>
-                                                        subcategoryId:'#url.subcatId#',
-                                                    <cfelseif structKeyexists(url,"sortOrder")>
-                                                        searchValue:'#url.searchValue#',
-                                                    </cfif>
-                                                    <cfif structKeyexists(url,"sortOrder")>
-                                                        sortOrder:'#url.sortOrder#'
-                                                    </cfif>
-                                                })" 
-                            aria-expanded="false"
-                        >
-                            Submit
-                        </button>
+                            <button 
+                                class = "btn w-100 border my-1" 
+                                onclick="clearFilter()"
+                            >
+                                Clear
+                            </button>
+                            <button 
+                                class="btn w-100 border my-1"
+                                onclick="filterProducts({
+                                                        subcatId:#subcatId#,
+                                                        searchValue:'#searchValue#',
+                                                        sortOrder:'#sortOrder#'
+                                                    })" 
+                                aria-expanded="false"
+                            >
+                                Submit
+                            </button>
                         </li>
                     </ul>
                 </div>
             </div>
+            <div class="text-center" id="listingMessage"></div>
             <cfif arrayLen(productList)>
                 <div class="productListingParent m-3" id="productListingParent">
                     <cfloop array = "#productList#" item="productDetails" index="productIndex">
@@ -132,15 +132,31 @@
                                 <p class="mt-auto">Rs : #productDetails.productPrice + productDetails.productTax#</p>
                             </div>
                         </a>
+                        <cfset arrayAppend(arrayProductId, productDetails.productId)>
+                        <cfif productIndex GTE 10>
+                            <cfbreak>
+                        </cfif>
                     </cfloop>
                 </div>
                 <cfif arrayLen(productList) GT 10>
                     <div class="d-flex justify-content-center">
-                        <button class="btn border" id="showButton" onclick="showMore()">Show more</button>
+                        <button 
+                            class="btn border my-1"
+                            id="showMoreBtn"
+                            onclick="showMore({
+                                                subcatId:#subcatId#,
+                                                searchValue:'#searchValue#',
+                                                sortOrder:'#sortOrder#',
+                                                excludedIdList:'#arraytolist(arrayProductId)#'
+                                            })" 
+                            aria-expanded="false"
+                        >
+                            Show more
+                        </button>
                     </div>
                 </cfif>
             <cfelse>
-                <h6>No products found<h6>
+                <div class = "text-center" >No products found<div>
             </cfif>
         </div>
     </cfoutput>

@@ -31,23 +31,8 @@
                             </button>
                         </cfif>
                     </div>
-                    <div>
-                        <button 
-                            class="btn btn-warning"
-                            name="addToCart"
-                            onclick="addToCart(#url.productId#)"
-                        >
-                            ADD  TO CART
-                        </button>
-                        <button 
-                            class="btn btn-primary"
-                            name="buyNow"
-                        >
-                            BUY NOW
-                        </button>
-                    </div>
                 </div>
-                <div class="productDetails my-3 mx-2 px-2 py-3 border">
+                <div class="productDetails my-3 mx-2 px-2 py-3 border d-flex flex-column">
                     <div class="productNavLinks d-flex">
                         <a 
                             href="./category.cfm?catId=#productDetails[1].categoryID#"
@@ -86,6 +71,24 @@
                                 #productDetails[1].productPrice + productDetails[1].productTax#
                             </span>
                         </div>
+                    </div>
+                    <div class = "m-auto d-flex flex-column w-100 productButtons">
+                        <div class = "d-flex w-100" >
+                            <button 
+                                class="btn btn-warning"
+                                name="addToCart"
+                                onclick="addToCart(#url.productId#)"
+                            >
+                                ADD  TO CART
+                            </button>
+                            <button 
+                                class="btn btn-primary"
+                                name="buyNow"
+                            >
+                                BUY NOW
+                            </button>
+                        </div>
+                        <div id="productMessages" class = "text-center text-success my-1" ></div>
                     </div>
                 </div>
             </div>

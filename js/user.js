@@ -21,6 +21,7 @@ function setHeader(){
 		}
 	});
 }
+
 function emptyHeader(){
 	$("#logOutBtn").text("Login")
 	$("#cartCount").hide()
@@ -28,6 +29,7 @@ function emptyHeader(){
 	$("#profileBtn").attr('onclick','location.href = "login.cfm"')
 	$("#logOutBtn").attr('onclick','location.href = "login.cfm"')
 }
+
 function logOut(){
 	if(confirm("You will log out of this page and need to authenticate again to login"))
 	{
@@ -38,20 +40,28 @@ function logOut(){
 				logOutResult=JSON.parse(result)
 				if(logOutResult.success){
 					emptyHeader();
+					$("#productMessages").text("")
 				}
 			}
 		});
 	}
 }
 
-function clearFilter(currentData)
-{
-	setFilter({min:'',max:''});
-	$('[name=filterRadio]').prop('checked',false);
-	filterProduct(currentData);
+function setFilter(range){
+	$('#filterMin').val(range.min)
+	$('#filterMax').val(range.max)
 }
 
-function filterProduct(currentData){
+$('.filterInput').click(function(){
+	$('[name=filterRadio]').prop('checked',false);
+});
+
+function clearFilter(){
+	setFilter({min:'',max:''});
+	$('[name=filterRadio]').prop('checked',false);
+}
+
+function filterProducts(currentData){
 	let minValue = $("#filterMin").val()
 	let maxValue = $("#filterMax").val()
 		$.ajax({
@@ -66,67 +76,39 @@ function filterProduct(currentData){
 				},
 			success: function(result) {
 				$('#productListingParent').empty();
-				productsJson=JSON.parse(result)
-				count=0;
-				productsJson.forEach(productData => {
-					count++;
-					let productBody = `
-					<a 
-                        href="product.cfm?productId=${productData.productId}" 
-                        class="randomProducts p-3 d-flex flex-column align-items-center border"
-                        >
-                            <img src="./assets/productimages/${productData.imageFileName}"></img>
-                            <div class="w-100 my-2">
-                                <h6>${productData.productName}</h6>
-                                <p>${productData.brandName}</p>
-                                <p class="mt-auto">Rs : ${productData.productPrice+productData.productTax}</p>
-                            </div>
-					</a>
-					`;
-					$("#productListingParent").append(productBody)
-				});
+				productList=JSON.parse(result)
+				listProducts(productList)
+				$("#showMoreBtn").css("display","none");
+				if(productList.length){
+					$('#listingMessage').text("");
+				}
+				else{
+					$('#listingMessage').text("No products Found");
+				}
 			}
 		});
 	$(".dropdown-toggle").dropdown('toggle');
 }
 
-function setFilter(range){
-	$('#filterMin').val(range.min)
-	$('#filterMax').val(range.max)
+function listProducts(productList)
+{
+	productList.forEach(productData => {
+		let productBody = `
+		<a 
+			href="product.cfm?productId=${productData.productId}" 
+			class="randomProducts p-3 d-flex flex-column align-items-center border"
+			>
+				<img src="./assets/productimages/${productData.imageFileName}"></img>
+				<div class="w-100 my-2">
+					<h6>${productData.productName}</h6>
+					<p>${productData.brandName}</p>
+					<p class="mt-auto">Rs : ${productData.productPrice+productData.productTax}</p>
+				</div>
+		</a>
+		`;
+		$("#productListingParent").append(productBody)
+	});
 }
-
-$('.filterInput').click(function(){
-	$('[name=filterRadio]').prop('checked',false);
-});
-
-$(document).ready(function(){
-	if(document.getElementsByClassName("randomProducts")){
-		showLess();
-	}
-  });
-
-function showMore(){
-	showButton=document.getElementById("showButton");
-	showButton.innerHTML="Show less"
-	showButton.onclick=function() {showLess()};
-	productElements=document.getElementsByClassName("randomProducts");
-	for(i=0;i<productElements.length;i++){
-		if(i>=10){
-			productElements[i].classList.remove("displayNone");
-		}
-	}
-}
-function showLess() {
-	showButton=document.getElementById("showButton");
-	showButton.innerHTML="Show More"
-	showButton.onclick=function() {showMore()};
-	productElements=document.getElementsByClassName("randomProducts");
-	for(i=0;i<productElements.length;i++){
-		if(i>=10){
-			productElements[i].classList.add("displayNone");
-		}
-	}
-}	
 
 function addToCart(productId){
 	$.ajax({
@@ -138,6 +120,35 @@ function addToCart(productId){
 			if(addToCartResult.redirect){
 				location.href="login.cfm?redirect=cart&productId="+productId
 			}
+			else{
+				$("#productMessages").text("Product added to cart")
+				if(addToCartResult.increasedItemCount){
+					let newCartCount=parseInt($("#cartCount").text())+addToCartResult.increasedItemCount;
+					$("#cartCount").text(newCartCount);
+				}
+		}
 		}
 	});
+}
+
+function showMore(currentData)
+{
+	let minValue = $("#filterMin").val()
+	let maxValue = $("#filterMax").val()
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=getProductList",
+			data:{
+					minPrice:minValue,
+					maxPrice:maxValue,
+					subcategoryId:currentData.subcategoryId,
+					searchValue:currentData.searchValue,
+					sortOrder:currentData.sortOrder,
+					excludedIdList:currentData.excludedIdList
+				},
+			success: function(result) {
+				listProducts(JSON.parse(result))
+				$("#showMoreBtn").css("display","none")
+			}
+		});
 }

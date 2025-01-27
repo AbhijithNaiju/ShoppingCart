@@ -200,7 +200,7 @@
         <cfargument  name = "sortOrder" type = "string" required = "false">
         <cfargument  name = "minPrice" type = "string" required = "false">
         <cfargument  name = "maxPrice" type = "string" required = "false">
-
+        <cfargument  name = "excludedIdList" type = "string" required = "false">
         <cfquery  name = "local.getProducts" returntype="struct">
             SELECT 
                 P.fldProduct_ID AS productId,
@@ -223,7 +223,11 @@
                     AND
                     P.fldSubcategoryId = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
                 </cfif>
-                <cfif structKeyExists(arguments, "searchValue")>
+                <cfif structKeyExists(arguments, "excludedIdList")>
+                    AND
+                    P.fldProduct_ID NOT IN (<cfqueryparam value = "#arguments.excludedIdList#" list="true" cfSqlType = "integer">)
+                </cfif>
+                <cfif structKeyExists(arguments, "searchValue") AND len(arguments.searchValue)>
                     AND(
                     P.fldProductName like <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                     OR
@@ -246,6 +250,9 @@
                 <cfelseif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "desc">
                     ORDER BY
                         (P.fldPrice+P.fldTax) DESC
+                <cfelse>
+                    ORDER BY
+                        RAND()
                 </cfif>
         </cfquery>
 
@@ -295,8 +302,48 @@
         <cfargument  name = "productid" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>
-        <cfset local.resultStruct["success"] = true>
-        <cfdump  var="#local.resultStruct#">
+        <cfif structKeyExists(session, "userId")>
+            <cfset local.resultStruct["success"] = true>
+            <cfquery  name = "local.isProductExist">
+                SELECT 
+                    fldCart_ID,
+                    fldQuantity
+                FROM 
+                    tblCart
+                WHERE
+                    fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
+                    AND
+                    fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer"> 
+            </cfquery>
+            <cfif local.isProductExist.recordCount>
+                <cfquery>
+                    UPDATE 
+                        tblCart
+                    SET
+                        fldQuantity=<cfqueryparam value = "#local.isProductExist.fldQuantity+1#" cfSqlType = "integer">
+                    WHERE
+                        fldCart_Id=<cfqueryparam value = "#local.isProductExist.fldCart_ID#" cfSqlType = "integer">
+                </cfquery>
+                <cfset local.resultStruct["increasedItemCount"] = 0>
+            <cfelse>
+                <cfquery>
+                    INSERT INTO
+                        tblCart(
+                            fldproductId,
+                            fldQuantity,
+                            fldUserId
+                        )
+                    VALUES(
+                        <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">,
+                        1,
+                        <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+                    )
+                </cfquery>
+                <cfset local.resultStruct["increasedItemCount"] = 1>
+            </cfif>
+        <cfelse>
+            <cfset local.resultStruct["redirect"] = true>
+        </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
 </cfcomponent>
