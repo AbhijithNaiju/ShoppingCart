@@ -1,4 +1,7 @@
-setHeader();
+$(document).ready(function(){
+	setHeader();
+});
+
 function setHeader(){
 	$.ajax({
 		type:"POST",
@@ -14,8 +17,7 @@ function setHeader(){
 				$("#profileBtn").click(function(){
 					// open profile
 				})
-			}
-			else{
+			}else{
 				emptyHeader();
 			}
 		}
@@ -62,41 +64,47 @@ function clearFilter(){
 }
 
 function filterProducts(currentData){
-	let minValue = $("#filterMin").val()
-	let maxValue = $("#filterMax").val()
-		$.ajax({
-			type:"POST",
-			url:"components/user.cfc?method=getProductList",
-			data:{
-					minPrice:minValue,
-					maxPrice:maxValue,
-					subcategoryId:currentData.subcategoryId,
-					searchValue:currentData.searchValue,
-					sortOrder:currentData.sortOrder
-				},
-			success: function(result) {
-				$('#productListingParent').empty();
-				productList=JSON.parse(result)
-				listProducts(productList)
-				$("#showMoreBtn").css("display","none");
-				if(productList.length){
-					$('#listingMessage').text("");
-				}
-				else{
-					$('#listingMessage').text("No products Found");
-				}
+	let minValue = $("#filterMin").val();
+	let maxValue = $("#filterMax").val();
+	const filterData = new Object();
+	if(minValue){
+		filterData.minPrice = minValue;
+	}
+	if(maxValue){
+		filterData.maxPrice = maxValue;
+	}
+	if(currentData.subcategoryId){
+		filterData.subcategoryId = currentData.subcategoryId;
+	}else if(currentData.searchValue != ''){
+		filterData.searchValue = currentData.searchValue;
+	}
+	filterData.sortOrder = currentData.sortOrder;
+	$.ajax({
+		type:"POST",
+		url:"components/user.cfc?method=getProductList",
+		data:filterData,
+		success: function(result) {
+			$('#productListingParent').empty();
+			productList=JSON.parse(result)
+			listProducts(productList)
+			$("#showMoreBtn").css("display","none");
+
+			if(productList.length){
+				$('#listingMessage').text("");
+			}else{
+				$('#listingMessage').text("No products Found");
 			}
-		});
+		}
+	});
 	$(".dropdown-toggle").dropdown('toggle');
 }
 
-function listProducts(productList)
-{
+function listProducts(productList){
 	productList.forEach(productData => {
 		let productBody = `
-		<a 
-			href="product.cfm?productId=${productData.productId}" 
-			class="randomProducts p-3 d-flex flex-column align-items-center border"
+			<a 
+				href="product.cfm?productId=${productData.productId}" 
+				class="randomProducts p-3 d-flex flex-column align-items-center border"
 			>
 				<img src="./assets/productimages/${productData.imageFileName}"></img>
 				<div class="w-100 my-2">
@@ -104,9 +112,9 @@ function listProducts(productList)
 					<p>${productData.brandName}</p>
 					<p class="mt-auto">Rs : ${productData.productPrice+productData.productTax}</p>
 				</div>
-		</a>
+			</a>
 		`;
-		$("#productListingParent").append(productBody)
+		$("#productListingParent").append(productBody);
 	});
 }
 
@@ -119,36 +127,35 @@ function addToCart(productId){
 			addToCartResult=JSON.parse(result)
 			if(addToCartResult.redirect){
 				location.href="login.cfm?redirect=cart&productId="+productId
-			}
-			else{
+			}else{
 				$("#productMessages").text("Product added to cart")
 				if(addToCartResult.increasedItemCount){
 					let newCartCount=parseInt($("#cartCount").text())+addToCartResult.increasedItemCount;
 					$("#cartCount").text(newCartCount);
 				}
-		}
+			}
 		}
 	});
 }
 
 function showMore(currentData)
 {
-	let minValue = $("#filterMin").val()
-	let maxValue = $("#filterMax").val()
-		$.ajax({
-			type:"POST",
-			url:"components/user.cfc?method=getProductList",
-			data:{
-					minPrice:minValue,
-					maxPrice:maxValue,
-					subcategoryId:currentData.subcategoryId,
-					searchValue:currentData.searchValue,
-					sortOrder:currentData.sortOrder,
-					excludedIdList:currentData.excludedIdList
-				},
-			success: function(result) {
-				listProducts(JSON.parse(result))
-				$("#showMoreBtn").css("display","none")
-			}
-		});
+	const productData = new Object();
+	if(currentData.subcategoryId){
+		productData.subcategoryId = currentData.subcategoryId;
+	}else if(currentData.searchValue != ''){
+		productData.searchValue = currentData.searchValue;
+	}
+	productData.sortOrder = currentData.sortOrder;
+	productData.excludedIdList = currentData.excludedIdList;
+
+	$.ajax({
+		type:"POST",
+		url:"components/user.cfc?method=getProductList",
+		data:productData,
+		success: function(result) {
+			listProducts(JSON.parse(result))
+			$("#showMoreBtn").css("display","none")
+		}
+	});
 }

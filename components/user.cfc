@@ -26,6 +26,8 @@
                     tbluser
                 WHERE 
                     fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
+                    OR
+                    fldPhone = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
             </cfquery>
 
             <cfif local.isEmailExist.recordCount>
@@ -89,18 +91,14 @@
                     fldActive=1;
             </cfquery>
             <cfif local.userDetails.recordCount>
-                <cfloop query="local.userDetails">
-                    <cfif 
-                        local.userDetails.fldHashedPassword
-                        EQ
-                        hash(arguments.password & local.userDetails.fldUserSaltString,'SHA-512', 'utf-8', 125)
-                    >
-                        <cfset session.userId = local.userDetails.fldUser_ID>
-                        <cfset local.structResult["success"] = true>
-                        <cfbreak>
-                    </cfif>
-                </cfloop>
-                <cfif NOT structKeyExists(local.structResult, "success")>
+                <cfif 
+                    local.userDetails.fldHashedPassword
+                    EQ
+                    hash(arguments.password & local.userDetails.fldUserSaltString,'SHA-512', 'utf-8', 125)
+                >
+                    <cfset session.userId = local.userDetails.fldUser_ID>
+                    <cfset local.structResult["success"] = true>
+                <cfelse>
                     <cfset local.structResult["error"] = "Invalid password">
                 </cfif>
             <cfelse>
@@ -153,19 +151,14 @@
                 fldSubcategoryName AS subcategoryName
             FROM
                 tblProduct P
-            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
-            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
-            INNER JOIN 
-                    tblSubcategory SC 
-                    ON 
-                    P.fldSubcategoryId = SC.fldSubcategory_ID
-                    <cfif structKeyExists(arguments, "categoryId")>
-                        AND
-                        SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
-                    </cfif>
+            INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
+                <cfif structKeyExists(arguments, "categoryId")>
                     AND
-                    SC.fldActive = 1
+                    SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                </cfif>
             INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
+            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
                 P.fldActive=1
             <cfif NOT structKeyExists(arguments, "categoryId")>
@@ -194,12 +187,16 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+    <cffunction name = "getProductCount" returntype = "">
+        
+    </cffunction>
+
     <cffunction name = "getProductList" returntype = "array" access = "remote" returnformat = "json">
         <cfargument  name = "subcategoryId" type = "integer" required = "false">
         <cfargument  name = "searchValue" type = "string" required = "false">
         <cfargument  name = "sortOrder" type = "string" required = "false">
-        <cfargument  name = "minPrice" type = "string" required = "false">
-        <cfargument  name = "maxPrice" type = "string" required = "false">
+        <cfargument  name = "minPrice" type = "float" required = "false">
+        <cfargument  name = "maxPrice" type = "float" required = "false">
         <cfargument  name = "excludedIdList" type = "string" required = "false">
         <cfquery  name = "local.getProducts" returntype="struct">
             SELECT 
@@ -210,13 +207,13 @@
                 P.fldSubcategoryId AS subCategoryId,
                 B.fldBrandName AS brandName,
                 PI.fldImageFileName AS imageFileName,
-                SC.fldSubcategoryName AS subcategoryName
+                SC.fldSubcategoryName AS subcategoryName,
             FROM
                 tblProduct P
-            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
-            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
             INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
             INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
+            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
                 P.fldActive=1
                 <cfif structKeyExists(arguments, "subcategoryId")>
@@ -229,20 +226,20 @@
                 </cfif>
                 <cfif structKeyExists(arguments, "searchValue") AND len(arguments.searchValue)>
                     AND(
-                    P.fldProductName like <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                    P.fldProductName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                     OR
-                    P.fldDescription like <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                    P.fldDescription LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                     OR
-                    B.fldBrandName like <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                    B.fldBrandName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                     )
                 </cfif>
-                <cfif structKeyExists(arguments, "minPrice") AND val(arguments.minPrice)>
+                <cfif structKeyExists(arguments, "minPrice") AND val(arguments.minPrice) GT -1>
                     AND
-                    (P.fldPrice+P.fldTax) > <cfqueryparam value = '#val(arguments.minPrice)#' cfSqlType = "decimal">
+                    (P.fldPrice+P.fldTax) >= <cfqueryparam value = '#val(arguments.minPrice)#' cfSqlType = "decimal" scale="2">
                 </cfif>
-                <cfif structKeyExists(arguments, "maxPrice") AND val(arguments.maxPrice)>
+                <cfif structKeyExists(arguments, "maxPrice") AND val(arguments.maxPrice) GT -1>
                     AND
-                    (P.fldPrice+P.fldTax) < <cfqueryparam value = '#val(arguments.maxPrice)#' cfSqlType = "decimal">
+                    (P.fldPrice+P.fldTax) <= <cfqueryparam value = '#val(arguments.maxPrice)#' cfSqlType = "decimal" scale="2">
                 </cfif>
                 <cfif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "asc">
                     ORDER BY
@@ -255,7 +252,6 @@
                         RAND()
                 </cfif>
         </cfquery>
-
         <cfreturn local.getProducts.resultSet>
     </cffunction>
 
@@ -276,19 +272,9 @@
                     SC.fldSubcategoryname AS SubcategoryName
                 FROM
                     tblProduct P
-                LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID
-                INNER JOIN 
-                        tblSubcategory SC 
-                        ON 
-                        P.fldSubcategoryId = SC.fldSubcategory_ID
-                        AND
-                        SC.fldActive = 1
-                INNER JOIN 
-                        tblCategory C
-                        ON 
-                        SC.fldCategoryId = C.fldCategory_ID
-                        AND
-                        C.fldActive = 1
+                INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
+                INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
+                LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
                 LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldActive=1
                 WHERE
                     P.fldActive=1
@@ -346,4 +332,6 @@
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
+
+
 </cfcomponent>

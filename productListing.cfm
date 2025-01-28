@@ -2,44 +2,44 @@
 <cfif structKeyExists(url, "searchValue") OR ( structKeyExists(url, "subcatId") AND isNumeric(url.subcatId))>
     <cfset arrayProductId = arrayNew(1)>
     <cfif structKeyExists(url, "sortOrder") AND structKeyExists(url, "searchvalue")>
-        <cfset productList = application.userObject.getProductList(
-                                                                            searchValue=url.searchValue,
-                                                                            sortOrder=url.sortOrder
-                                                                        )>
+        <cfset variables.productList = application.userObject.getProductList(
+            searchValue=url.searchValue,
+            sortOrder=url.sortOrder
+        )>
     <cfelseif structKeyExists(url, "searchvalue")>
-        <cfset productList = application.userObject.getProductList(
-                                                                            searchValue=url.searchValue
-                                                                        )>
+        <cfset variables.productList = application.userObject.getProductList(
+            searchValue=url.searchValue
+        )>
         
     <cfelseif structKeyExists(url, "sortOrder") AND structKeyExists(url, "subcatId")>
-        <cfset productList = application.userObject.getProductList(
-                                                                            sortOrder=url.sortOrder,
-                                                                            subcategoryId=url.subcatId
-                                                                        )>
+        <cfset variables.productList = application.userObject.getProductList(
+            sortOrder=url.sortOrder,
+            subcategoryId=url.subcatId
+        )>
     <cfelseif structKeyExists(url, "subcatId") >
-        <cfset productList = application.userObject.getProductList(
-                                                                            subcategoryId=url.subcatId
-                                                                        )>
+        <cfset variables.productList = application.userObject.getProductList(
+            subcategoryId=url.subcatId
+        )>
     </cfif>
     <cfif structKeyExists(url, "subcatId")>
-        <cfset subcatId = url.subcatId>
-        <cfset searchValue = 0>
+        <cfset variables.subcatId = url.subcatId>
+        <cfset variables.searchValue = ''>
     <cfelseif structKeyExists(url, "searchValue")>
-        <cfset searchValue = url.searchValue>
-        <cfset subcatId = 0>
+        <cfset variables.searchValue = url.searchValue>
+        <cfset variables.subcatId = 0>
     </cfif>
     <cfif structKeyExists(url, "sortOrder")>
-        <cfset sortOrder = url.sortOrder>
+        <cfset variables.sortOrder = url.sortOrder>
     <cfelse>
-        <cfset sortOrder = 0>
+        <cfset variables.sortOrder = 0>
     </cfif>
     <cfoutput>
         <div class="m-2">
             <h3>
                 <cfif structKeyExists(url, "searchvalue")>
                     Search result for #url.searchValue#
-                <cfelseif structKeyExists(url, "subcatId") AND arrayLen(productList)>
-                    #productList[1].subcategoryName#
+                <cfelseif structKeyExists(url, "subcatId") AND arrayLen(variables.productList)>
+                    #variables.productList[1].subcategoryName#
                 </cfif>
             </h3>
             <div class="d-flex justify-content-between mx-2">
@@ -105,10 +105,10 @@
                             <button 
                                 class="btn w-100 border my-1"
                                 onclick="filterProducts({
-                                                        subcatId:#subcatId#,
-                                                        searchValue:'#searchValue#',
-                                                        sortOrder:'#sortOrder#'
-                                                    })" 
+                                    subcategoryId:#variables.subcatId#,
+                                    searchValue:'#variables.searchValue#',
+                                    sortOrder:'#variables.sortOrder#'
+                                })"
                                 aria-expanded="false"
                             >
                                 Submit
@@ -118,9 +118,9 @@
                 </div>
             </div>
             <div class="text-center" id="listingMessage"></div>
-            <cfif arrayLen(productList)>
+            <cfif arrayLen(variables.productList)>
                 <div class="productListingParent m-3" id="productListingParent">
-                    <cfloop array = "#productList#" item="productDetails" index="productIndex">
+                    <cfloop array = "#variables.productList#" item="productDetails" index="productIndex">
                         <a 
                         href="product.cfm?productId=#productDetails.productId#" 
                         class="randomProducts p-3 align-items-center border"
@@ -138,17 +138,17 @@
                         </cfif>
                     </cfloop>
                 </div>
-                <cfif arrayLen(productList) GT 10>
+                <cfif arrayLen(variables.productList) GT 10>
                     <div class="d-flex justify-content-center">
                         <button 
                             class="btn border my-1"
                             id="showMoreBtn"
                             onclick="showMore({
-                                                subcatId:#subcatId#,
-                                                searchValue:'#searchValue#',
-                                                sortOrder:'#sortOrder#',
-                                                excludedIdList:'#arraytolist(arrayProductId)#'
-                                            })" 
+                                subcategoryId:#variables.subcatId#,
+                                searchValue:'#variables.searchValue#',
+                                sortOrder:'#variables.sortOrder#',
+                                excludedIdList:'#arraytolist(arrayProductId)#'
+                            })" 
                             aria-expanded="false"
                         >
                             Show more

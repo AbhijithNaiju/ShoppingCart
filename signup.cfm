@@ -1,13 +1,13 @@
-<cfset local.signupResult = structNew()>
+<cfset variables.signupResult = structNew()>
 <cfif structKeyExists(form,"signupButton")>
-    <cfset local.signupResult = application.userObject.userSignp(
+    <cfset variables.signupResult = application.userObject.userSignp(
         firstName = form.firstName,
         lastName = form.lastName,
         emailId = form.emailId,
         phoneNumber = form.phoneNumber,
         password = form.password
-        )>
-    <cfif structKeyExists(local.signupResult,"success")>
+    )>
+    <cfif structKeyExists(variables.signupResult,"success")>
         <cflocation url="index.cfm" addtoken="false">
     </cfif>
 </cfif>
@@ -75,10 +75,10 @@
                 required
             >
         </div>
-        <cfif structKeyExists(local, "signupResult") AND structKeyExists(local.signupResult, "error")>
+        <cfif structKeyExists(variables, "signupResult") AND structKeyExists(variables.signupResult, "error")>
             <cfoutput>
                 <div class="errorMessage loginError">
-                    #local.signupResult.error#
+                    #variables.signupResult.error#
                 </div>
             </cfoutput>
         </cfif>

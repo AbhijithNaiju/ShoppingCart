@@ -8,14 +8,13 @@
         <title>Shopping Cart</title>
     </head>
     <body>
-        <cfset allSubcategories = application.userObject.getAllSubcategories()>
-        <cfset excludedPages = ["/login.cfm","/missingpage.cfm","/errorpage.cfm","/signup.cfm"]>
+        <cfset variables.excludedPages = ["/login.cfm","/missingpage.cfm","/errorpage.cfm","/signup.cfm"]>
         <div class="header bg-success">
             <a href="../index.cfm" class="logo">
                 <img src="../assets/Images/shopping cart_transparent.png">
             </a>
             
-            <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
+            <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
                 <div class="searchBar">
                     <form class="input-group" action="productlisting.cfm">
                         <input 
@@ -43,34 +42,36 @@
                         <span class="badge" id="cartCount"></span>
                     </div>
                     <button  id="logOutBtn">
+                        Login
                     </button>
                 </div>
             </cfif> 
         </div>
-        <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
+        <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
+            <cfset variables.allSubcategories = application.userObject.getAllSubcategories()>
             <div class="categoryNav px-3 py-1 border">
-                <cfoutput query="allSubcategories" group="categoryId">
+                <cfoutput query="variables.allSubcategories" group="categoryId">
                     <div  class = "navCategory" >
-                        <a href="category.cfm?catId=#allSubcategories.categoryId#" class = "navCategoryName" >
-                            #allSubcategories.categoryName#
+                        <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName" >
+                            #variables.allSubcategories.categoryName#
                         </a>
-                        <cfquery  name = "subcategories" dbtype="query">
+                        <cfquery  name = "variables.subcategories" dbtype="query">
                             SELECT 
                                 subcategoryId,
                                 subcategoryName
                             FROM
                                 allSubcategories
                             WHERE
-                                categoryId = #allSubcategories.categoryId#
+                                categoryId = #variables.allSubcategories.categoryId#
                                 AND subcategoryId IS NOT NULL
                         </cfquery>
                         <div class="categoryDropDown d-flex flex-column ">
-                            <cfloop query="subcategories">
+                            <cfloop query="variables.subcategories">
                                 <a 
-                                    href="productListing.cfm?subcatId=#subcategories.subcategoryId#" 
+                                    href="productListing.cfm?subcatId=#variables.subcategories.subcategoryId#" 
                                     class="navSubcategoryName btn border"
                                 >
-                                    #subcategories.subcategoryName#
+                                    #variables.subcategories.subcategoryName#
                                 </a>
                             </cfloop>
                         </div>

@@ -1,25 +1,33 @@
-<cfset local.loginResult = structNew()>
+<cfset variables.loginResult = structNew()>
 <cfif structKeyExists(form,"loginBtn")>
-    <cfset local.loginResult = application.userObject.userLogin(
+    <cfset variables.loginResult = application.userObject.userLogin(
         username = form.userName,
         password = form.password
-        )>
-    <cfif structKeyExists(local.loginResult,"success")>
+    )>
+    <cfif structKeyExists(variables.loginResult,"success")>
+        <!--- if login is success --->
         <cfif structKeyExists(url, "redirect")>
-
+            <!---redirect present in url --->
+            
             <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
+                <!--- product id is present in url --->
+
                 <cfif url.redirect EQ "cart">
+                    <!--- adding product to cart and going back to product page --->
                     <cfset addTocart = application.userObject.addToCart(url.productId)>
                     <cflocation  url="./product.cfm?productId=#url.productId#" addtoken="no">
                 <cfelseif url.redirect EQ "order">
+                    <!--- goto to order page --->
                     <cflocation  url="./orderPage.cfm?productId=#url.productId#" addtoken="no">
                 </cfif>
-            </cfif>
-            <cfif url.redirect EQ "cart">
+
+            <cfelseif url.redirect EQ "cart">
+                <!--- go to cart page(productid is not present) --->
                 <cflocation  url="./cartPage.cfm" addtoken="no">
             </cfif>
 
         <cfelse>
+            <!--- goto home page(no redirect value) --->
             <cflocation url="index.cfm" addtoken="false">
         </cfif>
     </cfif>
@@ -41,10 +49,10 @@
             <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             <span class="errorMessage"></span>
         </div>
-        <cfif structKeyExists(local, "loginResult") AND structKeyExists(local.loginResult, "error")>
+        <cfif structKeyExists(variables, "loginResult") AND structKeyExists(variables.loginResult, "error")>
             <cfoutput>
                 <div class="errorMessage loginError">
-                    #local.loginResult.error#
+                    #variables.loginResult.error#
                 </div>
             </cfoutput>
         </cfif>
