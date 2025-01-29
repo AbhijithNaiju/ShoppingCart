@@ -18,7 +18,7 @@ function loginValidate()
     if(error)
         return false
 }
-function logout()
+function logOut()
 {
 	if(confirm("You will log out of this page and need to authenticate again to login"))
 	{
@@ -290,17 +290,17 @@ function listProductImages(productId)
 
                     const jsonKeys=Object.keys(productImages.remainingImages);
                     for(i=0;i<jsonKeys.length;i++)
-                {
-                    remainingImageId=jsonKeys[i];
-                    let slideBody = `
-                    <div class="carousel-item">
-                    <img src="../assets/productImages/${productImages.remainingImages[remainingImageId]}" class="d-block w-100">
-                        <div class="carouselButtons">
-                            <button onclick="deleteImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">DELETE</button>
-                            <button onclick="setDefaultImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">
-                                Make Default
-                            </button>
-                        </div>
+                    {
+                        remainingImageId=jsonKeys[i];
+                        let slideBody = `
+                        <div class="carousel-item">
+                        <img src="../assets/productImages/${productImages.remainingImages[remainingImageId]}" class="d-block w-100">
+                            <div class="carouselButtons">
+                                <button onclick="deleteImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">DELETE</button>
+                                <button onclick="setDefaultImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">
+                                    Make Default
+                                </button>
+                            </div>
                         </div>`;
                         $("#carouselInner").append(slideBody)
                     }

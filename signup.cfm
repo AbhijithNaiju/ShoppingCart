@@ -1,13 +1,13 @@
-<cfset local.signupResult = structNew()>
+<cfset variables.signupResult = structNew()>
 <cfif structKeyExists(form,"signupButton")>
-    <cfset local.signupResult = application.userObject.userSignp(
+    <cfset variables.signupResult = application.userObject.userSignup(
         firstName = form.firstName,
         lastName = form.lastName,
         emailId = form.emailId,
         phoneNumber = form.phoneNumber,
         password = form.password
-        )>
-    <cfif structKeyExists(local.signupResult,"success")>
+    )>
+    <cfif structKeyExists(variables.signupResult,"success")>
         <cflocation url="index.cfm" addtoken="false">
     </cfif>
 </cfif>
@@ -18,8 +18,8 @@
         <div class="formHeader">
             User Login
         </div>
-        <div class="form-group">
-            <label for="userName">First name</label>
+        <div class="form-group my-2">
+            <label for="firstName">First name</label>
             <input 
                 type="text" 
                 class="form-control" 
@@ -29,8 +29,8 @@
                 required
             >
         </div>
-        <div class="form-group">
-            <label for="userName">Last name</label>
+        <div class="form-group my-2">
+            <label for="lastName">Last name</label>
             <input 
                 type="text" 
                 class="form-control" 
@@ -40,8 +40,8 @@
                 required
             >
         </div>
-        <div class="form-group">
-            <label for="userName">Email Id</label>
+        <div class="form-group my-2">
+            <label for="emailId">Email Id</label>
             <input 
                 type="email" 
                 class="form-control" 
@@ -51,18 +51,19 @@
                 required
             >
         </div>
-        <div class="form-group">
-            <label for="userName">Phone</label>
+        <div class="form-group my-2">
+            <label for="phoneNumber">Phone</label>
             <input 
                 type="tel" 
                 class="form-control" 
                 id="phoneNumber" 
                 name="phoneNumber" 
-                placeholder="Phone" 
+                placeholder="Phone"
+                maxlength="15"
                 required
             >
         </div>
-        <div class="form-group">
+        <div class="form-group my-2">
             <label for="password">Password</label>
             <input 
                 type="password" 
@@ -74,14 +75,18 @@
                 required
             >
         </div>
-        <cfif structKeyExists(local, "signupResult") AND structKeyExists(local.signupResult, "error")>
+        <cfif structKeyExists(variables, "signupResult") AND structKeyExists(variables.signupResult, "error")>
             <cfoutput>
                 <div class="errorMessage loginError">
-                    #local.signupResult.error#
+                    #variables.signupResult.error#
                 </div>
             </cfoutput>
         </cfif>
         <input type="submit" id="" class="btn btn-success" name="signupButton">
+        <div class="d-flex my-2">
+            Already have an account ? 
+            <a href="./login.cfm" class = "mx-1" >Login</a>
+        </div>
     </form>
 </div>
 <cfinclude  template="userFooter.cfm">

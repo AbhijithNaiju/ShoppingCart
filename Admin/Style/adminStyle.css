@@ -44,6 +44,7 @@ body
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: scroll;
 }
 .loginForm
 {
@@ -117,6 +118,7 @@ body
 {
     width: 35%;
     max-height: 90%;
+    overflow: scroll;
 }
 #addModal,#imageModal
 {

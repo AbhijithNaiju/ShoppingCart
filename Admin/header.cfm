@@ -16,10 +16,10 @@
             
             <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
                 <div class="logOutBtn">
-                    <button class="" onclick="logout()">
+                    <button class="" onclick="logOut()">
                         Logout
                     </button>
-                    <img src="../assets/images/icons8-logout-24.png" alt="image not found">
+                    <img src="../assets/images/icons8-logOut-24.png" alt="image not found">
                 </div>
             </cfif> 
         </div>
