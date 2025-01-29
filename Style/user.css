@@ -231,13 +231,17 @@ body{
 .carousel-control-prev-icon,.carousel-control-next-icon{
     background-color: #747474;
 }
-.productNavLinks a{
+.productNavLinks a,.productNavLinks span{
     max-width: 25%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin: 0px 5px;
     font-size: 12px;
+}
+.productNavLinks
+{
+    align-items: center;
 }
 .description{
     font-size: 12px;

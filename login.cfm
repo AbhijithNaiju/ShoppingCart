@@ -5,9 +5,9 @@
         password = form.password
     )>
     <cfif structKeyExists(variables.loginResult,"success")>
-        <!--- if login is success --->
+        <!--- Login is success --->
         <cfif structKeyExists(url, "redirect")>
-            <!---redirect present in url --->
+            <!--- redirect is present in url --->
             
             <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
                 <!--- product id is present in url --->

@@ -1,7 +1,14 @@
 <cfinclude  template="userHeader.cfm">
 <cfif structKeyExists(url, "catId") AND isNumeric(url.catId)>
-    <cfset variables.categoryProducts = application.userObject.getCategoryProducts(categoryId=url.catId)>
-    <div class="m-2">
+    <cfset variables.categoryProducts = application.userObject.getCategoryProducts(categoryId=url.catId)>   
+    <div class="container-fluid h-100 overflow-scroll">
+        <div class = "d-flex border-bottom border-secondary my-2">
+            <cfoutput>
+                <h2>
+                    #variables.categoryProducts.categoryName#
+                </h2>
+            </cfoutput>
+        </div>
         <cfif variables.categoryProducts.recordCount>
             <cfloop query="variables.categoryProducts" group="subcategoryId">
                 <cfquery  name = "variables.subcategoryProducts" dbtype="query">
@@ -11,26 +18,32 @@
                         productName,
                         brandName,
                         productPrice,
-                        productTax
+                        productTax,
+                        subcategoryId
                     FROM
                         variables.categoryProducts
                     WHERE
                         subCategoryId = #variables.categoryProducts.subcategoryId#
+                        AND subCategoryId IS NOT NULL  
+                        AND productId IS NOT NULL 
                 </cfquery>
-                <cfif variables.subcategoryProducts.recordCount>
-                    <div class = "d-flex justify-content-between align-items-center mx-3">
-                        <cfoutput>
-                            <h3>
-                                #variables.categoryProducts.subcategoryName#
-                            </h3>
+                
+                <div class = "d-flex justify-content-between align-items-center mx-3">
+                    <cfoutput>
+                        <h3>
+                            #variables.categoryProducts.subcategoryName#
+                        </h3>
+                        <cfif variables.subcategoryProducts.recordCount>
                             <a 
                                 href="./productListing.cfm?subcatId=#variables.categoryProducts.subcategoryId#"
                                 class = "subCategoryLink btn border" 
                             >
                                 View all
                             </a>
-                        </cfoutput>
-                    </div>
+                        </cfif>
+                    </cfoutput>
+                </div>
+                <cfif variables.subcategoryProducts.recordCount>
                     <div class="productListingParent m-3">
                         <cfoutput query = "variables.subcategoryProducts" maxRows=5>
                             <a 
@@ -46,6 +59,8 @@
                             </a>
                         </cfoutput>
                     </div>
+                <cfelse>
+            <div class = "text-center" >No products found</div>
                 </cfif>
             </cfloop>
         <cfelse>

@@ -1,6 +1,6 @@
 <cfinclude  template="userHeader.cfm">
 <cfif structKeyExists(url, "searchValue") OR ( structKeyExists(url, "subcatId") AND isNumeric(url.subcatId))>
-    <cfset arrayProductId = arrayNew(1)>
+    <cfset variables.arrayProductId = arrayNew(1)>
     <cfif structKeyExists(url, "sortOrder") AND structKeyExists(url, "searchvalue")>
         <cfset variables.productList = application.userObject.getProductList(
             searchValue=url.searchValue,
@@ -21,6 +21,7 @@
             subcategoryId=url.subcatId
         )>
     </cfif>
+
     <cfif structKeyExists(url, "subcatId")>
         <cfset variables.subcatId = url.subcatId>
         <cfset variables.searchValue = ''>
@@ -34,12 +35,12 @@
         <cfset variables.sortOrder = 0>
     </cfif>
     <cfoutput>
-        <div class="m-2">
+        <div class="m-3">
             <h3>
                 <cfif structKeyExists(url, "searchvalue")>
                     Search result for #url.searchValue#
-                <cfelseif structKeyExists(url, "subcatId") AND arrayLen(variables.productList)>
-                    #variables.productList[1].subcategoryName#
+                <cfelseif structKeyExists(url, "subcatId") AND arrayLen(variables.productList.resultArray)>
+                    #variables.productList.resultArray[1].subcategoryName#
                 </cfif>
             </h3>
             <div class="d-flex justify-content-between mx-2">
@@ -60,7 +61,7 @@
                         data-bs-auto-close="outside" 
                         aria-expanded="false"
                     >
-                        Filter
+                        Price Filter
                     </button>
                     <ul class="dropdown-menu p-2">
                         <li class = "form-control">
@@ -114,13 +115,20 @@
                                 Submit
                             </button>
                         </li>
+                        <li class = " text-center">
+                            <small class = "text-danger" id="filterError"></small>
+                        </li>
                     </ul>
                 </div>
             </div>
             <div class="text-center" id="listingMessage"></div>
-            <cfif arrayLen(variables.productList)>
+            <cfif 
+                arrayLen(variables.productList.resultArray) 
+                AND 
+                structKeyExists(variables.productList.resultArray[1],"productId"
+            )>
                 <div class="productListingParent m-3" id="productListingParent">
-                    <cfloop array = "#variables.productList#" item="productDetails" index="productIndex">
+                    <cfloop array = "#variables.productList.resultArray#" item="productDetails">
                         <a 
                         href="product.cfm?productId=#productDetails.productId#" 
                         class="randomProducts p-3 align-items-center border"
@@ -132,13 +140,10 @@
                                 <p class="mt-auto">Rs : #productDetails.productPrice + productDetails.productTax#</p>
                             </div>
                         </a>
-                        <cfset arrayAppend(arrayProductId, productDetails.productId)>
-                        <cfif productIndex GTE 10>
-                            <cfbreak>
-                        </cfif>
+                        <cfset arrayAppend(variables.arrayProductId, productDetails.productId)>
                     </cfloop>
                 </div>
-                <cfif arrayLen(variables.productList) GT 10>
+                <cfif variables.productList.productCount GT 10>
                     <div class="d-flex justify-content-center">
                         <button 
                             class="btn border my-1"
@@ -147,7 +152,7 @@
                                 subcategoryId:#variables.subcatId#,
                                 searchValue:'#variables.searchValue#',
                                 sortOrder:'#variables.sortOrder#',
-                                excludedIdList:'#arraytolist(arrayProductId)#'
+                                excludedIdList:'#arraytolist(variables.arrayProductId)#'
                             })" 
                             aria-expanded="false"
                         >

@@ -1,6 +1,6 @@
 <cfset variables.signupResult = structNew()>
 <cfif structKeyExists(form,"signupButton")>
-    <cfset variables.signupResult = application.userObject.userSignp(
+    <cfset variables.signupResult = application.userObject.userSignup(
         firstName = form.firstName,
         lastName = form.lastName,
         emailId = form.emailId,

@@ -44,11 +44,10 @@
                         >
                             #variables.productDetails[1].SubcategoryName#
                         </a>-
-                        <a 
-                            href=""
+                        <span
                         >
                             #variables.productDetails[1].productName#
-                        </a>
+                        </span>
                     </div>
                     <div class = "m-3" >
                         <h3 class="productName">

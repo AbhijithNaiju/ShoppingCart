@@ -1,5 +1,6 @@
 <cfcomponent>
-    <cffunction  name = "userSignp" returntype = "struct">
+    <!--- user signup --->
+    <cffunction  name = "userSignup" returntype = "struct">
         <cfargument  name="firstName" type ="string" required = "true">
         <cfargument  name="lastName" type ="string" required = "true">
         <cfargument  name="emailId" type ="string" required = "true">
@@ -45,16 +46,15 @@
                             fldHashedPassword,
                             fldUserSaltString,
                             fldRoleId
-                        )
-                    VALUES(
-                        <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#local.saltString#' cfsqltype = "varchar">,
-                        2
-                    );
+                        )VALUES(
+                            <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#local.saltString#' cfsqltype = "varchar">,
+                            2
+                        );
                 </cfquery>
                 <cfset local.structResult["success"] = true>
                 <cfset session.userId = local.signUpresult.generatedKey>
@@ -65,6 +65,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
+    <!--- userlogin --->
     <cffunction  name="userLogin" returntype="struct">
         <cfargument  name="username" type = "string" required = "true">
         <cfargument  name="password" type = "string" required = "true">
@@ -111,14 +112,15 @@
         <cfreturn local.structResult>
     </cffunction>
 
+    <!--- logout --->
     <cffunction  name="logOut" returntype="struct" returnformat = "json" access="remote">
         <cfset structClear(session)>
         <cfset local.logOutResult["success"] = true>
         <cfreturn local.logOutResult>
     </cffunction>
 
+    <!--- subcategory list for nav bar in header --->
     <cffunction name = "getAllSubcategories" returntype = "query">
-        <cfargument  name = "categoryId" type = "integer" required = "false">
         <cfquery  name = "local.getAllSubcategories">
             SELECT 
                 SC.fldSubcategory_ID AS subcategoryId,
@@ -127,16 +129,14 @@
                 C.fldCategoryName AS categoryName
             FROM
                 tblCategory C
-            LEFT JOIN tblSubCategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
+            INNER JOIN tblSubCategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
             WHERE
                 C.fldActive=1
-            <cfif structKeyExists(arguments,"categoryId")>
-                AND SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
-            </cfif>
         </cfquery>
         <cfreturn local.getAllSubcategories>
     </cffunction>
-
+    
+    <!--- get products from categoryid/get random 10 products --->
     <cffunction name = "getCategoryProducts" returntype = "query">
         <cfargument  name = "categoryId" type = "integer" required = "false">
         <cfquery  name = "local.getCategoryProducts">
@@ -147,28 +147,34 @@
                 P.fldTax AS productTax,
                 B.fldBrandName AS brandName,
                 PI.fldImageFileName AS imageFileName,
-                fldSubcategoryId AS subcategoryId,
-                fldSubcategoryName AS subcategoryName
+                SC.fldSubcategory_ID AS subcategoryId,
+                SC.fldSubcategoryName AS subcategoryName,
+                C.fldCategoryName AS categoryName
             FROM
-                tblProduct P
-            INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
-                <cfif structKeyExists(arguments, "categoryId")>
-                    AND
-                    SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
-                </cfif>
-            INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
-            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+                tblCategory C
+            INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
+            LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
+            LEFt JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
-                P.fldActive=1
-            <cfif NOT structKeyExists(arguments, "categoryId")>
-                ORDER BY RAND() 
+                C.fldActive=1
+                <cfif structKeyExists(arguments, "categoryId")>
+                    AND
+                    C.fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                </cfif>
+            ORDER BY
+            <cfif structKeyExists(arguments,"categoryId")>
+                fldSubcategory_ID,
+                RAND()
+            <cfelse>
+                RAND()
                 LIMIT 10
             </cfif>
         </cfquery>
         <cfreturn local.getCategoryProducts>
     </cffunction>
 
+    <!--- Details to set header --->
     <cffunction name = "headerDetails" returntype = "struct" access = "remote" returnformat = "json">
         <cfif structKeyExists(session,"userId")>
             <cfset local.resultStruct["sessionExist"] = true>
@@ -187,17 +193,15 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
-    <cffunction name = "getProductCount" returntype = "">
-        
-    </cffunction>
-
-    <cffunction name = "getProductList" returntype = "array" access = "remote" returnformat = "json">
+    <!--- get list of products for productListingPage --->
+    <cffunction name = "getProductList" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument  name = "subcategoryId" type = "integer" required = "false">
         <cfargument  name = "searchValue" type = "string" required = "false">
         <cfargument  name = "sortOrder" type = "string" required = "false">
         <cfargument  name = "minPrice" type = "float" required = "false">
         <cfargument  name = "maxPrice" type = "float" required = "false">
         <cfargument  name = "excludedIdList" type = "string" required = "false">
+        <cfset local.resultStruct = structNew()>
         <cfquery  name = "local.getProducts" returntype="struct">
             SELECT 
                 P.fldProduct_ID AS productId,
@@ -207,54 +211,100 @@
                 P.fldSubcategoryId AS subCategoryId,
                 B.fldBrandName AS brandName,
                 PI.fldImageFileName AS imageFileName,
-                SC.fldSubcategoryName AS subcategoryName,
+                SC.fldSubcategoryName AS subcategoryName
             FROM
-                tblProduct P
-            INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
-            INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
+                tblCategory C
+            INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
+            LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
             LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
-                P.fldActive=1
+                C.fldActive=1
                 <cfif structKeyExists(arguments, "subcategoryId")>
                     AND
-                    P.fldSubcategoryId = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
+                    SC.fldSubcategory_ID = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
                 </cfif>
-                <cfif structKeyExists(arguments, "excludedIdList")>
+                <cfif structKeyExists(arguments, "excludedIdList") AND len(arguments.excludedIdList)>
                     AND
                     P.fldProduct_ID NOT IN (<cfqueryparam value = "#arguments.excludedIdList#" list="true" cfSqlType = "integer">)
                 </cfif>
                 <cfif structKeyExists(arguments, "searchValue") AND len(arguments.searchValue)>
                     AND(
-                    P.fldProductName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
-                    OR
-                    P.fldDescription LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
-                    OR
-                    B.fldBrandName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                        P.fldProductName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                        OR
+                        P.fldDescription LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                        OR
+                        B.fldBrandName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                     )
                 </cfif>
-                <cfif structKeyExists(arguments, "minPrice") AND val(arguments.minPrice) GT -1>
+                <cfif structKeyExists(arguments, "minPrice") AND val(arguments.minPrice) GTE 0>
                     AND
                     (P.fldPrice+P.fldTax) >= <cfqueryparam value = '#val(arguments.minPrice)#' cfSqlType = "decimal" scale="2">
                 </cfif>
-                <cfif structKeyExists(arguments, "maxPrice") AND val(arguments.maxPrice) GT -1>
+                <cfif structKeyExists(arguments, "maxPrice") AND val(arguments.maxPrice) GTE 0>
                     AND
                     (P.fldPrice+P.fldTax) <= <cfqueryparam value = '#val(arguments.maxPrice)#' cfSqlType = "decimal" scale="2">
                 </cfif>
-                <cfif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "asc">
-                    ORDER BY
+                ORDER BY
+                    <cfif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "asc">
                         (P.fldPrice+P.fldTax) ASC
-                <cfelseif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "desc">
-                    ORDER BY
+                    <cfelseif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "desc">
                         (P.fldPrice+P.fldTax) DESC
-                <cfelse>
-                    ORDER BY
+                    <cfelse>
                         RAND()
+                    </cfif>
+                <cfif NOT (
+                    structKeyExists(arguments, "excludedIdList") 
+                    OR structKeyExists(arguments, "minPrice") 
+                    OR structKeyExists(arguments, "maxPrice")
+                )>
+                    LIMIT 10
                 </cfif>
         </cfquery>
-        <cfreturn local.getProducts.resultSet>
+        <cfif NOT (
+            structKeyExists(arguments, "excludedIdList") 
+            OR structKeyExists(arguments, "minPrice") 
+            OR structKeyExists(arguments, "maxPrice")
+        )>
+            <cfquery name = "local.totalProducts">
+                SELECT
+                    COUNT(*) AS productCount
+                FROM
+                    tblProduct P
+                INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
+                INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
+                INNER JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+                WHERE
+                    P.fldActive=1
+                    <cfif structKeyExists(arguments, "subcategoryId")>
+                        AND
+                        P.fldSubcategoryId = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
+                    </cfif>
+                    <cfif structKeyExists(arguments, "searchValue") AND len(arguments.searchValue)>
+                        AND(
+                            P.fldProductName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                            OR
+                            P.fldDescription LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                            OR
+                            B.fldBrandName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
+                        )
+                    </cfif>
+                ORDER BY
+                    <cfif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "asc">
+                        (P.fldPrice+P.fldTax) ASC
+                    <cfelseif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "desc">
+                        (P.fldPrice+P.fldTax) DESC
+                    <cfelse>
+                        RAND()
+                    </cfif>
+            </cfquery>
+            <cfset local.resultStruct["productCount"] = local.totalProducts.productCount>
+        </cfif>
+        <cfset local.resultStruct["resultArray"] = local.getProducts.resultSet>
+        <cfreturn local.resultStruct>
     </cffunction>
 
+    <!--- get details of single product --->
     <cffunction name = "getProductDetails" returntype = "array">
         <cfargument  name = "productId" type = "integer" required = "true">
             <cfquery  name = "local.productDetails" returnType="struct">
@@ -274,7 +324,7 @@
                     tblProduct P
                 INNER JOIN tblSubcategory SC ON P.fldSubcategoryId = SC.fldSubcategory_ID AND SC.fldActive = 1
                 INNER JOIN tblCategory C ON SC.fldCategoryId = C.fldCategory_ID AND C.fldActive = 1
-                LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+                INNER JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
                 LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldActive=1
                 WHERE
                     P.fldActive=1
@@ -284,12 +334,14 @@
         <cfreturn local.productDetails.resultSet>
     </cffunction>
 
+    <!--- add product to cart --->
     <cffunction name = "addToCart" returntype = "struct" returnformat = "json" access="remote">
         <cfargument  name = "productid" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>
         <cfif structKeyExists(session, "userId")>
-            <cfset local.resultStruct["success"] = true>
+            <!--- user is logged in --->
+            <!--- checking whether product already in the cart --->
             <cfquery  name = "local.isProductExist">
                 SELECT 
                     fldCart_ID,
@@ -302,6 +354,7 @@
                     fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer"> 
             </cfquery>
             <cfif local.isProductExist.recordCount>
+                <!--- product is present in cart(increase quantity) --->
                 <cfquery>
                     UPDATE 
                         tblCart
@@ -312,26 +365,27 @@
                 </cfquery>
                 <cfset local.resultStruct["increasedItemCount"] = 0>
             <cfelse>
+                <!--- product is not present in cart(add product) --->
                 <cfquery>
                     INSERT INTO
                         tblCart(
                             fldproductId,
                             fldQuantity,
                             fldUserId
-                        )
-                    VALUES(
-                        <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">,
-                        1,
-                        <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
-                    )
+                        )VALUES(
+                            <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">,
+                            1,
+                            <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+                        );
                 </cfquery>
                 <cfset local.resultStruct["increasedItemCount"] = 1>
+                <cfset local.resultStruct["success"] = true>
             </cfif>
         <cfelse>
+            <!--- user is not loged in --->
             <cfset local.resultStruct["redirect"] = true>
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
-
 
 </cfcomponent>

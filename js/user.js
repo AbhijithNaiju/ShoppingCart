@@ -1,28 +1,32 @@
 $(document).ready(function(){
-	setHeader();
-});
 
-function setHeader(){
-	$.ajax({
-		type:"POST",
-		url:"components/user.cfc?method=headerDetails",
-		success: function(result) {
-			headerDetails=JSON.parse(result)
-			if(headerDetails.sessionExist){
-				$("#cartCount").show()
-				$("#cartCount").text(headerDetails.cartCount)
-				$("#logOutBtn").text("Logout")
-				$("#cartBtn").attr('onclick','location.href="cartPage.cfm"')
-				$("#logOutBtn").attr('onclick','logOut()')
-				$("#profileBtn").click(function(){
-					// open profile
-				})
-			}else{
-				emptyHeader();
+	setHeader();
+	function setHeader(){
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=headerDetails",
+			success: function(result) {
+				headerDetails=JSON.parse(result)
+				if(headerDetails.sessionExist){
+					$("#cartCount").show()
+					$("#cartCount").text(headerDetails.cartCount)
+					$("#logOutBtn").text("Logout")
+					$("#cartBtn").attr('onclick','location.href="cartPage.cfm"')
+					$("#logOutBtn").attr('onclick','logOut()')
+					$("#profileBtn").click(function(){
+						// open profile
+					})
+				}else{
+					emptyHeader();
+				}
 			}
-		}
+		});
+	}
+
+	$('.filterInput').click(function(){
+		$('[name=filterRadio]').prop('checked',false);
 	});
-}
+});
 
 function emptyHeader(){
 	$("#logOutBtn").text("Login")
@@ -54,10 +58,6 @@ function setFilter(range){
 	$('#filterMax').val(range.max)
 }
 
-$('.filterInput').click(function(){
-	$('[name=filterRadio]').prop('checked',false);
-});
-
 function clearFilter(){
 	setFilter({min:'',max:''});
 	$('[name=filterRadio]').prop('checked',false);
@@ -67,36 +67,44 @@ function filterProducts(currentData){
 	let minValue = $("#filterMin").val();
 	let maxValue = $("#filterMax").val();
 	const filterData = new Object();
-	if(minValue){
-		filterData.minPrice = minValue;
-	}
-	if(maxValue){
-		filterData.maxPrice = maxValue;
-	}
-	if(currentData.subcategoryId){
-		filterData.subcategoryId = currentData.subcategoryId;
-	}else if(currentData.searchValue != ''){
-		filterData.searchValue = currentData.searchValue;
-	}
-	filterData.sortOrder = currentData.sortOrder;
-	$.ajax({
-		type:"POST",
-		url:"components/user.cfc?method=getProductList",
-		data:filterData,
-		success: function(result) {
-			$('#productListingParent').empty();
-			productList=JSON.parse(result)
-			listProducts(productList)
-			$("#showMoreBtn").css("display","none");
-
-			if(productList.length){
-				$('#listingMessage').text("");
-			}else{
-				$('#listingMessage').text("No products Found");
-			}
+	if(minValue < 0 || maxValue < 0){
+		$("#filterError").text("Please enter a positive number");
+	}else{
+		$("#filterError").text("");
+		if(minValue.trim().length == 0){
+			minValue = -1
 		}
-	});
-	$(".dropdown-toggle").dropdown('toggle');
+		if(maxValue.trim().length == 0){
+			maxValue = -1
+		}
+		filterData.minPrice = minValue;
+		filterData.maxPrice = maxValue;
+		if(currentData.subcategoryId){
+			filterData.subcategoryId = currentData.subcategoryId;
+		}else if(currentData.searchValue != ''){
+			filterData.searchValue = currentData.searchValue;
+		}
+		filterData.sortOrder = currentData.sortOrder;
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=getProductList",
+			data:filterData,
+			success: function(result) {
+				$('#productListingParent').empty();
+				$("#showMoreBtn").css("display","none");
+
+				productList=JSON.parse(result)
+				if(productList.resultArray.length){
+					$('#listingMessage').text("");
+					listProducts(productList.resultArray)
+				}else{
+					$('#listingMessage').text("No products Found");
+				}
+				
+			}
+		});
+		$(".dropdown-toggle").dropdown('toggle');
+	}
 }
 
 function listProducts(productList){
@@ -154,7 +162,8 @@ function showMore(currentData)
 		url:"components/user.cfc?method=getProductList",
 		data:productData,
 		success: function(result) {
-			listProducts(JSON.parse(result))
+			resultJson=JSON.parse(result);
+			listProducts(resultJson.resultArray)
 			$("#showMoreBtn").css("display","none")
 		}
 	});
