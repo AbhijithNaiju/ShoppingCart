@@ -26,6 +26,38 @@ $(document).ready(function(){
 	$('.filterInput').click(function(){
 		$('[name=filterRadio]').prop('checked',false);
 	});
+
+
+	$('.removeButton').click(function(){
+		const cartId = $(this).val();
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=removeFromCart",
+			data:{cartId:cartId},
+			success: function(result) {
+				cartDeleteResult=JSON.parse(result)
+				if(cartDeleteResult.success){
+					$("#cartItem"+cartId).remove();
+				}else{
+					alert("Error occured")
+				}
+			}
+		});
+	});
+	
+	// Setting reduce quantity buttons disabled
+	$(function() {
+		if($(".cartQuantity"))
+		{
+			quantityItems = $(".cartQuantity");
+			for(let element of quantityItems){
+				if($(element).val()==1){
+					$(element).prev().prop("disabled",true);
+				}
+			};
+		}
+	});
+
 });
 
 function emptyHeader(){
@@ -165,6 +197,39 @@ function showMore(currentData)
 			resultJson=JSON.parse(result);
 			listProducts(resultJson.resultArray)
 			$("#showMoreBtn").css("display","none")
+		}
+	});
+}
+
+function changeQuantity(buttonObject,changeDetails){
+	if(changeDetails.change == -1){
+		quantityElement= $(buttonObject).next();
+		newQuantity = parseInt(quantityElement.val())-1
+		if(newQuantity==1){
+			// disabling reduce button
+			$(buttonObject).prop("disabled",true);
+		}
+	}else{
+		quantityElement= $(buttonObject).prev();
+		newQuantity = parseInt(quantityElement.val())+1
+		if(newQuantity==2){
+			// disabling reduce button
+			$(quantityElement).prev().prop("disabled",false)
+		}
+	}
+	$.ajax({
+		type:"POST",
+		url:"components/user.cfc?method=updateCartQnty",
+		data:{
+			cartId:changeDetails.cartId,
+			newQuantity:newQuantity
+		},
+		success: function(result){
+			changeQuantityResult=JSON.parse(result)
+			if(changeQuantityResult.success){
+				// setting input value
+				quantityElement.val(newQuantity);
+			}
 		}
 	});
 }

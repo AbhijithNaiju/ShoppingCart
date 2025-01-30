@@ -121,7 +121,7 @@ body{
     background-color: #fff;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: space-around;
     z-index:1;
 }
 .navCategoryName:hover{
@@ -205,7 +205,7 @@ body{
     align-items: center;
     justify-content: space-evenly;
 }
-.productBody{
+.productBody,.cartBody{
     height: 85%;
 }
 .carousel-inner{
@@ -262,4 +262,28 @@ body{
 .productButtons button{
     width: 40%;
     margin: auto;
+}
+.cartImage{
+    max-height: 70%;
+    max-width: 70%;
+}
+.qantityButtons input::-webkit-outer-spin-button,
+.qantityButtons input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cartItemName{
+    text-overflow: ellipsis;
+    display: flex;
+}
+.cartItem
+{
+    height: 30%;
+}
+.cartItemName a{
+    text-decoration: none;
+    color: #000000;
+}
+.itemPrice span{
+    font-size: 12px;
 }

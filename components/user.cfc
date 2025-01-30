@@ -80,12 +80,11 @@
                     fldUserSaltString
                 FROM
                     tblUser
-                WHERE
-                    (
-                        fldPhone=<cfqueryparam value = '#arguments.userName#' cfsqltype = "varchar">
+                WHERE(
+                    fldPhone=<cfqueryparam value = '#arguments.userName#' cfsqltype = "varchar">
                     OR
-                        fldEmail=<cfqueryparam value = '#arguments.userName#' cfsqltype = "varchar">
-                    )
+                    fldEmail=<cfqueryparam value = '#arguments.userName#' cfsqltype = "varchar">
+                )
                     AND 
                     fldRoleId=2
                     AND
@@ -153,8 +152,12 @@
             FROM
                 tblCategory C
             INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
-            LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
-            LEFt JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+            <cfif structKeyExists(arguments,"categoryId")>
+                LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
+            <cfelse>
+                INNER JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
+            </cfif>
+            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
                 C.fldActive=1
@@ -388,4 +391,56 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+    <cffunction name = "updateCartQnty" returntype = "struct" returnformat = "json" access = "remote">
+        <cfargument name = "cartId" type = "integer" required = "true">
+        <cfargument name = "newQuantity" type = "integer" required = "true">
+        <cfset local.resultStruct = structNew()>
+        <cfif arguments.newQuantity>
+            <cfquery>
+                UPDATE 
+                    tblCart
+                SET
+                    fldQuantity=<cfqueryparam value = "#arguments.newQuantity#" cfSqlType = "integer">
+                WHERE
+                    fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+            </cfquery>
+        </cfif>
+        <cfset local.resultStruct["success"] = true>
+        <cfreturn local.resultStruct>
+    </cffunction>
+    <!--- Get items in cart --->
+    <cffunction name = "getcartItems" returntype = "query">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfquery name = "local.cartItems">
+            SELECT
+                C.fldCart_ID AS cartId,
+                C.fldQuantity AS quantity,
+                C.fldProductId AS productId,
+                P.fldProductName AS productName,
+                P.fldPrice AS price,
+                P.fldTax AS tax,
+                PI.fldImageFileName AS imageFileName
+            FROM
+                tblCart C
+            INNER JOIN tblProduct P ON P.fldProduct_ID = C.fldProductId AND P.fldActive = 1
+            LEFT JOIN tblProductImages PI ON PI.fldProductId = P.fldProduct_ID AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
+            WHERE 
+                C.fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+        </cfquery>
+        <cfreturn local.cartItems>
+    </cffunction>
+
+    <!--- Delete an item from cart --->
+    <cffunction name = "removeFromCart" returntype = "struct" returnformat = "JSON" access = "remote">
+        <cfargument name = "cartId" type = "integer" required = "true">
+        <cfset local.structResult = structNew()>
+        <cfquery>
+            DELETE FROM
+                tblcart
+            WHERE 
+                fldCart_ID = <cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+        </cfquery>
+        <cfset local.structResult["success"] = true>
+        <cfreturn local.structResult>
+    </cffunction>
 </cfcomponent>
