@@ -266,12 +266,7 @@ body{
 .cartImage{
     max-height: 70%;
     max-width: 70%;
-}
-.qantityButtons input::-webkit-outer-spin-button,
-.qantityButtons input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+}   
 .cartItemName{
     text-overflow: ellipsis;
     display: flex;
@@ -284,6 +279,52 @@ body{
     text-decoration: none;
     color: #000000;
 }
-.itemPrice span{
-    font-size: 12px;
+.grandTotalContainer{
+    font-size: 18px;
+    font-weight: bold;
+}
+.qantityButtons input{
+    width: 20%;
+}
+.profileBody{
+    max-height: 85%;
+}
+.profileName{
+    font-size: 20px;
+    font-weight: bold;
+}
+.profileEditModal{
+    background-color: rgba(216, 216, 216, 0.212);
+    height: 100%;
+    width: 100%;
+    top: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1; 
+}
+.profileModalBody{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#profileEditBody{
+    width: 40%;
+    height: 60%;
+    background-color: #fff;
+}
+
+#addAddressBody{
+    width: 40%;
+    height: 80%;
+    background-color: #fff;
+}
+.addressBody{
+    flex: 1;
+}
+.addressFooter{
+    position: sticky;
+    bottom: 0;
 }

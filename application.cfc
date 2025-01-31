@@ -22,7 +22,7 @@
                 <cflocation url="../admin/login.cfm" addtoken ="false"> 
             </cfif>
         <cfelse>
-            <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm"]>
+            <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm"]>
             <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) AND NOT structKeyExists(session, "userId")>
                 <cflocation url="/login.cfm" addtoken ="false"> 
             <cfelse>

@@ -1,5 +1,4 @@
-$(document).ready(function(){
-
+$(document).ready(function(){ 
 	setHeader();
 	function setHeader(){
 		$.ajax({
@@ -13,9 +12,7 @@ $(document).ready(function(){
 					$("#logOutBtn").text("Logout")
 					$("#cartBtn").attr('onclick','location.href="cartPage.cfm"')
 					$("#logOutBtn").attr('onclick','logOut()')
-					$("#profileBtn").click(function(){
-						// open profile
-					})
+					$("#profileBtn").attr('onclick','location.href="profilePage.cfm"');
 				}else{
 					emptyHeader();
 				}
@@ -37,15 +34,60 @@ $(document).ready(function(){
 			success: function(result) {
 				cartDeleteResult=JSON.parse(result)
 				if(cartDeleteResult.success){
-					$("#cartItem"+cartId).remove();
+
+					// updating total price
+					cartItem = $("#cartItem"+cartId)
+					itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
+					itemTax = parseFloat($(cartItem).find(".itemTax").text());
+					itemQuantity = parseFloat($(cartItem).find(".cartQuantity").val());
+
+					actualPriceElement = $('#actualPrice');
+					totalTaxElement = $('#totalTax');
+					totalPriceElement = $('#totalPrice');
+
+					updatedActualPrice = (parseFloat(actualPriceElement.text())-(itemPrice*itemQuantity)).toFixed(2);
+					updatedTotalTax = (parseFloat(totalTaxElement.text())-(itemTax*itemQuantity)).toFixed(2);
+					updatedTotalPrice = parseFloat(updatedActualPrice) + parseFloat(updatedTotalTax);
+
+					actualPriceElement.text(updatedActualPrice);
+					totalTaxElement.text(updatedTotalTax);
+					totalPriceElement.text(updatedTotalPrice);
+
+					// removing deleted item
+					cartItem.remove();
+
+					// Changing cart count
+					newCartCount = parseInt($("#cartCount").text())-1;
+					$("#cartCount").text(newCartCount);
 				}else{
 					alert("Error occured")
 				}
 			}
 		});
 	});
+	$(function() {
+		if($(".cartItem"))
+		{
+			let actualPrice = 0.00;
+			let totalTax = 0.00;
+			let totalPrice = 0.00;
+			cartItems = $(".cartItem");
+			for(let element of cartItems){
+				itemPrice = parseFloat($(element).find(".itemPrice").text());
+				itemTax = parseFloat($(element).find(".itemTax").text());
+				itemQuantity = parseInt($(element).find(".cartQuantity").val());
+				actualPrice += itemPrice*itemQuantity
+				totalTax += itemTax*itemQuantity
+			}
+			totalPrice = (actualPrice+totalTax).toFixed(2);
+
+			$('#actualPrice').text(actualPrice.toFixed(2))
+			$('#totalTax').text(totalTax.toFixed(2))
+			$('#totalPrice').text(totalPrice)
+		}
+	});
 	
-	// Setting reduce quantity buttons disabled
+	// Setting reduce buttons disabled if quantity is 1
 	$(function() {
 		if($(".cartQuantity"))
 		{
@@ -57,14 +99,47 @@ $(document).ready(function(){
 			};
 		}
 	});
-
+	$("#openProfileEdit").click(function(){
+		$("#profileModal").addClass('profileEditModal');
+		$("#profileModal").removeClass('displayNone');
+		$("#profileEditBody").removeClass('displayNone');
+	});
+	$("#addAddress").click(function(){
+		$("#profileModal").addClass('profileEditModal');
+		$("#profileModal").removeClass('displayNone');
+		$("#addAddressBody").removeClass('displayNone');
+	});
+	$(".closeProfileEdit").click(function(){
+		$("#profileModal").addClass('displayNone');
+		$("#profileModal").removeClass('profileEditModal');
+		$("#profileModal").removeClass('profileEditModal');
+		$("#profileEditBody").addClass('displayNone');
+		$("#addAddressBody").addClass('displayNone');
+	});
+	$(".deleteAddress").click(function(){
+		const addressId=this.value;
+		if(confirm("This address will be deleted from your profile"))
+			{
+				$.ajax({
+					type:"POST",
+					url:"components/user.cfc?method=deleteAddress",
+					data:{addressId:addressId},
+					success: function(result) {
+						logOutResult=JSON.parse(result)
+						if(logOutResult.success){
+							$("#address"+addressId).remove();
+						}
+					}
+				});
+			}
+	});
 });
 
 function emptyHeader(){
 	$("#logOutBtn").text("Login")
 	$("#cartCount").hide()
 	$("#cartBtn").attr('onclick','location.href = "login.cfm?redirect=cart"')
-	$("#profileBtn").attr('onclick','location.href = "login.cfm"')
+	$("#profileBtn").attr('onclick','location.href = "login.cfm?redirect=profilePage"')
 	$("#logOutBtn").attr('onclick','location.href = "login.cfm"')
 }
 
@@ -77,8 +152,9 @@ function logOut(){
 			success: function(result) {
 				logOutResult=JSON.parse(result)
 				if(logOutResult.success){
-					emptyHeader();
-					$("#productMessages").text("")
+					// emptyHeader();
+					// $("#productMessages").text("")
+					location.reload();
 				}
 			}
 		});
@@ -229,6 +305,28 @@ function changeQuantity(buttonObject,changeDetails){
 			if(changeQuantityResult.success){
 				// setting input value
 				quantityElement.val(newQuantity);
+
+				// setting total price
+				cartItem = $("#cartItem"+changeDetails.cartId)
+				itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
+				itemTax = parseFloat($(cartItem).find(".itemTax").text());
+				
+				actualPriceElement = $('#actualPrice');
+				totalTaxElement = $('#totalTax');
+				totalPriceElement = $('#totalPrice');
+
+				if(changeDetails.change == -1){
+					updatedActualPrice = (parseFloat(actualPriceElement.text())-(itemPrice)).toFixed(2);
+					updatedTotalTax = (parseFloat(totalTaxElement.text())-(itemTax)).toFixed(2);
+				}else{
+					updatedActualPrice = (parseFloat(actualPriceElement.text())+(itemPrice)).toFixed(2);
+					updatedTotalTax = (parseFloat(totalTaxElement.text())+(itemTax)).toFixed(2);
+				}
+				updatedTotalPrice = (parseFloat(updatedActualPrice) + parseFloat(updatedTotalTax)).toFixed(2);
+
+				actualPriceElement.text(updatedActualPrice);
+				totalTaxElement.text(updatedTotalTax);
+				totalPriceElement.text(updatedTotalPrice);
 			}
 		}
 	});

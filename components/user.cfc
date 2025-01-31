@@ -443,4 +443,165 @@
         <cfset local.structResult["success"] = true>
         <cfreturn local.structResult>
     </cffunction>
+
+    <!---  Get details of user for profile page --->
+    <cffunction name = "getProfileDetails" returntype = "struct">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfquery name = "local.qryProfileDetails" returntype = "struct">
+            SELECT
+                fldFirstName AS firstName,
+                fldLastName AS lastName,
+                fldEmail AS email,
+                fldPhone AS phone
+            FROM
+                tblUser
+            WHERE
+                fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+                AND
+                fldActive = 1;
+
+        </cfquery>
+        <cfreturn local.qryProfileDetails.resultSet[1]>
+    </cffunction>
+
+    <!--- Get address list of user --->
+    <cffunction name = "getAddressListDetails" returntype = "array">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfquery name = "local.qryaddressList" returntype = "struct">
+            SELECT
+                fldAddress_ID AS addressId,
+                fldFirstName AS firstName,
+                fldLastName AS lastName,
+                fldAddressLine1 AS addressLine1,
+                fldAddressLine2 AS addressLine2,
+                fldCity AS city,
+                fldState AS state,
+                fldPincode AS pincode,
+                fldPhoneNumber AS phoneNumber
+            FROM
+                tblAddress
+            WHERE
+                fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+                AND
+                fldActive = 1;
+
+        </cfquery>
+        <cfreturn local.qryaddressList.resultSet>
+    </cffunction>
+
+    <cffunction name = "updateProfile" returntype = "struct">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfargument name = "formStruct" type = "struct" required = "true">
+        <cfset local.resultStruct = structNew()>
+
+        <cfif 
+            len(trim(arguments.formStruct.firstName))
+            AND 
+            len(trim(arguments.formStruct.lastName))
+            AND 
+            len(trim(arguments.formStruct.emailId))
+            AND 
+            len(trim(arguments.formStruct.phoneNumber))
+        >
+            <cfquery name="local.isEmailExist">
+                SELECT
+                    fldUser_ID
+                FROM
+                    tbluser
+                WHERE 
+                    fldemail = <cfqueryparam value = "#arguments.formStruct.emailId#" cfSqlType= "varchar">
+                    AND
+                    NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
+            </cfquery>
+
+            <cfif local.isEmailExist.recordCount>
+                <cfset local.structResult["error"] = "Email already exists">
+            <cfelse>
+                <cfquery result="local.signUpresult">
+                    UPDATE
+                        tbluser
+                    SET
+                        fldFirstName = <cfqueryparam value = '#arguments.formStruct.firstName#' cfsqltype = "varchar">,
+                        fldLastName = <cfqueryparam value = '#arguments.formStruct.lastName#' cfsqltype = "varchar">,
+                        fldPhone = <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">,
+                        fldEmail = <cfqueryparam value = '#arguments.formStruct.emailId#' cfsqltype = "varchar">
+                    WHERE 
+                        flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
+                </cfquery>
+                <cfset local.structResult["success"] = true>
+            </cfif>
+        <cfelse>
+            <cfset local.structResult["error"] = "Please fill all the fields">
+        </cfif>
+        <cfreturn local.structResult>
+    </cffunction>
+
+    <cffunction name = "addAddress" returntype = "struct">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfargument name = "formStruct" type = "struct" required = "true">
+
+        <cfset local.resultStruct = structNew()>
+        <cfif 
+            len(trim(arguments.formStruct.firstName))
+            AND 
+            len(trim(arguments.formStruct.lastName))
+            AND 
+            len(trim(arguments.formStruct.addressLine1))
+            AND 
+            len(trim(arguments.formStruct.addressLine2))
+            AND 
+            len(trim(arguments.formStruct.city))
+            AND 
+            len(trim(arguments.formStruct.state))
+            AND 
+            len(trim(arguments.formStruct.phoneNumber))
+            AND 
+            len(trim(arguments.formStruct.pincode))
+        >
+            <cfquery name = "">
+                INSERT INTO 
+                    tbladdress( 
+                        fldUserId, 
+                        fldFirstName, 
+                        fldLastName, 
+                        fldAddressLine1, 
+                        fldAddressLine2, 
+                        fldCity, 
+                        fldState, 
+                        fldPincode, 
+                        fldPhoneNumber
+                    )VALUES (
+                        <cfqueryparam value = '#arguments.userId#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.firstName#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.lastName#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.addressLine1#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.addressLine2#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.city#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.state#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.pincode#' cfsqltype = "varchar">
+                    );
+            </cfquery>
+            <cfset local.resultStruct["success"] = true>
+        <cfelse>
+            <cfset local.resultStruct["error"] = "Please enter all the Fields">
+        </cfif>
+        <cfreturn local.resultStruct>
+    </cffunction>
+
+    <cffunction name = "deleteAddress" returntype = "struct" access = "remote" returnformat = "json">
+        <cfargument name = "addressId" type = "integer" required = "true">
+
+        <cfset local.resultStruct = structNew()>
+        <cfquery name = "">
+            UPDATE
+                tblAddress
+            SET
+                fldActive = 0
+            WHERE
+                fldAddress_ID = <cfqueryparam value = '#arguments.addressId#' cfsqltype = "integer">
+        </cfquery>
+        <cfset local.resultStruct["success"] = true>
+        <cfreturn local.resultStruct>
+    </cffunction>
 </cfcomponent>

@@ -24,6 +24,11 @@
             <cfelseif url.redirect EQ "cart">
                 <!--- go to cart page(productid is not present) --->
                 <cflocation  url="./cartPage.cfm" addtoken="no">
+
+            <cfelseif url.redirect EQ "profilePage">
+                <!--- go to cart page(productid is not present) --->
+                <cflocation  url="./profilePage.cfm" addtoken="no">
+                
             </cfif>
 
         <cfelse>
