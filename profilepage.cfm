@@ -35,7 +35,19 @@
         <div class="addressBody border overflow-scroll">
             <cfloop array="#variables.addressList#" item="variables.addressItem">
                 <div class = "border p-3 d-flex justify-content-between align-items-center" id="address#variables.addressItem.addressId#">
-                    <cfdump  var="#variables.addressItem#">
+                    <div class="d-flex flex-column">
+                        <span class="addressName">#variables.addressItem.firstName & ' ' & variables.addressItem.lastName#</span>
+                        <span>
+                            #variables.addressItem.addressLine1 & ', '#
+                            <cfif structKeyExists(variables.addressItem,"addressLine2")>
+                                #variables.addressItem.addressLine2 & ', '#
+                            </cfif>
+                            #variables.addressItem.city & ', '#
+                            #variables.addressItem.state & ', '#
+                            #variables.addressItem.pincode#
+                        </span>
+                        <span>#variables.addressItem.phoneNumber#</span>
+                    </div>
                     <button 
                         class = "btn btn-danger btn-sm deleteAddress" 
                         value="#variables.addressItem.addressId#"
@@ -138,12 +150,11 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Address Line 1</label>
+                        <label for="">Address Line 2</label>
                         <input 
                             type="text" 
                             class="form-control" 
                             name="addressLine2"
-                            required
                         >
                     </div>
                     <div class="form-group my-2">

@@ -1,12 +1,5 @@
 <cfinclude  template="./userHeader.cfm">
 <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
-    <cfif structKeyExists(form, "buyNow")>
-        <cfif structKeyExists(session, "userId")>
-            <cflocation  url="/orderPage.cfm?productId=#url.productId#" addtoken="no">
-        <cfelse>
-            <cflocation  url="/login.cfm?redirect=order&productId=#url.productId#" addtoken="no">
-        </cfif>
-    </cfif>
     <cfset variables.productDetails = application.userObject.getProductDetails(productId=url.productId)>
     <cfif arrayLen(variables.productDetails)>
         <cfoutput>
@@ -83,6 +76,8 @@
                             <button 
                                 class="btn btn-primary"
                                 name="buyNow"
+                                id="buyNow"
+                                value="#url.productId#"
                             >
                                 BUY NOW
                             </button>

@@ -112,9 +112,26 @@ $(document).ready(function(){
 	$(".closeProfileEdit").click(function(){
 		$("#profileModal").addClass('displayNone');
 		$("#profileModal").removeClass('profileEditModal');
-		$("#profileModal").removeClass('profileEditModal');
 		$("#profileEditBody").addClass('displayNone');
 		$("#addAddressBody").addClass('displayNone');
+	});
+
+	$("#changeAddress").click(function(){
+		$("#selectAddressModal").addClass('profileEditModal');
+		$("#selectAddressModal").removeClass('displayNone');
+	});
+	$("#closeSelectAddress").click(function(){
+		$("#selectAddressModal").removeClass('profileEditModal');
+		$("#selectAddressModal").addClass('displayNone');
+	});
+
+	$("#orderAddAddress").click(function(){
+		$("#addAddressModal").addClass('profileEditModal');
+		$("#addAddressModal").removeClass('displayNone');
+	});
+	$("#closeAddAddress").click(function(){
+		$("#addAddressModal").removeClass('profileEditModal');
+		$("#addAddressModal").addClass('displayNone');
 	});
 	$(".deleteAddress").click(function(){
 		const addressId=this.value;
@@ -133,6 +150,60 @@ $(document).ready(function(){
 				});
 			}
 	});
+
+	$(".orderAddress").change(function(){
+		const addressId=this.value;
+		addressItem=$("#addressItem"+addressId)
+		$("#selectedAddress").empty()
+		$("#selectedAddress").append(addressItem.find(".addressName").clone())
+		$("#selectedAddress").append(addressItem.find(".addressDetails").clone())
+		$("#selectedAddress").append(addressItem.find(".addressPhone").clone())
+	});
+	$(".cardData").change(function(){
+		$("#placeOrder").attr("disabled", "disabled");
+		$("#verifyCard").removeAttr("disabled");
+		$("#verifyCard").text("Verify");
+	});
+	
+	$("#verifyCard").click(function(){
+		cardNumber=$("#cardNumber").val();
+		cardCVV=$("#cardCVV").val();
+		if(cardNumber.trim().length == 16 && cardCVV.trim().length ==3){
+			if(isNaN(cardNumber) || isNaN(cardCVV))
+			{
+				$("#cardError").text("Please enter valid number");
+			}else{
+				$.ajax({
+					type:"POST",
+					url:"components/user.cfc?method=verifyCard",
+					data:{
+						cardNumber:parseInt(cardNumber),
+						cardCVV:parseInt(cardCVV)
+					},
+					success: function(result) {
+						cardVerifyresult=JSON.parse(result)
+						if(cardVerifyresult.success){
+							$("#cardError").text('');
+							$("#placeOrder").removeAttr("disabled");	
+							$("#verifyCard").attr("disabled", "disabled");
+							$("#verifyCard").attr("readonly",true);
+							$("#verifyCard").text("Verified");
+						}
+						else{
+							$("#cardError").text("Incorrect details");
+						}
+					}
+				});
+			}
+		}else{
+			$("#cardError").text("Please fill all the fields with valid data");
+		}
+	});
+	$("#buyNow").click(function(){
+		productId=this.value;
+		addToCart(productId);
+		location.href="./orderPage.cfm"
+	})
 });
 
 function emptyHeader(){
@@ -298,7 +369,7 @@ function changeQuantity(buttonObject,changeDetails){
 		url:"components/user.cfc?method=updateCartQnty",
 		data:{
 			cartId:changeDetails.cartId,
-			newQuantity:newQuantity
+			quantityChange:changeDetails.change
 		},
 		success: function(result){
 			changeQuantityResult=JSON.parse(result)

@@ -362,7 +362,7 @@
                     UPDATE 
                         tblCart
                     SET
-                        fldQuantity=<cfqueryparam value = "#local.isProductExist.fldQuantity+1#" cfSqlType = "integer">
+                        fldQuantity=fldQuantity+1
                     WHERE
                         fldCart_Id=<cfqueryparam value = "#local.isProductExist.fldCart_ID#" cfSqlType = "integer">
                 </cfquery>
@@ -393,18 +393,20 @@
 
     <cffunction name = "updateCartQnty" returntype = "struct" returnformat = "json" access = "remote">
         <cfargument name = "cartId" type = "integer" required = "true">
-        <cfargument name = "newQuantity" type = "integer" required = "true">
+        <cfargument name = "quantityChange" type = "integer" required = "true">
         <cfset local.resultStruct = structNew()>
-        <cfif arguments.newQuantity>
-            <cfquery>
-                UPDATE 
-                    tblCart
-                SET
-                    fldQuantity=<cfqueryparam value = "#arguments.newQuantity#" cfSqlType = "integer">
-                WHERE
-                    fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
-            </cfquery>
-        </cfif>
+        <cfquery>
+            UPDATE 
+                tblCart
+            SET
+                <cfif arguments.quantityChange EQ 1>
+                    fldQuantity=fldQuantity+1
+                <cfelseif arguments.quantityChange EQ -1>
+                    fldQuantity=fldQuantity-1
+                </cfif>
+            WHERE
+                fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+        </cfquery>
         <cfset local.resultStruct["success"] = true>
         <cfreturn local.resultStruct>
     </cffunction>
@@ -578,8 +580,8 @@
                         <cfqueryparam value = '#arguments.formStruct.addressLine2#' cfsqltype = "varchar">,
                         <cfqueryparam value = '#arguments.formStruct.city#' cfsqltype = "varchar">,
                         <cfqueryparam value = '#arguments.formStruct.state#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.pincode#' cfsqltype = "varchar">
+                        <cfqueryparam value = '#arguments.formStruct.pincode#' cfsqltype = "varchar">,
+                        <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">
                     );
             </cfquery>
             <cfset local.resultStruct["success"] = true>
@@ -602,6 +604,36 @@
                 fldAddress_ID = <cfqueryparam value = '#arguments.addressId#' cfsqltype = "integer">
         </cfquery>
         <cfset local.resultStruct["success"] = true>
+        <cfreturn local.resultStruct>
+    </cffunction>
+
+    <cffunction name = "verifyCard" returntype = "struct" returnformat = "json" access = "remote">
+        <cfargument name = "cardNumber" type = "numeric" required = "true">
+        <cfargument name = "cardCVV" type = "numeric" required = "true">
+
+        <cfset local.resultStruct = structNew()>
+        <cfset local.cardNumber = "1122334455667788">
+        <cfset local.cardCVV = "123">
+        <cfif arguments.cardNumber EQ local.cardNumber AND arguments.cardCVV EQ local.cardCVV>
+            <cfset local.resultStruct["success"] = true>
+        </cfif>
+        <cfreturn local.resultStruct>
+    </cffunction>
+
+    <cffunction name = "placeOrder" returntype = "struct">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfargument name = "orderAddressId" type = "integer" required = "true">
+        <cfargument name = "cardNumber" type = "numeric" required = "true">
+        <cfargument name = "cardCVV" type = "numeric" required = "true">
+
+        <cfset local.resultStruct = structNew()>
+        <cfset local.verifyCardResult = verifyCard(cardNumber=arguments.cardNumber,cardCVV=arguments.cardCVV)>
+        <cfif structKeyExists(local.verifyCardResult, "success")>
+            <cfset local.UUID = createUUID()>
+            <cfdump  var="#local.UUID#">
+        <cfelse>
+            <cfset local.resultStruct["error"] = "Invalid Card Details">
+        </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
 </cfcomponent>

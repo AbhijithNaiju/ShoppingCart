@@ -205,7 +205,7 @@ body{
     align-items: center;
     justify-content: space-evenly;
 }
-.productBody,.cartBody{
+.productBody{
     height: 85%;
 }
 .carousel-inner{
@@ -286,15 +286,18 @@ body{
 .qantityButtons input{
     width: 20%;
 }
-.profileBody{
+.profileBody,.cartBody,.orderBody{
     max-height: 85%;
+}
+.orderBody{
+    position: relative;
 }
 .profileName{
     font-size: 20px;
     font-weight: bold;
 }
 .profileEditModal{
-    background-color: rgba(216, 216, 216, 0.212);
+    background-color: rgba(255, 255, 255, 0.644);
     height: 100%;
     width: 100%;
     top: 0;
@@ -305,6 +308,12 @@ body{
     z-index: 1; 
 }
 .profileModalBody{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.selectAddressBody{
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -321,10 +330,26 @@ body{
     height: 80%;
     background-color: #fff;
 }
+#addAddressBody,#selectAddressBody{
+    width: 40%;
+    height: 80%;
+    background-color: #fff;
+}
 .addressBody{
     flex: 1;
 }
 .addressFooter{
     position: sticky;
     bottom: 0;
+}
+.closeSelectAddress
+{
+    position: sticky;
+    top: 0;
+}
+.addressName{
+    font-weight: bold;
+}
+.orderItem{
+    height: 20%;
 }

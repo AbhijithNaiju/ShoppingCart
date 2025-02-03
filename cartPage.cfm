@@ -2,7 +2,7 @@
 
 <cfset variables.cartItems=application.userObject.getCartItems(userId=session.userId)>
 <cfoutput>
-    <div class="cartBody container">
+    <div class="cartBody container h-100">
         <div class="row h-100">
             <div class="col-8 h-100 overflow-scroll">
                 <cfloop query="#variables.cartItems#">
