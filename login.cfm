@@ -12,13 +12,15 @@
             <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
                 <!--- product id is present in url --->
 
-                <cfif url.redirect EQ "cart">
+                <cfif url.redirect EQ "cart" OR url.redirect EQ "order">
                     <!--- adding product to cart and going back to product page --->
                     <cfset addTocart = application.userObject.addToCart(url.productId)>
-                    <cflocation  url="./product.cfm?productId=#url.productId#" addtoken="no">
-                <cfelseif url.redirect EQ "order">
-                    <!--- goto to order page --->
-                    <cflocation  url="./orderPage.cfm?productId=#url.productId#" addtoken="no">
+                    <cfif url.redirect EQ "order">
+                        <!--- goto to order page --->
+                        <cflocation  url="./orderPage.cfm" addtoken="no">
+                    <cfelse>
+                        <cflocation  url="./product.cfm?productId=#url.productId#" addtoken="no">
+                    </cfif>
                 </cfif>
 
             <cfelseif url.redirect EQ "cart">

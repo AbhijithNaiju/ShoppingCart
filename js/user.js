@@ -59,6 +59,14 @@ $(document).ready(function(){
 					// Changing cart count
 					newCartCount = parseInt($("#cartCount").text())-1;
 					$("#cartCount").text(newCartCount);
+					if(newCartCount == 0){
+						$("#placeOrder").remove();
+						// Showing message to goto home
+						if(confirm("No products remaining in cart, add products to continue.")){
+							location.href="./index.cfm"
+						}
+						
+					}
 				}else{
 					alert("Error occured")
 				}
@@ -201,7 +209,7 @@ $(document).ready(function(){
 	});
 	$("#buyNow").click(function(){
 		productId=this.value;
-		addToCart(productId);
+		addToCart(productId,"order");
 		location.href="./orderPage.cfm"
 	})
 });
@@ -305,7 +313,7 @@ function listProducts(productList){
 	});
 }
 
-function addToCart(productId){
+function addToCart(productId,redirect){
 	$.ajax({
 		type:"POST",
 		url:"components/user.cfc?method=addToCart",
@@ -313,7 +321,11 @@ function addToCart(productId){
 		success: function(result) {
 			addToCartResult=JSON.parse(result)
 			if(addToCartResult.redirect){
-				location.href="login.cfm?redirect=cart&productId="+productId
+				if(redirect && redirect==="order"){
+					location.href="login.cfm?redirect=order&productId="+productId
+				}else{
+					location.href="login.cfm?redirect=cart&productId="+productId
+				}
 			}else{
 				$("#productMessages").text("Product added to cart")
 				if(addToCartResult.increasedItemCount){

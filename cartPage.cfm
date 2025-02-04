@@ -5,66 +5,73 @@
     <div class="cartBody container h-100">
         <div class="row h-100">
             <div class="col-8 h-100 overflow-scroll">
-                <cfloop query="#variables.cartItems#">
-                    <div class="cartItem row bg-white my-3" id="cartItem#variables.cartItems.cartId#">
-                        <div class="col-3 d-flex">
-                            <img 
-                                src="./assets/productimages/#variables.cartItems.imageFileName#"
-                                class="cartImage m-auto"
-                            >
-                        </div>
-                        <div class="col-5 cartItemName d-flex flex-column justify-content-around">
-                            <a href="./product.cfm?productId=#variables.cartItems.productId#">
-                                #variables.cartItems.productName#
-                            </a>
-                            <div class="qantityButtons">
-                                <button 
-                                    class="btn btn-sm btn-primary" 
-                                    onclick="changeQuantity(this,{change:-1,cartId:#variables.cartItems.cartId#})"
-                                >   
-                                    -
-                                </button>
-                                <input 
-                                    class="btn border btn-sm cartQuantity" 
-                                    value="#variables.cartItems.quantity#"
-                                    readonly
+                <cfif variables.cartItems.recordCount>
+                    <cfloop query="#variables.cartItems#">
+                        <div class="cartItem row bg-white my-3" id="cartItem#variables.cartItems.cartId#">
+                            <div class="col-3 d-flex">
+                                <img 
+                                    src="./assets/productimages/#variables.cartItems.imageFileName#"
+                                    class="cartImage m-auto"
                                 >
+                            </div>
+                            <div class="col-5 cartItemName d-flex flex-column justify-content-around">
+                                <a href="./product.cfm?productId=#variables.cartItems.productId#">
+                                    #variables.cartItems.productName#
+                                </a>
+                                <div class="qantityButtons">
+                                    <button 
+                                        class="btn btn-sm btn-primary" 
+                                        onclick="changeQuantity(this,{change:-1,cartId:#variables.cartItems.cartId#})"
+                                    >   
+                                        -
+                                    </button>
+                                    <input 
+                                        class="btn border btn-sm cartQuantity" 
+                                        value="#variables.cartItems.quantity#"
+                                        readonly
+                                    >
+                                    <button 
+                                        class="btn btn-sm btn-primary" 
+                                        onclick="changeQuantity(this,{change:1,cartId:#variables.cartItems.cartId#})"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-4 d-flex flex-column justify-content-around">
+                                <div class="d-flex flex-column justify-content-around">
+                                    <small>
+                                        Unit price : RS 
+                                        <span class="itemPrice">
+                                            #variables.cartItems.price#
+                                        </span>
+                                    </small>
+                                    <small>
+                                        Unit tax : Rs 
+                                        <span class="itemTax">
+                                            #variables.cartItems.tax#
+                                        </span>
+                                    </small>
+                                    <b>
+                                        Total price : Rs 
+                                        #variables.cartItems.price+variables.cartItems.tax#
+                                    </b>
+                                </div>
                                 <button 
-                                    class="btn btn-sm btn-primary" 
-                                    onclick="changeQuantity(this,{change:1,cartId:#variables.cartItems.cartId#})"
+                                    class="btn border border-dark removeButton"
+                                    value="#variables.cartItems.cartId#"
                                 >
-                                    +
+                                    Remove
                                 </button>
                             </div>
                         </div>
-                        <div class="col-4 d-flex flex-column justify-content-around">
-                            <div class="d-flex flex-column justify-content-around">
-                                <small>
-                                    Unit price : RS 
-                                    <span class="itemPrice">
-                                        #variables.cartItems.price#
-                                    </span>
-                                </small>
-                                <small>
-                                    Unit tax : Rs 
-                                    <span class="itemTax">
-                                        #variables.cartItems.tax#
-                                    </span>
-                                </small>
-                                <b>
-                                    Total price : Rs 
-                                    #variables.cartItems.price+variables.cartItems.tax#
-                                </b>
-                            </div>
-                            <button 
-                                class="btn border border-dark removeButton"
-                                value="#variables.cartItems.cartId#"
-                            >
-                                Remove
-                            </button>
-                        </div>
+                    </cfloop>
+                <cfelse>
+                    <div class = "text-center m-3">
+                        <h2>No items present in cart</h2>
+                        <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
                     </div>
-                </cfloop>
+                </cfif>
             </div>
             <div class="col-4 border h-50 p-3 d-flex flex-column justify-content-around">
                 <div class="">
@@ -90,7 +97,9 @@
                         <span id="totalPrice"></span>
                     </div>
                 </span>
-                <button class="btn btn-primary w-100">Place Order</button>
+                <cfif variables.cartItems.recordCount>
+                    <a href="./orderPage.cfm" id="placeOrder" class="btn btn-primary w-100">Place Order</a>
+                </cfif>
             </div>
         </div>
     </div>

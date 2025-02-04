@@ -1,12 +1,16 @@
 <cfinclude  template="userHeader.cfm">
 
 <cfif structKeyExists(form, "placeOrder")>
-    <cfset variables.placeOrder = application.userObject.placeOrder(
-        userId = session.userId,
-        orderAddressId = form.orderAddressId,
-        cardNumber = form.cardNumber,
-        cardCVV = form.cardCVV
-    )>
+    <cfif structKeyExists(form, "orderAddressId")>
+        <cfset variables.placeOrder = application.userObject.placeOrder(
+            userId = session.userId,
+            orderAddressId = form.orderAddressId,
+            cardNumber = form.cardNumber,
+            cardCVV = form.cardCVV
+        )>
+    <cfelse>
+        <cfset variables.addressError = "Please enter delivery address to continue">
+    </cfif>
 </cfif>
 <cfif structKeyExists(form,"addAddress")>
     <cfset variables.addAddressResult = application.userObject.addAddress(
@@ -16,7 +20,8 @@
 </cfif>
 <cfset variables.cartItems=application.userObject.getCartItems(userId=session.userId)>
 <cfset variables.addressList=application.userObject.getAddressListDetails(userId=session.userId)>
-<cfoutput>
+<cfif variables.cartItems.recordCount>
+    <cfoutput>
     <form method="post" class="orderBody container h-100 overflow-scroll">
         <div class="accordion" id="orderAccordion">
             <div class="accordion-item">
@@ -30,26 +35,38 @@
                         <h2>Delivery Address</h2>
                         <div class = "border p-3 d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-column" id = "selectedAddress">
-                                <span class="addressName">#variables.addressList[1].firstName & ' ' & variables.addressList[1].lastName#</span>
-                                <span>
-                                    #variables.addressList[1].addressLine1 & ', '#
-                                    <cfif structKeyExists(variables.addressList[1],"addressLine2")>
-                                        #variables.addressList[1].addressLine2 & ', '#
-                                    </cfif>
-                                    #variables.addressList[1].city & ', '#
-                                    #variables.addressList[1].state & ', '#
-                                    #variables.addressList[1].pincode#
-                                </span>
-                                <span>#variables.addressList[1].phoneNumber#</span>
+                                <cfif arrayLen(variables.addressList)>
+                                    <span class="addressName">#variables.addressList[1].firstName & ' ' & variables.addressList[1].lastName#</span>
+                                    <span>
+                                        #variables.addressList[1].addressLine1 & ', '#
+                                        <cfif structKeyExists(variables.addressList[1],"addressLine2")>
+                                            #variables.addressList[1].addressLine2 & ', '#
+                                        </cfif>
+                                        #variables.addressList[1].city & ', '#
+                                        #variables.addressList[1].state & ', '#
+                                        #variables.addressList[1].pincode#
+                                    </span>
+                                    <span>#variables.addressList[1].phoneNumber#</span>
+                                <cfelse>
+                                    <div class = "text-center text-danger">
+                                        <cfif structKeyExists(variables,"addressError")>
+                                            #variables.addressError#
+                                        <cfelse>
+                                            No address available, add address to continue
+                                        </cfif>
+                                    </div>
+                                </cfif>
                             </div>
                             <div class = "d-flex flex-column">
-                                <button 
-                                    type = "button"
-                                    class = "btn link-primary"
-                                    id = "changeAddress"
-                                >
-                                    Change
-                                </button>
+                                <cfif arrayLen(variables.addressList)>
+                                    <button 
+                                        type = "button"
+                                        class = "btn link-primary"
+                                        id = "changeAddress"
+                                    >
+                                        Change
+                                    </button>
+                                </cfif>
                                 <button 
                                     type = "button"
                                     class = "btn link-primary"
@@ -212,26 +229,30 @@
                                     Verify
                                     </butoon>
                                 </div>
-                                <div class="col-12 d-flex justify-content-end">
-                                    <button 
-                                        type="submit" 
-                                        class="btn btn-warning w-25" 
-                                        name = "placeOrder"
-                                        id="placeOrder"
-                                        disabled
-                                    >
-                                       Place Order
-                                    </button>
-                                </div>
+                                <cfif variables.cartItems.recordCount AND arrayLen(variables.addressList)>
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button 
+                                            type="submit" 
+                                            class="btn btn-warning w-25" 
+                                            name = "placeOrder"
+                                            id="placeOrder"
+                                            disabled
+                                        >
+                                        Place Order
+                                        </button>
+                                    </div>
+                                </cfif>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <cfif structKeyExists(variables,"placeOrder") AND structKeyExists(variables.placeOrder, "error")>
-            <div class = "text-center errorMessage my-2">#variables.placeOrder.error#</div>
-        </cfif>
+        <div class = "text-center errorMessage my-2" id="orderError">
+            <cfif structKeyExists(variables,"placeOrder") AND structKeyExists(variables.placeOrder, "error")>
+                #variables.placeOrder.error#
+            </cfif>
+        </div>
         <div id="selectAddressModal" class="displayNone">
             <div id="selectAddressBody">
                 <div class="selectAddressBody overflow-scroll">
@@ -361,5 +382,19 @@
             </form>
         </div>
     </div>
-</cfoutput>
+    </cfoutput>
+<cfelse>
+    <cfif structKeyExists(variables,"placeOrder") AND structKeyExists(variables.placeOrder, "success")>
+        <div class = "text-center m-3">
+            <h2>Order placed Successfully</h2>
+            <p>Check your email for your order Confirmation</p>
+            <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
+        </div>
+    <cfelse>
+        <div class = "text-center m-3">
+            <h2>No products available to order please add products to continue</h2>
+            <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
+        </div>
+    </cfif>
+</cfif>
 <cfinclude  template="userFooter.cfm">

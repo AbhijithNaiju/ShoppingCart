@@ -630,9 +630,30 @@
         <cfset local.verifyCardResult = verifyCard(cardNumber=arguments.cardNumber,cardCVV=arguments.cardCVV)>
         <cfif structKeyExists(local.verifyCardResult, "success")>
             <cfset local.UUID = createUUID()>
-            <cfdump  var="#local.UUID#">
+            <cfset local.cardLastFour = right(arguments.cardNumber, 4)>
+            <cfquery name = "local.placeOrder">
+                CALL checkOutProcedure(
+                    <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">,
+                    <cfqueryparam value = "#arguments.orderAddressId#" cfSqlType = "integer">,
+                    <cfqueryparam value = "#local.cardLastFour#" cfSqlType = "integer">,
+                    <cfqueryparam value = "#local.UUID#" cfSqlType = "varchar">
+                )
+            </cfquery>
+            <cfset local.resultStruct["success"] = true>
         <cfelse>
             <cfset local.resultStruct["error"] = "Invalid Card Details">
+        </cfif>
+        <!--- Sending mail if order placed --->
+        <cfif structKeyExists(local.resultStruct, "success")>
+            <cfset local.userDetails = getProfileDetails(userId=arguments.userId)>
+            <cfmail  
+                from="abhijith1@gmail.com"  
+                subject="Order placed"  
+                to="#local.userDetails.email#"
+            >
+                Dear #local.userDetails.firstName#,Your order placed successfully.
+                Order ID : #local.UUID#
+            </cfmail>
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
