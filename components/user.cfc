@@ -503,6 +503,8 @@
             AND 
             len(trim(arguments.formStruct.emailId))
             AND 
+            isValid("email", arguments.formStruct.emailId)
+            AND
             len(trim(arguments.formStruct.phoneNumber))
         >
             <cfquery name="local.isEmailExist">
@@ -632,7 +634,7 @@
             <cfset local.UUID = createUUID()>
             <cfset local.cardLastFour = right(arguments.cardNumber, 4)>
             <cfquery name = "local.placeOrder">
-                CALL checkOutProcedure(
+                CALL placeOrder(
                     <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">,
                     <cfqueryparam value = "#arguments.orderAddressId#" cfSqlType = "integer">,
                     <cfqueryparam value = "#local.cardLastFour#" cfSqlType = "integer">,
@@ -650,9 +652,13 @@
                 from="abhijith1@gmail.com"  
                 subject="Order placed"  
                 to="#local.userDetails.email#"
+                type="html"
             >
-                Dear #local.userDetails.firstName#,Your order placed successfully.
-                Order ID : #local.UUID#
+                <cfmailpart type="text/html">
+                    <h3>Dear #local.userDetails.firstName#,</h3>
+                    <p>Your order placed successfully.</p>
+                    <p>Order ID : #local.UUID#</p>
+                </cfmailpart>
             </cfmail>
         </cfif>
         <cfreturn local.resultStruct>

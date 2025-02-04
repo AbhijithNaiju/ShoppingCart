@@ -62,9 +62,8 @@ $(document).ready(function(){
 					if(newCartCount == 0){
 						$("#placeOrder").remove();
 						// Showing message to goto home
-						if(confirm("No products remaining in cart, add products to continue.")){
-							location.href="./index.cfm"
-						}
+						alert("No products remaining in cart, add products to continue.")
+						location.href="./index.cfm"
 						
 					}
 				}else{
@@ -167,46 +166,7 @@ $(document).ready(function(){
 		$("#selectedAddress").append(addressItem.find(".addressDetails").clone())
 		$("#selectedAddress").append(addressItem.find(".addressPhone").clone())
 	});
-	$(".cardData").change(function(){
-		$("#placeOrder").attr("disabled", "disabled");
-		$("#verifyCard").removeAttr("disabled");
-		$("#verifyCard").text("Verify");
-	});
 	
-	$("#verifyCard").click(function(){
-		cardNumber=$("#cardNumber").val();
-		cardCVV=$("#cardCVV").val();
-		if(cardNumber.trim().length == 16 && cardCVV.trim().length ==3){
-			if(isNaN(cardNumber) || isNaN(cardCVV))
-			{
-				$("#cardError").text("Please enter valid number");
-			}else{
-				$.ajax({
-					type:"POST",
-					url:"components/user.cfc?method=verifyCard",
-					data:{
-						cardNumber:parseInt(cardNumber),
-						cardCVV:parseInt(cardCVV)
-					},
-					success: function(result) {
-						cardVerifyresult=JSON.parse(result)
-						if(cardVerifyresult.success){
-							$("#cardError").text('');
-							$("#placeOrder").removeAttr("disabled");	
-							$("#verifyCard").attr("disabled", "disabled");
-							$("#verifyCard").attr("readonly",true);
-							$("#verifyCard").text("Verified");
-						}
-						else{
-							$("#cardError").text("Incorrect details");
-						}
-					}
-				});
-			}
-		}else{
-			$("#cardError").text("Please fill all the fields with valid data");
-		}
-	});
 	$("#buyNow").click(function(){
 		productId=this.value;
 		addToCart(productId,"order");

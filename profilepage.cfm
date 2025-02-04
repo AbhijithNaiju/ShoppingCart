@@ -32,6 +32,7 @@
         <cfif structKeyExists(variables,"addAddressResult") and structKeyExists(variables.addAddressResult, "error")>
             <div class = "text-center errorMessage">#variables.addAddressResult.error#</div>
         </cfif>
+        <h2 class = "addressHeading">Addresses</h2>
         <div class="addressBody border overflow-scroll">
             <cfloop array="#variables.addressList#" item="variables.addressItem">
                 <div class = "border p-3 d-flex justify-content-between align-items-center" id="address#variables.addressItem.addressId#">
@@ -107,6 +108,7 @@
                             id="phoneNumber" 
                             name="phoneNumber"
                             minlength="8"
+                            maxlength="15"
                             pattern="[0-9]{10}"
                             value="#variables.profileDetails.phone#"
                             required
@@ -182,7 +184,8 @@
                             class="form-control"  
                             name="phoneNumber"
                             minlength="8"
-                            pattern="[0-9]{10}"
+                            maxlength="15"
+                            pattern="[0-9-]"
                             required
                         >
                     </div>
@@ -193,6 +196,7 @@
                             class="form-control" 
                             name="pincode"
                             minlength="6"
+                            maxlength="6"
                             pattern="[0-9]{6}"
                             required
                         >

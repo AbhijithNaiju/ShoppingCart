@@ -11,8 +11,7 @@
     <cfelse>
         <cfset variables.addressError = "Please enter delivery address to continue">
     </cfif>
-</cfif>
-<cfif structKeyExists(form,"addAddress")>
+<cfelseif structKeyExists(form,"addAddress")>
     <cfset variables.addAddressResult = application.userObject.addAddress(
         userId = session.userId,
         formStruct = form
@@ -204,7 +203,7 @@
                                 <div class="col-6">
                                     <label for="" class="form-label">CVV</label>
                                     <input 
-                                        type="text" 
+                                        type="password" 
                                         class="form-control cardData" 
                                         name="cardCVV" 
                                         id="cardCVV" 
@@ -220,15 +219,6 @@
                                     </div>
                                 </div>
                                 <div class="text-center errorMessage m-2" id="cardError"></div>
-                                <div class="col-12 d-flex justify-content-end">
-                                    <button 
-                                        type = "button"
-                                        id="verifyCard" 
-                                        class = "btn btn-primary w-25"
-                                    >
-                                    Verify
-                                    </butoon>
-                                </div>
                                 <cfif variables.cartItems.recordCount AND arrayLen(variables.addressList)>
                                     <div class="col-12 d-flex justify-content-end">
                                         <button 
@@ -236,7 +226,6 @@
                                             class="btn btn-warning w-25" 
                                             name = "placeOrder"
                                             id="placeOrder"
-                                            disabled
                                         >
                                         Place Order
                                         </button>
