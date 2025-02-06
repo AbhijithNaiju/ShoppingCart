@@ -663,4 +663,53 @@
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
+
+    <cffunction name = "getOrderHistory" returntype = "query">
+        <cfargument name = "userId" type = "integer" required = "false">
+        <cfargument name = "orderId" type = "string" required = "false">
+        <cfquery name = "local.qryOrderHistory">
+            SELECT 
+                O.fldOrder_ID AS OrderID,
+                O.fldTotalPrice AS totalPrice,
+                O.fldTotalTax AS totalTax,
+                O.fldOrderDate AS orderDate,
+                OI.fldQuantity AS quantity,
+                OI.fldUnitPrice AS unitPrice,
+                OI.fldUnitTax AS unitTax,
+                P.fldProductName AS productName,
+                PI.fldImageFileName AS imageFileName,
+                B.fldBrandName AS brandName,
+                A.fldFirstName AS firstName,
+                A.fldLastName AS lastName,
+                A.fldAddressLine1 AS addressLine1,
+                A.fldAddressLine2 AS addressLine2,
+                A.fldCity AS city,
+                A.fldState AS state,
+                A.fldPincode AS pincode,
+                A.fldPhoneNumber AS phoneNumber
+            FROM
+                tblOrder O
+            INNER JOIN tblOrderItems OI ON OI.fldOrderId = O.fldOrder_ID
+            INNER JOIN tblAddress A ON A.fldAddress_ID = O.fldAddressId
+            INNER JOIN tblProduct P ON P.fldProduct_ID = OI.fldProductId
+            INNER JOIN tblBrands B ON B.fldBrand_ID = P.fldBrandId
+            INNER JOIN tblProductImages PI ON PI.fldproductId = P.fldProduct_ID AND PI.fldDefaultImage = 1
+            WHERE
+                <cfif structKeyExists(arguments, "userId")>
+                    O.fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+                <cfelseif structKeyExists(arguments, "orderId")>
+                    O.fldOrder_ID = <cfqueryparam value = "#arguments.orderId#" cfSqlType = "varchar">
+                </cfif>
+            ORDER BY
+                O.fldOrderDate
+        </cfquery>
+        <cfreturn local.qryOrderHistory>
+    </cffunction>
+
+    <cffunction name = "downloadInvoice" returntype = "struct" returnformat = "json" access = "remote">
+        <cfargument name = "orderId" type = "string" required = "true">
+        <cfset local.resultStruct = structNew()>
+        <cfset local.resultStruct["success"] = true>
+        <cfreturn local.resultStruct>
+    </cffunction>
 </cfcomponent>

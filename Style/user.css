@@ -352,6 +352,9 @@ body{
     position: sticky;
     top: 0;
 }
+.orderHistoryBody{
+    max-height: 85%;
+}
 .addressName{
     font-weight: bold;
 }
@@ -360,4 +363,32 @@ body{
 }
 .addressHeading{
     text-decoration: underline;
+}
+.orderSearch{
+    height: 70%;
+}
+.input-group .btn{
+    z-index: 0;
+}
+.addressDetails,.orderDate{
+    font-size: 12px;
+}
+.orderHistoryImage{
+    max-width: 50%;
+    max-height: 90%;
+}
+.orderItemProductName{
+    text-transform: uppercase;
+}
+.orderItemBrand,.orderItemQuantity{
+    font-size: 14px;
+}
+.orderItemProductName,.orderItemBrand,.orderItemQuantity{
+    text-overflow: ellipsis;
+}
+.orderHistoryPrice,.orderHistoryTax,.orderHistoryUnitTotal{
+    font-size: 14px;
+}
+.orderId{
+    font-size: 18px;
 }

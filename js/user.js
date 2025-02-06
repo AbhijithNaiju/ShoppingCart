@@ -1,4 +1,5 @@
 $(document).ready(function(){ 
+	
 	setHeader();
 	function setHeader(){
 		$.ajax({
@@ -140,6 +141,7 @@ $(document).ready(function(){
 		$("#addAddressModal").removeClass('profileEditModal');
 		$("#addAddressModal").addClass('displayNone');
 	});
+
 	$(".deleteAddress").click(function(){
 		const addressId=this.value;
 		if(confirm("This address will be deleted from your profile"))
@@ -171,6 +173,26 @@ $(document).ready(function(){
 		productId=this.value;
 		addToCart(productId,"order");
 		location.href="./orderPage.cfm"
+	})
+
+	$(".downloadInvoice").click(function(){
+		orderId=this.value;
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=downloadInvoice",
+			data:{orderId:orderId},
+			success: function(result) {
+				downloadResult=JSON.parse(result)
+				if(downloadResult.success){
+					alert()
+				}
+			}
+		});
+	})
+
+	var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+	var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+	  return new bootstrap.Tooltip(tooltipTriggerEl)
 	})
 });
 
