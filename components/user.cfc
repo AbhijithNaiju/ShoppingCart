@@ -667,12 +667,13 @@
     <cffunction name = "getOrderHistory" returntype = "query">
         <cfargument name = "userId" type = "integer" required = "false">
         <cfargument name = "orderId" type = "string" required = "false">
+        <cfargument name = "orderSearchId" type = "string" required = "false">
         <cfquery name = "local.qryOrderHistory">
             SELECT 
-                O.fldOrder_ID AS OrderID,
+                O.fldOrder_ID AS orderId,
                 O.fldTotalPrice AS totalPrice,
                 O.fldTotalTax AS totalTax,
-                O.fldOrderDate AS orderDate,
+                DATE_FORMAT(O.fldOrderDate, '%d/%m/%Y %l:%i %p') AS orderDate,
                 OI.fldQuantity AS quantity,
                 OI.fldUnitPrice AS unitPrice,
                 OI.fldUnitTax AS unitTax,
@@ -699,6 +700,12 @@
                     O.fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
                 <cfelseif structKeyExists(arguments, "orderId")>
                     O.fldOrder_ID = <cfqueryparam value = "#arguments.orderId#" cfSqlType = "varchar">
+                <cfelseif structKeyExists(arguments, "orderSearchId")>
+                    O.fldOrder_ID like <cfqueryparam value = "%#arguments.orderSearchId#%" cfSqlType = "varchar">
+                </cfif>
+                <cfif structKeyExists(arguments, "orderSearchId")>
+                    AND
+                    O.fldOrder_ID like <cfqueryparam value = "%#arguments.orderSearchId#%" cfSqlType = "varchar">
                 </cfif>
             ORDER BY
                 O.fldOrderDate
@@ -706,10 +713,4 @@
         <cfreturn local.qryOrderHistory>
     </cffunction>
 
-    <cffunction name = "downloadInvoice" returntype = "struct" returnformat = "json" access = "remote">
-        <cfargument name = "orderId" type = "string" required = "true">
-        <cfset local.resultStruct = structNew()>
-        <cfset local.resultStruct["success"] = true>
-        <cfreturn local.resultStruct>
-    </cffunction>
 </cfcomponent>

@@ -1,26 +1,53 @@
 <cfinclude  template="userHeader.cfm">
-
-<cfset variables.orderHistory=application.userObject.getOrderHistory(userId=session.userId)>
+<cfif structKeyExists(form, "orderSearchButton") AND len(trim(form.orderSearchId))>
+    <cfset variables.orderHistory=application.userObject.getOrderHistory(
+        userId=session.userId,
+        orderSearchId=form.orderSearchId
+    )>
+<cfelse>
+    <cfset variables.orderHistory=application.userObject.getOrderHistory(userId=session.userId)>
+</cfif>
 <cfoutput>
     <div class="container overflow-scroll orderHistoryBody">
         <div class="d-flex justify-content-between align-items-center bg-white">
-            <h2>Order History</h2>
-            <div class="input-group w-50 orderSearch" action="productlisting.cfm">
+            <h2>
+                <cfif structKeyExists(form, "orderSearchButton") AND len(trim(form.orderSearchId))>
+                    Search result for "#form.orderSearchId#"
+                <cfelse>
+                    Order History
+                </cfif>
+            </h2>
+            <form class="input-group w-50 orderSearch" method="post">
                 <input 
                     type="text" 
                     class="form-control form-control-sm" 
-                    name="searchValue" 
+                    name="orderSearchId" 
                     placeholder="" 
                     aria-label="Search" 
                     aria-describedby="basic-addon2"
-                    required
+                    id="orderSearchId"
+                    <cfif structKeyExists(form,"orderSearchId")>
+                        value="#form.orderSearchId#"
+                    </cfif>
                 >
                 <div class="input-group-append">
-                    <button class="btn btn-outline-success h-100" type="submit">Search</button>
+                    <button 
+                        class="btn btn-outline-success h-100" 
+                        id="orderSearchButton" 
+                        type="submit"
+                        name = "orderSearchButton"
+                    >
+                        Search
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
-        <div class = "d-flex flex-column">
+        <cfif variables.orderHistory.recordCount EQ 0>
+            <div class="text-center my-2">
+                <h3>No order found</h3>
+            </div>
+        </cfif>
+        <div class = "d-flex flex-column" id="orderListingBody">
             <cfloop query="variables.orderHistory" group="orderId">
                 <div class = "border d-flex flex-column my-2">
                     <div class = "d-flex justify-content-between align-items-center px-2 w-100 bg-success-subtle">
@@ -90,7 +117,9 @@
                                 #variables.orderHistory.firstName & ' ' & variables.orderHistory.lastName#
                             </span>
                             <span>
-                                #variables.orderHistory.addressLine1 & ' ' & variables.orderHistory.addressLine2 & ' ' & variables.orderHistory.city#
+                                #variables.orderHistory.addressLine1 & ', '# 
+                                #variables.orderHistory.addressLine2 & ', '#
+                                #variables.orderHistory.city#
                                 #variables.orderHistory.state & ' - ' & variables.orderHistory.pincode#
                             </span>
                             <span>Phone : #variables.orderHistory.phoneNumber#</span>
@@ -106,7 +135,7 @@
                             </div>
                             <span class="orderDate"> 
                                 Ordered on : 
-                                #dateTimeFormat(variables.orderHistory.orderDate.toString(),"dd/mm/yyyy hh:mm tt")#
+                                #variables.orderHistory.orderDate#
                             </span>
                         </div>
                     </div>

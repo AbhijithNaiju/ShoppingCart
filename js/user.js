@@ -144,20 +144,19 @@ $(document).ready(function(){
 
 	$(".deleteAddress").click(function(){
 		const addressId=this.value;
-		if(confirm("This address will be deleted from your profile"))
-			{
-				$.ajax({
-					type:"POST",
-					url:"components/user.cfc?method=deleteAddress",
-					data:{addressId:addressId},
-					success: function(result) {
-						logOutResult=JSON.parse(result)
-						if(logOutResult.success){
-							$("#address"+addressId).remove();
-						}
+		if(confirm("This address will be deleted from your profile")){
+			$.ajax({
+				type:"POST",
+				url:"components/user.cfc?method=deleteAddress",
+				data:{addressId:addressId},
+				success: function(result) {
+					logOutResult=JSON.parse(result)
+					if(logOutResult.success){
+						$("#address"+addressId).remove();
 					}
-				});
-			}
+				}
+			});
+		}
 	});
 
 	$(".orderAddress").change(function(){
@@ -174,22 +173,7 @@ $(document).ready(function(){
 		addToCart(productId,"order");
 		location.href="./orderPage.cfm"
 	})
-
-	$(".downloadInvoice").click(function(){
-		orderId=this.value;
-		$.ajax({
-			type:"POST",
-			url:"components/user.cfc?method=downloadInvoice",
-			data:{orderId:orderId},
-			success: function(result) {
-				downloadResult=JSON.parse(result)
-				if(downloadResult.success){
-					alert()
-				}
-			}
-		});
-	})
-
+	
 	var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 	var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 	  return new bootstrap.Tooltip(tooltipTriggerEl)
