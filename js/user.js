@@ -16,10 +16,10 @@ $(document).ready(function(){
 		});
 	}
 
+	// Used to uncheck redio when min max input fields are used
 	$('.filterInput').click(function(){
 		$('[name=filterRadio]').prop('checked',false);
 	});
-
 
 	$('.removeButton').click(function(){
 		const cartId = $(this).val();
@@ -67,13 +67,13 @@ $(document).ready(function(){
 		});
 	});
 	
-	// Setting reduce buttons disabled if quantity is 1
+	// Setting reduce quantity buttons disabled if quantity is 1
 	$(function() {
 		if($(".cartQuantity")){
 			quantityItems = $(".cartQuantity");
 			for(let element of quantityItems){
 				if($(element).val()==1){
-					$(element).prev().prop("disabled",true);
+					$(element).prev().prop("disabled",true); // Only single line of code is reusable
 				}
 			};
 		}
@@ -131,6 +131,8 @@ $(document).ready(function(){
 					logOutResult=JSON.parse(result)
 					if(logOutResult.success){
 						$("#address"+addressId).remove();
+					}else{
+						alert("Error occured while deleting")
 					}
 				}
 			});

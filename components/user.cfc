@@ -18,7 +18,7 @@
             AND 
             len(trim(arguments.phoneNumber))
             AND
-            len(trim(arguments.password) GT 8)
+            len(trim(arguments.password)) GTE 8
         >
             <cfquery name="local.isEmailExist">
                 SELECT
@@ -35,7 +35,7 @@
                 <cfset local.structResult["error"] = "Email or phone number already exists">
             <cfelse>
                 <cfset local.saltString = generateSecretKey("AES")>
-                <cfset local.hashedPassword =hash(arguments.password & local.saltString,'SHA-512', 'utf-8', 125)>
+                <cfset local.hashedPassword = hash(arguments.password & local.saltString,'SHA-512', 'utf-8', 125)>
                 <cfquery result="local.signUpresult">
                     INSERT INTO
                         tbluser(
@@ -60,7 +60,11 @@
                 <cfset session.userId = local.signUpresult.generatedKey>
             </cfif>
         <cfelse>
-            <cfset local.structResult["error"] = "Please fill all the fields">
+            <cfif len(trim(arguments.password)) LT 8>
+                <cfset local.structResult["error"] = "Password needs to be atleast 8 characters long">
+            <cfelse>
+                <cfset local.structResult["error"] = "Please fill all the fields">
+            </cfif>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>
@@ -137,9 +141,37 @@
         <cfreturn local.getAllSubcategories>
     </cffunction>
     
-    <!--- get products from categoryid/get random 10 products --->
+    <!--- get 10 random products --->
+    <cffunction name = "getRandomProducts" returntype = "query">
+        <cfquery  name = "local.getRandomProducts">
+            SELECT 
+                P.fldProduct_ID AS productId,
+                P.fldproductName AS productName,
+                P.fldPrice AS productPrice,
+                P.fldTax AS productTax,
+                B.fldBrandName AS brandName,
+                PI.fldImageFileName AS imageFileName,
+                SC.fldSubcategory_ID AS subcategoryId,
+                SC.fldSubcategoryName AS subcategoryName,
+                C.fldCategoryName AS categoryName
+            FROM
+                tblCategory C
+            INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
+            INNER JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
+            INNER JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
+            WHERE
+                C.fldActive = 1
+            ORDER BY
+                RAND()
+            LIMIT 10
+        </cfquery>
+        <cfreturn local.getRandomProducts>
+    </cffunction>
+
+    <!--- Get products from categoryid --->
     <cffunction name = "getCategoryProducts" returntype = "query">
-        <cfargument  name = "categoryId" type = "integer" required = "false">
+        <cfargument  name = "categoryId" type = "integer" required = "true">
         <cfquery  name = "local.getCategoryProducts">
             SELECT 
                 P.fldProduct_ID AS productId,
@@ -154,27 +186,16 @@
             FROM
                 tblCategory C
             INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
-            <cfif structKeyExists(arguments,"categoryId")>
-                LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
-            <cfelse>
-                INNER JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
-            </cfif>
+            LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
             LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
                 C.fldActive=1
-                <cfif structKeyExists(arguments, "categoryId")>
-                    AND
-                    C.fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
-                </cfif>
+                AND
+                C.fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
             ORDER BY
-            <cfif structKeyExists(arguments,"categoryId")>
                 fldSubcategory_ID,
                 RAND()
-            <cfelse>
-                RAND()
-                LIMIT 10
-            </cfif>
         </cfquery>
         <cfreturn local.getCategoryProducts>
     </cffunction>
@@ -409,11 +430,11 @@
             WHERE
                 fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
         </cfquery>
-        <cfset local.resultStruct["success"] = true>
+        <cfset local.resultStruct["Cuccess"] = true>
         <cfreturn local.resultStruct>
     </cffunction>
     <!--- Get items in cart --->
-    <cffunction name = "getcartItems" returntype = "query">
+    <cffunction name = "getCartItems" returntype = "query">
         <cfargument name = "userId" type = "integer" required = "true">
         <cfquery name = "local.cartItems">
             SELECT
@@ -612,7 +633,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
-    <cffunction name = "verifyCard" returntype = "struct" returnformat = "json" access = "remote">
+    <cffunction name = "verifyCard" returntype = "struct">
         <cfargument name = "cardNumber" type = "numeric" required = "true">
         <cfargument name = "cardCVV" type = "numeric" required = "true">
 

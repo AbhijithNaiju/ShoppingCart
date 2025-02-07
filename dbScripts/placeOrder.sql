@@ -13,10 +13,9 @@ placeOrder:BEGIN
 	DECLARE unitPrice DECIMAL(10, 2);
 	DECLARE unitTax DECIMAL(10, 2);
 
-
 	SELECT
-		SUM(C.fldQuantity * p.fldPrice),
-		SUM(C.fldQuantity * p.fldtax)
+		SUM(C.fldQuantity * P.fldPrice),
+		SUM(C.fldQuantity * P.fldtax)
 	INTO
 		totalPrice,
 		totalTax
