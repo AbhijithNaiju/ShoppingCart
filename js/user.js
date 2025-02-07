@@ -96,6 +96,8 @@ $(document).ready(function(){
 		$("#profileModal").removeClass('profileEditModal');
 		$("#profileEditBody").addClass('displayNone');
 		$("#addAddressBody").addClass('displayNone');
+		$("#updateProfileError").text('');
+		$("#updateProfileSuccess").text('');
 	});
 
 	$("#changeAddress").click(function(){
@@ -148,6 +150,40 @@ $(document).ready(function(){
 		productId=this.value;
 		addToCart(productId,"order");
 		location.href="./orderPage.cfm"
+	})
+
+	$("#editProfileForm").submit(function(){
+		let firstName= $("#firstName").val();
+		let lastName= $("#lastName").val();
+		let emailId= $("#emailId").val();
+		let phoneNumber= $("#phoneNumber").val();
+		let userId= $("#editProfile").val();
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=updateProfile",
+			data:{
+				userId:userId,
+				firstName:firstName,
+				lastName:lastName,
+				emailId:emailId,
+				phoneNumber:phoneNumber
+			},
+			success: function(result) {
+				editProfileResult=JSON.parse(result)
+				if(editProfileResult.success){
+
+					$("#profileName").text(firstName +' '+lastName);
+					$("#profileEmail").text(emailId);
+
+					$("#updateProfileSuccess").text("Profile edited successfully");
+					$("#updateProfileError").text("");
+				}else if(editProfileResult.error){
+					$("#updateProfileError").text(editProfileResult.error);
+					$("#updateProfileSuccess").text("");
+				}
+			}
+		});
+		return false;
 	})
 });
 

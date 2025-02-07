@@ -493,21 +493,24 @@
         <cfreturn local.qryaddressList.resultSet>
     </cffunction>
 
-    <cffunction name = "updateProfile" returntype = "struct">
+    <cffunction name = "updateProfile" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument name = "userId" type = "integer" required = "true">
-        <cfargument name = "formStruct" type = "struct" required = "true">
+        <cfargument name = "firstName" type = "string" required = "true">
+        <cfargument name = "lastName" type = "string" required = "true">
+        <cfargument name = "emailId" type = "string" required = "true">
+        <cfargument name = "phoneNumber" type = "string" required = "true">
         <cfset local.resultStruct = structNew()>
 
         <cfif 
-            len(trim(arguments.formStruct.firstName))
+            len(trim(arguments.firstName))
             AND 
-            len(trim(arguments.formStruct.lastName))
+            len(trim(arguments.lastName))
             AND 
-            len(trim(arguments.formStruct.emailId))
+            len(trim(arguments.emailId))
             AND 
-            isValid("email", arguments.formStruct.emailId)
+            isValid("email", arguments.emailId)
             AND
-            len(trim(arguments.formStruct.phoneNumber))
+            len(trim(arguments.phoneNumber))
         >
             <cfquery name="local.isEmailExist">
                 SELECT
@@ -515,7 +518,7 @@
                 FROM
                     tbluser
                 WHERE 
-                    fldemail = <cfqueryparam value = "#arguments.formStruct.emailId#" cfSqlType= "varchar">
+                    fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
                     AND
                     NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
             </cfquery>
@@ -527,10 +530,10 @@
                     UPDATE
                         tbluser
                     SET
-                        fldFirstName = <cfqueryparam value = '#arguments.formStruct.firstName#' cfsqltype = "varchar">,
-                        fldLastName = <cfqueryparam value = '#arguments.formStruct.lastName#' cfsqltype = "varchar">,
-                        fldPhone = <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">,
-                        fldEmail = <cfqueryparam value = '#arguments.formStruct.emailId#' cfsqltype = "varchar">
+                        fldFirstName = <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
+                        fldLastName = <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
+                        fldPhone = <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
+                        fldEmail = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">
                     WHERE 
                         flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
                 </cfquery>
@@ -553,8 +556,6 @@
             len(trim(arguments.formStruct.lastName))
             AND 
             len(trim(arguments.formStruct.addressLine1))
-            AND 
-            len(trim(arguments.formStruct.addressLine2))
             AND 
             len(trim(arguments.formStruct.city))
             AND 

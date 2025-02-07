@@ -1,11 +1,5 @@
 <cfinclude  template="userHeader.cfm">
 
-<cfif structKeyExists(form,"editProfile")>
-    <cfset variables.editProfileResult = application.userObject.updateProfile(
-        userId = session.userId,
-        formStruct = form
-    )>
-</cfif>
 <cfif structKeyExists(form,"addAddress")>
     <cfset variables.addAddressResult = application.userObject.addAddress(
         userId = session.userId,
@@ -19,20 +13,17 @@
         <div class="profileHeader d-flex justify-content-between align-items-center mx-2">
             <div class="profileDetails">
                 Hello,
-                <span class="m-1 profileName">
+                <span class="m-1 profileName" id="profileName">
                     #variables.profileDetails.firstName & ' ' & variables.profileDetails.LastName#
                 </span>
-                <p>#variables.profileDetails.email#</p>
+                <p id="profileEmail">#variables.profileDetails.email#</p>
             </div>
             <button class="btn btn-primary btn-sm" id="openProfileEdit">Edit</button>
         </div>
-        <cfif structKeyExists(variables,"editProfileResult") and structKeyExists(variables.editProfileResult, "error")>
-            <div class = "text-center errorMessage">#variables.editProfileResult.error#</div>
-        </cfif>
         <cfif structKeyExists(variables,"addAddressResult") and structKeyExists(variables.addAddressResult, "error")>
             <div class = "text-center errorMessage">#variables.addAddressResult.error#</div>
         </cfif>
-        <h2 class = "addressHeading">Addresses</h2>
+        <h2>Addresses</h2>
         <div class="addressBody border overflow-scroll">
             <cfloop array="#variables.addressList#" item="variables.addressItem">
                 <div class = "border p-3 d-flex justify-content-between align-items-center" id="address#variables.addressItem.addressId#">
@@ -65,10 +56,10 @@
     </div>
     <div id="profileModal" class="displayNone">
         <div class="displayNone" id="profileEditBody">
-            <form class="profileModalBody" method="post">
+            <form class="profileModalBody" id="editProfileForm" method="post">
                 <div class="m-4">
                     <div class="form-group my-2">
-                        <label for="firstName">First Name</label>
+                        <label for="firstName">First Name *</label>
                     <input 
                         type="text" 
                         class="form-control" 
@@ -79,7 +70,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="lastName">Last Name</label>
+                        <label for="lastName">Last Name *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -90,7 +81,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="emailId">Email Address</label>
+                        <label for="emailId">Email Address *</label>
                         <input 
                             type="email" 
                             class="form-control" 
@@ -101,7 +92,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="phoneNumber">Phone Number</label>
+                        <label for="phoneNumber">Phone Number *</label>
                         <input 
                             type="tel" 
                             class="form-control" 
@@ -115,9 +106,19 @@
                         >
                     </div>
                 </div>
+                <div class = "text-center errorMessage" id="updateProfileError"></div>
+                <div class = "text-center text-success" id="updateProfileSuccess"></div>
                 <div class="editFooter w-100 d-flex">
-                    <button type="reset" class="btn btn-secondary m-2 w-50 closeProfileEdit">Close</button>
-                    <button type="submit" name="editProfile" class="btn btn-primary m-2 w-50">Edit</button>
+                    <button type="button" class="btn btn-secondary m-2 w-50 closeProfileEdit">Close</button>
+                    <button 
+                        type="submit" 
+                        id="editProfile" 
+                        value="#session.userId#" 
+                        name="editProfile" 
+                        class="btn btn-primary m-2 w-50"
+                    >
+                        Edit
+                    </button>
                 </div>
             </form>
         </div>
@@ -125,7 +126,7 @@
             <form method="post" class = "profileModalBody overflow-scroll">
                 <div class="m-4">
                     <div class="form-group my-2">
-                        <label for="">First Name</label>
+                        <label for="">First Name *</label>
                     <input 
                         type="text" 
                         class="form-control" 
@@ -134,7 +135,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Last Name</label>
+                        <label for="">Last Name *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -143,7 +144,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Address Line 1</label>
+                        <label for="">Address Line 1 *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -152,7 +153,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Address Line 2</label>
+                        <label for="">Address Line 2 *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -160,7 +161,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">City</label>
+                        <label for="">City *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -169,7 +170,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">State</label>
+                        <label for="">State *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -178,7 +179,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Phone Number</label>
+                        <label for="">Phone Number *</label>
                         <input 
                             type="tel" 
                             class="form-control"  
@@ -190,7 +191,7 @@
                         >
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Pincode</label>
+                        <label for="">Pincode *</label>
                         <input 
                             type="tel" 
                             class="form-control" 
