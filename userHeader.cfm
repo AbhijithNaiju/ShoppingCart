@@ -33,17 +33,26 @@
                     </form>
                 </div>
                 <div class="menuButtons">
-                    <button id="profileBtn">
+                    <a 
+                        id="profileBtn"
+                        href="./profilePage.cfm"
+                    >
                         Profile
-                    </button>
+                    </a>
                     <div class="cartButton">
-                        <button id="cartBtn">
+                        <a 
+                            id="cartBtn"
+                            href="./cartPage.cfm"
+                        >
                             Cart
-                        </button>
+                        </a>
                         <span class="badge" id="cartCount"></span>
                     </div>
-                    <button  id="logOutBtn">
-                        Login
+                    <button  
+                        id="logOutBtn"
+                        onclick="logOut()"
+                    >
+                        Logout
                     </button>
                 </div>
             </cfif> 

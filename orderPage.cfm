@@ -18,7 +18,10 @@
     )>
 </cfif>
 <cfset variables.cartItems=application.userObject.getCartItems(userId=session.userId)>
-<cfset variables.addressList=application.userObject.getAddressListDetails(userId=session.userId)>
+<cfset variables.addressList=application.userObject.getAddressList(userId=session.userId)>
+<cfset variables.actualPrice = 0>
+<cfset variables.totalTax = 0>
+<cfset variables.totalPrice = 0>
 <cfif variables.cartItems.recordCount>
     <cfoutput>
     <form method="post" class="orderBody container h-100 overflow-scroll">
@@ -145,6 +148,8 @@
                                     </button>
                                 </div>
                             </div>
+                            <cfset variables.actualPrice +=variables.cartItems.price*variables.cartItems.quantity>
+                            <cfset variables.totalTax += variables.cartItems.tax*variables.cartItems.quantity>
                         </cfloop>
                     </div>
                     <div class="my-1">
@@ -154,14 +159,14 @@
                                     <span class="col-6">Actual Price</span>
                                     <div  class="col-6 text-end">
                                         <i class="fa-solid fa-indian-rupee-sign"></i>
-                                        <span id="actualPrice"></span>
+                                        <span id="actualPrice">#variables.actualPrice#</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <span  class="col-6">Total Tax</span>
                                     <div  class="col-6 text-end">
                                         <i class="fa-solid fa-indian-rupee-sign"></i>
-                                        <span id="totalTax"></span>
+                                        <span id="totalTax">#variables.totalTax#</span>
                                     </div>
                                 </div>
                             </div>
@@ -169,7 +174,7 @@
                                 <span  class="col-6">Total Price</span>
                                 <div  class="col-6 text-end">
                                     <i class="fa-solid fa-indian-rupee-sign"></i>
-                                    <span id="totalPrice"></span>
+                                    <span id="totalPrice">#variables.actualPrice + variables.totalTax#</span>
                                 </div>
                             </span>
                         </div>

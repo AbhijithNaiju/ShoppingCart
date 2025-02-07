@@ -1,18 +1,14 @@
 $(document).ready(function(){ 
-	setHeader();
-	function setHeader(){
+	setCartCount();
+	function setCartCount(){
 		$.ajax({
 			type:"POST",
 			url:"components/user.cfc?method=headerDetails",
 			success: function(result) {
 				headerDetails=JSON.parse(result)
 				if(headerDetails.sessionExist){
-					$("#cartCount").show()
-					$("#cartCount").text(headerDetails.cartCount)
-					$("#logOutBtn").text("Logout")
-					$("#cartBtn").attr('onclick','location.href="cartPage.cfm"')
-					$("#logOutBtn").attr('onclick','logOut()')
-					$("#profileBtn").attr('onclick','location.href="profilePage.cfm"');
+					$("#cartCount").show();
+					$("#cartCount").text(headerDetails.cartCount);
 				}else{
 					emptyHeader();
 				}
@@ -34,7 +30,6 @@ $(document).ready(function(){
 			success: function(result) {
 				cartDeleteResult=JSON.parse(result)
 				if(cartDeleteResult.success){
-
 					// updating total price
 					cartItem = $("#cartItem"+cartId)
 					itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
@@ -63,8 +58,7 @@ $(document).ready(function(){
 						$("#placeOrder").remove();
 						// Showing message to goto home
 						alert("No products remaining in cart, add products to continue.")
-						location.href="./index.cfm"
-						
+						location.href="./index.cfm"	
 					}
 				}else{
 					alert("Error occured")
@@ -72,32 +66,10 @@ $(document).ready(function(){
 			}
 		});
 	});
-	$(function() {
-		if($(".cartItem"))
-		{
-			let actualPrice = 0.00;
-			let totalTax = 0.00;
-			let totalPrice = 0.00;
-			cartItems = $(".cartItem");
-			for(let element of cartItems){
-				itemPrice = parseFloat($(element).find(".itemPrice").text());
-				itemTax = parseFloat($(element).find(".itemTax").text());
-				itemQuantity = parseInt($(element).find(".cartQuantity").val());
-				actualPrice += itemPrice*itemQuantity
-				totalTax += itemTax*itemQuantity
-			}
-			totalPrice = (actualPrice+totalTax).toFixed(2);
-
-			$('#actualPrice').text(actualPrice.toFixed(2))
-			$('#totalTax').text(totalTax.toFixed(2))
-			$('#totalPrice').text(totalPrice)
-		}
-	});
 	
 	// Setting reduce buttons disabled if quantity is 1
 	$(function() {
-		if($(".cartQuantity"))
-		{
+		if($(".cartQuantity")){
 			quantityItems = $(".cartQuantity");
 			for(let element of quantityItems){
 				if($(element).val()==1){
@@ -106,16 +78,19 @@ $(document).ready(function(){
 			};
 		}
 	});
+
 	$("#openProfileEdit").click(function(){
 		$("#profileModal").addClass('profileEditModal');
 		$("#profileModal").removeClass('displayNone');
 		$("#profileEditBody").removeClass('displayNone');
 	});
+
 	$("#addAddress").click(function(){
 		$("#profileModal").addClass('profileEditModal');
 		$("#profileModal").removeClass('displayNone');
 		$("#addAddressBody").removeClass('displayNone');
 	});
+
 	$(".closeProfileEdit").click(function(){
 		$("#profileModal").addClass('displayNone');
 		$("#profileModal").removeClass('profileEditModal');
@@ -127,6 +102,7 @@ $(document).ready(function(){
 		$("#selectAddressModal").addClass('profileEditModal');
 		$("#selectAddressModal").removeClass('displayNone');
 	});
+
 	$("#closeSelectAddress").click(function(){
 		$("#selectAddressModal").removeClass('profileEditModal');
 		$("#selectAddressModal").addClass('displayNone');
@@ -136,26 +112,27 @@ $(document).ready(function(){
 		$("#addAddressModal").addClass('profileEditModal');
 		$("#addAddressModal").removeClass('displayNone');
 	});
+
 	$("#closeAddAddress").click(function(){
 		$("#addAddressModal").removeClass('profileEditModal');
 		$("#addAddressModal").addClass('displayNone');
 	});
+
 	$(".deleteAddress").click(function(){
 		const addressId=this.value;
-		if(confirm("This address will be deleted from your profile"))
-			{
-				$.ajax({
-					type:"POST",
-					url:"components/user.cfc?method=deleteAddress",
-					data:{addressId:addressId},
-					success: function(result) {
-						logOutResult=JSON.parse(result)
-						if(logOutResult.success){
-							$("#address"+addressId).remove();
-						}
+		if(confirm("This address will be deleted from your profile")){
+			$.ajax({
+				type:"POST",
+				url:"components/user.cfc?method=deleteAddress",
+				data:{addressId:addressId},
+				success: function(result) {
+					logOutResult=JSON.parse(result)
+					if(logOutResult.success){
+						$("#address"+addressId).remove();
 					}
-				});
-			}
+				}
+			});
+		}
 	});
 
 	$(".orderAddress").change(function(){
@@ -177,22 +154,19 @@ $(document).ready(function(){
 function emptyHeader(){
 	$("#logOutBtn").text("Login")
 	$("#cartCount").hide()
-	$("#cartBtn").attr('onclick','location.href = "login.cfm?redirect=cart"')
-	$("#profileBtn").attr('onclick','location.href = "login.cfm?redirect=profilePage"')
+	$("#cartBtn").attr('href',"login.cfm?redirect=cart")
+	$("#profileBtn").attr('href', "login.cfm?redirect=profilePage")
 	$("#logOutBtn").attr('onclick','location.href = "login.cfm"')
 }
 
 function logOut(){
-	if(confirm("You will log out of this page and need to authenticate again to login"))
-	{
+	if(confirm("You will log out of this page and need to authenticate again to login")){
 		$.ajax({
 			type:"POST",
 			url:"components/user.cfc?method=logOut",
 			success: function(result) {
 				logOutResult=JSON.parse(result)
 				if(logOutResult.success){
-					// emptyHeader();
-					// $("#productMessages").text("")
 					location.reload();
 				}
 			}
@@ -246,8 +220,7 @@ function filterProducts(currentData){
 					listProducts(productList.resultArray)
 				}else{
 					$('#listingMessage').text("No products Found");
-				}
-				
+				}	
 			}
 		});
 		$(".dropdown-toggle").dropdown('toggle');

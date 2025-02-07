@@ -54,9 +54,10 @@
                             #variables.productDetails[1].description#
     
                         </div>
-                        <div class = " my-2" >
+                        <div class = " my-2 d-flex flex-column" >
+                            <b>Product Price :</b>
                             <span 
-                                class="price" 
+                                class="price m-2" 
                                 title="#variables.productDetails[1].productPrice# + #variables.productDetails[1].productTax#"
                             >
                                 <i class="fa-solid fa-indian-rupee-sign"></i> 

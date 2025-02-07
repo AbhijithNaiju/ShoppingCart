@@ -28,11 +28,11 @@
                 WHERE 
                     fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
                     OR
-                    fldPhone = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
+                    fldPhone = <cfqueryparam value = "#arguments.phoneNumber#" cfSqlType= "varchar">
             </cfquery>
 
             <cfif local.isEmailExist.recordCount>
-                <cfset local.structResult["error"] = "Email already exists">
+                <cfset local.structResult["error"] = "Email or phone number already exists">
             <cfelse>
                 <cfset local.saltString = generateSecretKey("AES")>
                 <cfset local.hashedPassword =hash(arguments.password & local.saltString,'SHA-512', 'utf-8', 125)>
@@ -131,6 +131,8 @@
             INNER JOIN tblSubCategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
             WHERE
                 C.fldActive=1
+            ORDER BY
+                C.fldCategory_id
         </cfquery>
         <cfreturn local.getAllSubcategories>
     </cffunction>
@@ -467,7 +469,7 @@
     </cffunction>
 
     <!--- Get address list of user --->
-    <cffunction name = "getAddressListDetails" returntype = "array">
+    <cffunction name = "getAddressList" returntype = "array">
         <cfargument name = "userId" type = "integer" required = "true">
         <cfquery name = "local.qryaddressList" returntype = "struct">
             SELECT

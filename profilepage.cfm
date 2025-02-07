@@ -13,7 +13,7 @@
     )>
 </cfif>
 <cfset variables.profileDetails=application.userObject.getProfileDetails(userId=session.userId)>
-<cfset variables.addressList=application.userObject.getAddressListDetails(userId=session.userId)>
+<cfset variables.addressList=application.userObject.getAddressList(userId=session.userId)>
 <cfoutput>
     <div class="profileBody container border w-50 h-100 d-flex flex-column">
         <div class="profileHeader d-flex justify-content-between align-items-center mx-2">
