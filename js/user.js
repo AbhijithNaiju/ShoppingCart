@@ -1,4 +1,5 @@
 $(document).ready(function(){ 
+	
 	setCartCount();
 	function setCartCount(){
 		$.ajax({
@@ -186,6 +187,26 @@ $(document).ready(function(){
 			}
 		});
 		return false;
+	})
+  
+  	$(".downloadInvoice").click(function(){
+		orderId=this.value;
+		$.ajax({
+			type:"POST",
+			url:"components/user.cfc?method=downloadInvoice",
+			data:{orderId:orderId},
+			success: function(result) {
+				downloadResult=JSON.parse(result)
+				if(downloadResult.success){
+					alert()
+				}
+			}
+		});
+	})
+
+	var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+	var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+	  return new bootstrap.Tooltip(tooltipTriggerEl)
 	})
 });
 
