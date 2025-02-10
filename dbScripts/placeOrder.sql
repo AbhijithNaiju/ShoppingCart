@@ -32,46 +32,46 @@ placeOrder:BEGIN
 
 	START TRANSACTION;
 
-	INSERT INTO
-		tblOrder(
-			fldOrder_ID,
-			fldUserId,
-			fldAddressId,
-			fldTotalPrice,
-			fldTotalTax,
-			fldCardPart
-		)VALUES(
-			orderId,
-			userId,
-			addressId,
-			totalPrice,
-			totalTax,
-			cardPart
-	);
+		INSERT INTO
+			tblOrder(
+				fldOrder_ID,
+				fldUserId,
+				fldAddressId,
+				fldTotalPrice,
+				fldTotalTax,
+				fldCardPart
+			)VALUES(
+				orderId,
+				userId,
+				addressId,
+				totalPrice,
+				totalTax,
+				cardPart
+		);
 
-	INSERT INTO
-		tblorderitems(
-			fldOrderId,
-			fldProductId,
-			fldQuantity,
-			fldUnitPrice,
-			fldUnitTax
-		)SELECT
-			orderId,
-			C.fldProductId,
-			C.fldQuantity,
-			P.fldPrice,
-			P.fldTax
-		FROM
-			tblCart C
-		INNER JOIN tblProduct P ON P.fldProduct_ID = C.fldProductId AND P.fldActive = 1
+		INSERT INTO
+			tblorderitems(
+				fldOrderId,
+				fldProductId,
+				fldQuantity,
+				fldUnitPrice,
+				fldUnitTax
+			)SELECT
+				orderId,
+				C.fldProductId,
+				C.fldQuantity,
+				P.fldPrice,
+				P.fldTax
+			FROM
+				tblCart C
+			INNER JOIN tblProduct P ON P.fldProduct_ID = C.fldProductId AND P.fldActive = 1
+			WHERE
+				C.fldUserId = userId;
+
+		DELETE FROM
+			tblCart
 		WHERE
-			C.fldUserId = userId;
-
-	DELETE FROM
-		tblCart
-	WHERE
-		fldUserId = userId;
+			fldUserId = userId;
 
 	COMMIT;
 END

@@ -206,7 +206,7 @@
             <cfset local.resultStruct["sessionExist"] = true>
             <cfquery  name = "local.getCartCount">
                 SELECT 
-                    count(fldCart_ID) AS cartCount
+                    COUNT(fldCart_ID) AS cartCount
                 FROM
                     tblCart
                 WHERE
@@ -327,6 +327,7 @@
             <cfset local.resultStruct["productCount"] = local.totalProducts.productCount>
         </cfif>
         <cfset local.resultStruct["resultArray"] = local.getProducts.resultSet>
+        <cfset local.resultStruct["success"] = true>
         <cfreturn local.resultStruct>
     </cffunction>
 
@@ -370,8 +371,7 @@
             <!--- checking whether product already in the cart --->
             <cfquery  name = "local.isProductExist">
                 SELECT 
-                    fldCart_ID,
-                    fldQuantity
+                    fldCart_ID
                 FROM 
                     tblCart
                 WHERE
@@ -405,8 +405,8 @@
                         );
                 </cfquery>
                 <cfset local.resultStruct["increasedItemCount"] = 1>
-                <cfset local.resultStruct["success"] = true>
             </cfif>
+            <cfset local.resultStruct["success"] = true>
         <cfelse>
             <!--- user is not loged in --->
             <cfset local.resultStruct["redirect"] = true>
@@ -418,19 +418,31 @@
         <cfargument name = "cartId" type = "integer" required = "true">
         <cfargument name = "quantityChange" type = "integer" required = "true">
         <cfset local.resultStruct = structNew()>
-        <cfquery>
-            UPDATE 
+        <cfquery name = "local.getCartItemQuantity">
+            SELECT
+                COUNT(*) AS cartItemQuantity
+            FROM 
                 tblCart
-            SET
-                <cfif arguments.quantityChange EQ 1>
-                    fldQuantity=fldQuantity+1
-                <cfelseif arguments.quantityChange EQ -1>
-                    fldQuantity=fldQuantity-1
-                </cfif>
-            WHERE
-                fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+            WHERE 
+                fldCart_id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">;
         </cfquery>
-        <cfset local.resultStruct["Cuccess"] = true>
+        <cfif local.getCartItemQuantity.cartItemQuantity EQ 1 AND arguments.quantityChange EQ -1>
+            <cfset local.resultStruct["error"] = "Unable to set quatity to 0">
+        <cfelse>
+            <cfquery>
+                UPDATE 
+                    tblCart
+                SET
+                    <cfif arguments.quantityChange EQ 1>
+                        fldQuantity=fldQuantity+1
+                    <cfelseif arguments.quantityChange EQ -1>
+                        fldQuantity=fldQuantity-1
+                    </cfif>
+                WHERE
+                    fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+            </cfquery>
+            <cfset local.resultStruct["success"] = true>
+        </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
     <!--- Get items in cart --->
@@ -465,7 +477,16 @@
             WHERE 
                 fldCart_ID = <cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
         </cfquery>
+        <cfquery name = "local.getCartCount">
+            SELECT
+                count(*) AS cartCount
+            FROM
+                tblcart
+            WHERE 
+                fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+        </cfquery>
         <cfset local.structResult["success"] = true>
+        <cfset local.structResult["cartCount"] = local.getCartCount.cartCount>
         <cfreturn local.structResult>
     </cffunction>
 
@@ -657,29 +678,54 @@
         <cfif structKeyExists(local.verifyCardResult, "success")>
             <cfset local.UUID = createUUID()>
             <cfset local.cardLastFour = right(arguments.cardNumber, 4)>
-            <cfquery name = "local.placeOrder">
-                CALL placeOrder(
-                    <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">,
-                    <cfqueryparam value = "#arguments.orderAddressId#" cfSqlType = "integer">,
-                    <cfqueryparam value = "#local.cardLastFour#" cfSqlType = "integer">,
-                    <cfqueryparam value = "#local.UUID#" cfSqlType = "varchar">
-                )
-            </cfquery>
+            <cfstoredproc
+                procedure = "placeOrdertest" 
+            >
+                <cfprocparam 
+                    CFSQLType = "integer"
+                    type = "in" 
+                    value = "#arguments.userId#"
+                >
+                <cfprocparam 
+                    CFSQLType = "integer"
+                    type = "in" 
+                    value = "#arguments.orderAddressId#"
+                >
+                <cfprocparam 
+                    CFSQLType = "integer"
+                    type = "in" 
+                    value = "#local.cardLastFour#"
+                >
+                <cfprocparam 
+                    CFSQLType = "varchar"
+                    type = "in" 
+                    value = "#local.UUID#"
+                >
+                <cfprocparam 
+                    CFSQLType = "varchar"
+                    type = "out" 
+                    variable = "local.emailId"
+                >
+                <cfprocparam 
+                    CFSQLType = "varchar"
+                    type = "out" 
+                    variable = "local.firstName"
+                >
+            </cfstoredproc>
             <cfset local.resultStruct["success"] = true>
         <cfelse>
             <cfset local.resultStruct["error"] = "Invalid Card Details">
         </cfif>
         <!--- Sending mail if order placed --->
         <cfif structKeyExists(local.resultStruct, "success")>
-            <cfset local.userDetails = getProfileDetails(userId=arguments.userId)>
             <cfmail  
                 from="abhijith1@gmail.com"  
                 subject="Order placed"  
-                to="#local.userDetails.email#"
+                to="#local.emailId#"
                 type="html"
             >
                 <cfmailpart type="text/html">
-                    <h3>Dear #local.userDetails.firstName#,</h3>
+                    <h3>Dear #local.firstName#,</h3>
                     <p>Your order placed successfully.</p>
                     <p>Order ID : #local.UUID#</p>
                 </cfmailpart>

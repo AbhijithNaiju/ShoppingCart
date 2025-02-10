@@ -121,7 +121,6 @@
                     </ul>
                 </div>
             </div>
-            <div class="text-center" id="listingMessage"></div>
             <cfif 
                 arrayLen(variables.productList.resultArray) 
                 AND 
@@ -160,8 +159,9 @@
                         </button>
                     </div>
                 </cfif>
+                <div class="text-center" id="listingMessage"></div>
             <cfelse>
-                <div class = "text-center" >No products found<div>
+                <div class = "text-center" id = "listingMessage">No products found<div>
             </cfif>
         </div>
     </cfoutput>
