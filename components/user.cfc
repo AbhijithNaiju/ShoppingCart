@@ -420,7 +420,7 @@
         <cfset local.resultStruct = structNew()>
         <cfquery name = "local.getCartItemQuantity">
             SELECT
-                COUNT(*) AS cartItemQuantity
+                fldQuantity AS cartItemQuantity
             FROM 
                 tblCart
             WHERE 
@@ -679,7 +679,7 @@
             <cfset local.UUID = createUUID()>
             <cfset local.cardLastFour = right(arguments.cardNumber, 4)>
             <cfstoredproc
-                procedure = "placeOrdertest" 
+                procedure = "placeOrder" 
             >
                 <cfprocparam 
                     CFSQLType = "integer"
@@ -732,5 +732,51 @@
             </cfmail>
         </cfif>
         <cfreturn local.resultStruct>
+    </cffunction>
+    <cffunction name = "getOrderHistory" returntype = "query">
+        <cfargument name = "userId" type = "integer" required = "true">
+        <cfargument name = "orderId" type = "string" required = "false">
+        <cfargument name = "orderSearchId" type = "string" required = "false">
+        <cfquery name = "local.qryOrderHistory">
+            SELECT 
+                O.fldOrder_ID AS orderId,
+                O.fldTotalPrice AS totalPrice,
+                O.fldTotalTax AS totalTax,
+                DATE_FORMAT(O.fldOrderDate, '%d/%m/%Y %l:%i %p') AS orderDate,
+                OI.fldQuantity AS quantity,
+                OI.fldUnitPrice AS unitPrice,
+                OI.fldUnitTax AS unitTax,
+                P.fldProduct_ID AS productId,
+                P.fldProductName AS productName,
+                PI.fldImageFileName AS imageFileName,
+                B.fldBrandName AS brandName,
+                A.fldFirstName AS firstName,
+                A.fldLastName AS lastName,
+                A.fldAddressLine1 AS addressLine1,
+                A.fldAddressLine2 AS addressLine2,
+                A.fldCity AS city,
+                A.fldState AS state,
+                A.fldPincode AS pincode,
+                A.fldPhoneNumber AS phoneNumber
+            FROM
+                tblOrder O
+            INNER JOIN tblOrderItems OI ON OI.fldOrderId = O.fldOrder_ID
+            INNER JOIN tblAddress A ON A.fldAddress_ID = O.fldAddressId
+            INNER JOIN tblProduct P ON P.fldProduct_ID = OI.fldProductId
+            LEFT JOIN tblBrands B ON B.fldBrand_ID = P.fldBrandId
+            LEFT JOIN tblProductImages PI ON PI.fldproductId = P.fldProduct_ID AND PI.fldDefaultImage = 1
+            WHERE
+                O.fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+                <cfif structKeyExists(arguments, "orderId")>
+                    AND
+                    O.fldOrder_ID = <cfqueryparam value = "#arguments.orderId#" cfSqlType = "varchar">
+                <cfelseif structKeyExists(arguments, "orderSearchId")>
+                    AND
+                    O.fldOrder_ID like <cfqueryparam value = "%#arguments.orderSearchId#%" cfSqlType = "varchar">
+                </cfif>
+            ORDER BY
+                O.fldOrderDate DESC
+        </cfquery>
+        <cfreturn local.qryOrderHistory>
     </cffunction>
 </cfcomponent>

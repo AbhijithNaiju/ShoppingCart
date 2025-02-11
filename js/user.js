@@ -432,3 +432,7 @@ function changeQuantity(buttonObject,changeDetails){
 		}
 	});
 }
+
+$("#orderSearchClearButton").click(function(){
+	$("#orderSearchField").val('');
+});

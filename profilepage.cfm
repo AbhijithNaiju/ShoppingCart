@@ -51,7 +51,7 @@
         </div>
         <div class="profileFooter d-flex">
             <button class="w-50 btn m-1 btn-success" id="addAddress">Add Address</button>
-            <button class="w-50 btn m-1 border border-success">Order History</button>
+            <a href="./orderHistory.cfm" class="w-50 btn m-1 border border-success">Order History</a>
         </div>
     </div>
     <div id="profileModal" class="displayNone">
