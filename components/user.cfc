@@ -734,7 +734,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
     <cffunction name = "getOrderHistory" returntype = "query">
-        <cfargument name = "userId" type = "integer" required = "false">
+        <cfargument name = "userId" type = "integer" required = "true">
         <cfargument name = "orderId" type = "string" required = "false">
         <cfargument name = "orderSearchId" type = "string" required = "false">
         <cfquery name = "local.qryOrderHistory">
@@ -746,6 +746,7 @@
                 OI.fldQuantity AS quantity,
                 OI.fldUnitPrice AS unitPrice,
                 OI.fldUnitTax AS unitTax,
+                P.fldProduct_ID AS productId,
                 P.fldProductName AS productName,
                 PI.fldImageFileName AS imageFileName,
                 B.fldBrandName AS brandName,
@@ -762,22 +763,19 @@
             INNER JOIN tblOrderItems OI ON OI.fldOrderId = O.fldOrder_ID
             INNER JOIN tblAddress A ON A.fldAddress_ID = O.fldAddressId
             INNER JOIN tblProduct P ON P.fldProduct_ID = OI.fldProductId
-            INNER JOIN tblBrands B ON B.fldBrand_ID = P.fldBrandId
-            INNER JOIN tblProductImages PI ON PI.fldproductId = P.fldProduct_ID AND PI.fldDefaultImage = 1
+            LEFT JOIN tblBrands B ON B.fldBrand_ID = P.fldBrandId
+            LEFT JOIN tblProductImages PI ON PI.fldproductId = P.fldProduct_ID AND PI.fldDefaultImage = 1
             WHERE
-                <cfif structKeyExists(arguments, "userId")>
-                    O.fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
-                <cfelseif structKeyExists(arguments, "orderId")>
+                O.fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+                <cfif structKeyExists(arguments, "orderId")>
+                    AND
                     O.fldOrder_ID = <cfqueryparam value = "#arguments.orderId#" cfSqlType = "varchar">
                 <cfelseif structKeyExists(arguments, "orderSearchId")>
-                    O.fldOrder_ID like <cfqueryparam value = "%#arguments.orderSearchId#%" cfSqlType = "varchar">
-                </cfif>
-                <cfif structKeyExists(arguments, "orderSearchId")>
                     AND
                     O.fldOrder_ID like <cfqueryparam value = "%#arguments.orderSearchId#%" cfSqlType = "varchar">
                 </cfif>
             ORDER BY
-                O.fldOrderDate
+                O.fldOrderDate DESC
         </cfquery>
         <cfreturn local.qryOrderHistory>
     </cffunction>

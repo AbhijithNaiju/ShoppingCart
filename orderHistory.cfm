@@ -4,8 +4,15 @@
         userId=session.userId,
         orderSearchId=form.orderSearchId
     )>
+<cfelseif structKeyExists(form, "orderSearchClearButton")>
+    <cfset variables.orderHistory=application.userObject.getOrderHistory(
+        userId=session.userId,
+        orderSearchId=""
+    )>
 <cfelse>
-    <cfset variables.orderHistory=application.userObject.getOrderHistory(userId=session.userId)>
+    <cfset variables.orderHistory=application.userObject.getOrderHistory(
+        userId=session.userId
+    )>
 </cfif>
 <cfoutput>
     <div class="container overflow-scroll orderHistoryBody">
@@ -21,7 +28,8 @@
                 <input 
                     type="text" 
                     class="form-control form-control-sm" 
-                    name="orderSearchId" 
+                    name="orderSearchId"
+                    id="orderSearchField"
                     placeholder="" 
                     aria-label="Search" 
                     aria-describedby="basic-addon2"
@@ -38,6 +46,14 @@
                         name = "orderSearchButton"
                     >
                         Search
+                    </button>
+                    <button 
+                        class="btn btn-outline-secondary h-100" 
+                        type="submit"
+                        name = "orderSearchClearButton"
+                        id = "orderSearchClearButton"
+                    >
+                        Reset
                     </button>
                 </div>
             </form>
@@ -63,6 +79,7 @@
                     <cfquery name = "variables.orderItems" dbtype="query">
                         SELECT
                             quantity,
+                            productId,
                             unitPrice,
                             unitTax,
                             productName,
@@ -76,13 +93,16 @@
                     <div class = "p-1">
                         <cfloop query="variables.orderItems">
                             <div class = "p-2 row">
-                                <div class="col-2 d-flex align-items-center justify-content-center">
+                                <a 
+                                    href="./product.cfm?productId=#variables.orderItems.productId#"
+                                    class="col-2 d-flex align-items-center justify-content-center"
+                                >
                                     <img 
                                         src="./assets/productimages/#variables.orderItems.imageFileName#" 
                                         alt="image not found"
                                         class="orderHistoryImage"
                                     >
-                                </div>
+                                </a>
                                 <div class="col-5 d-flex flex-column justify-content-around overflow-hidden">
                                     <span class="fw-bold orderItemProductName">
                                         #variables.orderItems.productName#

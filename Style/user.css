@@ -390,3 +390,6 @@ body{
 .orderId{
     font-size: 18px;
 }
+.orderHistoryBody{
+    max-height: 85%;
+}
