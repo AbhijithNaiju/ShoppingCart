@@ -8,22 +8,25 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="onRequestStart"> 
+    <cffunction  name="onRequestStart" returnType="boolean"> 
         <cfargument  name="requestedPage">
-<!---   <cfif listfirst(CGI.script_name,'/') EQ admin>
-            <cflocation url="../admin/login.cfm" addtoken ="false"> 
-        </cfif>  --->
+
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
-        <cfset local.publicPages = ["/admin/login.cfm","/login.cfm","/signup.cfm","/errorpage.cfm"]>
-        <cfif arrayFindNoCase(local.publicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
-            <cfreturn true>
-        <cfelse>
-            <cfif listfirst(CGI.script_name,'/') EQ "admin">
-                <cflocation url="../admin/login.cfm" addtoken ="false"> 
+        <cfif listfirst(CGI.script_name,'/') EQ "admin">
+            <cfset local.adminPublicPages = ["/admin/login.cfm"]>
+            <cfif arrayFindNoCase(local.adminPublicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
+                <cfreturn true>
             <cfelse>
-                <cflocation url="login.cfm" addtoken ="false"> 
+                <cflocation url="../admin/login.cfm" addtoken ="false"> 
+            </cfif>
+        <cfelse>
+            <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm"]>
+            <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) AND NOT structKeyExists(session, "userId")>
+                <cflocation url="/login.cfm" addtoken ="false"> 
+            <cfelse>
+                <cfreturn true>
             </cfif>
         </cfif>
     </cffunction>
@@ -33,7 +36,7 @@
         <cfreturn true>
     </cffunction>
 
-<!---      <cffunction  name="onError" returntype ="void"> 
+<!---    <cffunction  name="onError" returntype ="void"> 
         <cfargument name="exception" type="any" required=true>
         <cfargument name="eventName" type="String" required=true>
 
@@ -50,6 +53,6 @@
             </cfmail>
             <cflocation  url="errorPage.cfm" addtoken="false">
         </cfif>
-     </cffunction>  --->
+     </cffunction> --->
 
 </cfcomponent>
