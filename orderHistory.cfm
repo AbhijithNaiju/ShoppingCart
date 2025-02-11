@@ -1,13 +1,12 @@
 <cfinclude  template="userHeader.cfm">
-<cfif structKeyExists(form, "orderSearchButton") AND len(trim(form.orderSearchId))>
+<cfif 
+    structKeyExists(form, "orderSearchButton") 
+    AND structKeyExists(form, "orderSearchId")
+    AND len(trim(form.orderSearchId))
+>
     <cfset variables.orderHistory=application.userObject.getOrderHistory(
         userId=session.userId,
         orderSearchId=form.orderSearchId
-    )>
-<cfelseif structKeyExists(form, "orderSearchClearButton")>
-    <cfset variables.orderHistory=application.userObject.getOrderHistory(
-        userId=session.userId,
-        orderSearchId=""
     )>
 <cfelse>
     <cfset variables.orderHistory=application.userObject.getOrderHistory(
@@ -18,7 +17,10 @@
     <div class="container overflow-scroll orderHistoryBody">
         <div class="d-flex justify-content-between align-items-center bg-white">
             <h2>
-                <cfif structKeyExists(form, "orderSearchButton") AND len(trim(form.orderSearchId))>
+                <cfif structKeyExists(form, "orderSearchButton")
+                    AND structKeyExists(form, "orderSearchId")
+                    AND len(trim(form.orderSearchId))
+                >
                     Search result for "#form.orderSearchId#"
                 <cfelse>
                     Order History

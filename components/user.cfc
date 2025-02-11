@@ -420,7 +420,7 @@
         <cfset local.resultStruct = structNew()>
         <cfquery name = "local.getCartItemQuantity">
             SELECT
-                COUNT(*) AS cartItemQuantity
+                fldQuantity AS cartItemQuantity
             FROM 
                 tblCart
             WHERE 
