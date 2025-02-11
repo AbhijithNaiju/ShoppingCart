@@ -109,7 +109,7 @@
                 <div class = "text-center errorMessage" id="updateProfileError"></div>
                 <div class = "text-center text-success" id="updateProfileSuccess"></div>
                 <div class="editFooter w-100 d-flex">
-                    <button type="button" class="btn btn-secondary m-2 w-50 closeProfileEdit">Close</button>
+                    <button type="reset" class="btn btn-secondary m-2 w-50 closeProfileEdit">Close</button>
                     <button 
                         type="submit" 
                         id="editProfile" 

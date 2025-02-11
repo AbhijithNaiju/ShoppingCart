@@ -1,25 +1,10 @@
 $(document).ready(function(){ 
 	setCartCount();
-	function setCartCount(){
-		$.ajax({
-			type:"POST",
-			url:"components/user.cfc?method=headerDetails",
-			success: function(result) {
-				headerDetails=JSON.parse(result)
-				if(headerDetails.sessionExist){
-					$("#cartCount").show();
-					$("#cartCount").text(headerDetails.cartCount);
-				}else{
-					emptyHeader();
-				}
-			}
-		});
-	}
 
+	// Used to unselect radio when custom min max are used
 	$('.filterInput').click(function(){
 		$('[name=filterRadio]').prop('checked',false);
 	});
-
 
 	$('.removeButton').click(function(){
 		const cartId = $(this).val();
@@ -52,28 +37,29 @@ $(document).ready(function(){
 					cartItem.remove();
 
 					// Changing cart count
-					newCartCount = parseInt($("#cartCount").text())-1;
-					$("#cartCount").text(newCartCount);
-					if(newCartCount == 0){
+					$("#cartCount").text(cartDeleteResult.cartCount);
+					if(cartDeleteResult.cartCount == 0){
 						$("#placeOrder").remove();
 						// Showing message to goto home
 						alert("No products remaining in cart, add products to continue.")
 						location.href="./index.cfm"	
 					}
 				}else{
-					alert("Error occured")
+					alert("Error occured please try again")
 				}
+			},error: function(){
+				alert("Error occured");
 			}
 		});
 	});
 	
-	// Setting reduce buttons disabled if quantity is 1
+	// Setting reduce quantity buttons disabled if quantity is 1
 	$(function() {
 		if($(".cartQuantity")){
 			quantityItems = $(".cartQuantity");
 			for(let element of quantityItems){
 				if($(element).val()==1){
-					$(element).prev().prop("disabled",true);
+					$(element).prev().prop("disabled",true); //Only this line of code is reusable
 				}
 			};
 		}
@@ -131,7 +117,11 @@ $(document).ready(function(){
 					logOutResult=JSON.parse(result)
 					if(logOutResult.success){
 						$("#address"+addressId).remove();
+					}else{
+						alert("Error occured while deleting")
 					}
+				},error: function(){
+					alert("Error occured");
 				}
 			});
 		}
@@ -175,18 +165,43 @@ $(document).ready(function(){
 					$("#profileName").text(firstName +' '+lastName);
 					$("#profileEmail").text(emailId);
 
+					$("#firstName").attr("value",firstName);
+					$("#lastName").attr("value",lastName);
+					$("#emailId").attr("value",emailId);
+					$("#phoneNumber").attr("value",phoneNumber);
+					
 					$("#updateProfileSuccess").text("Profile edited successfully");
 					$("#updateProfileError").text("");
 				}else if(editProfileResult.error){
 					$("#updateProfileError").text(editProfileResult.error);
 					$("#updateProfileSuccess").text("");
 				}
+			},error: function(){
+				alert("Error occured");
 			}
 		});
 		return false;
 	})
 });
 
+function setCartCount(){
+	$.ajax({
+		type:"POST",
+		url:"components/user.cfc?method=headerDetails",
+		success: function(result) {
+			headerDetails=JSON.parse(result)
+			if(headerDetails.sessionExist){
+				$("#cartCount").show();
+				$("#cartCount").text(headerDetails.cartCount);
+				return headerDetails.cartCount;
+			}else{
+				emptyHeader();
+			}
+		},error: function(){
+			alert("Error occured");
+		}
+	});
+}
 function emptyHeader(){
 	$("#logOutBtn").text("Login")
 	$("#cartCount").hide()
@@ -205,6 +220,11 @@ function logOut(){
 				if(logOutResult.success){
 					location.reload();
 				}
+				else{
+					alert("Error occured try again")
+				}
+			},error: function(){
+				alert("Error occured");
 			}
 		});
 	}
@@ -247,19 +267,27 @@ function filterProducts(currentData){
 			url:"components/user.cfc?method=getProductList",
 			data:filterData,
 			success: function(result) {
-				$('#productListingParent').empty();
-				$("#showMoreBtn").css("display","none");
-
 				productList=JSON.parse(result)
-				if(productList.resultArray.length){
-					$('#listingMessage').text("");
-					listProducts(productList.resultArray)
+				if(productList.success){
+					// Removing current products
+					$('#productListingParent').empty();
+					$("#showMoreBtn").css("display","none");
+
+					// Adding products if products present in result
+					if(productList.resultArray.length){
+						$('#listingMessage').text("");
+						listProducts(productList.resultArray)
+					}else{
+						$('#listingMessage').text("No products Found");
+					}
+					$(".dropdown-toggle").dropdown('toggle');
 				}else{
-					$('#listingMessage').text("No products Found");
-				}	
+					alert("Error occured while filtering please try again");
+				}
+			},error: function(){
+				alert("Error occured");
 			}
 		});
-		$(".dropdown-toggle").dropdown('toggle');
 	}
 }
 
@@ -289,19 +317,24 @@ function addToCart(productId,redirect){
 		data:{productId:productId},
 		success: function(result) {
 			addToCartResult=JSON.parse(result)
-			if(addToCartResult.redirect){
-				if(redirect && redirect==="order"){
-					location.href="login.cfm?redirect=order&productId="+productId
+			if(addToCartResult.success){
+				if(addToCartResult.redirect){
+					if(redirect && redirect==="order"){
+						location.href="login.cfm?redirect=order&productId="+productId
+					}else{
+						location.href="login.cfm?redirect=cart&productId="+productId
+					}
 				}else{
-					location.href="login.cfm?redirect=cart&productId="+productId
+					$("#productMessages").text("Product added to cart")
+					if(addToCartResult.increasedItemCount){
+						setCartCount();
+					}
 				}
 			}else{
-				$("#productMessages").text("Product added to cart")
-				if(addToCartResult.increasedItemCount){
-					let newCartCount=parseInt($("#cartCount").text())+addToCartResult.increasedItemCount;
-					$("#cartCount").text(newCartCount);
-				}
+				alert("Error occured while adding product to cart");
 			}
+		},error: function(){
+			alert("Error occured");
 		}
 	});
 }
@@ -323,28 +356,23 @@ function showMore(currentData)
 		data:productData,
 		success: function(result) {
 			resultJson=JSON.parse(result);
-			listProducts(resultJson.resultArray)
-			$("#showMoreBtn").css("display","none")
+			if(resultJson.resultArray){
+				if(resultJson.resultArray.length){
+					listProducts(resultJson.resultArray);
+					$("#showMoreBtn").css("display","none");
+				}else{
+					alert("No more products found")
+				}
+			}else{
+				alert("Error occured while loading products");
+			}
+		},error: function(){
+			alert("Error occured");
 		}
 	});
 }
 
 function changeQuantity(buttonObject,changeDetails){
-	if(changeDetails.change == -1){
-		quantityElement= $(buttonObject).next();
-		newQuantity = parseInt(quantityElement.val())-1
-		if(newQuantity==1){
-			// disabling reduce button
-			$(buttonObject).prop("disabled",true);
-		}
-	}else{
-		quantityElement= $(buttonObject).prev();
-		newQuantity = parseInt(quantityElement.val())+1
-		if(newQuantity==2){
-			// disabling reduce button
-			$(quantityElement).prev().prop("disabled",false)
-		}
-	}
 	$.ajax({
 		type:"POST",
 		url:"components/user.cfc?method=updateCartQnty",
@@ -355,6 +383,21 @@ function changeQuantity(buttonObject,changeDetails){
 		success: function(result){
 			changeQuantityResult=JSON.parse(result)
 			if(changeQuantityResult.success){
+				if(changeDetails.change == -1){
+					quantityElement= $(buttonObject).next();
+					newQuantity = parseInt(quantityElement.val())-1
+					if(newQuantity==1){
+						// disabling reduce button
+						$(buttonObject).prop("disabled",true);
+					}
+				}else{
+					quantityElement= $(buttonObject).prev();
+					newQuantity = parseInt(quantityElement.val())+1
+					if(newQuantity==2){
+						// disabling reduce button
+						$(quantityElement).prev().prop("disabled",false)
+					}
+				}
 				// setting input value
 				quantityElement.val(newQuantity);
 
@@ -379,7 +422,13 @@ function changeQuantity(buttonObject,changeDetails){
 				actualPriceElement.text(updatedActualPrice);
 				totalTaxElement.text(updatedTotalTax);
 				totalPriceElement.text(updatedTotalPrice);
+			}else if(changeQuantityResult.error){
+				alert(changeQuantityResult.error);
+			}else{
+				alert("An unexpected error occured");
 			}
+		},error: function(){
+			alert("Error occured");
 		}
 	});
 }

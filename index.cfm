@@ -1,5 +1,5 @@
 <cfinclude  template="./userHeader.cfm">
-<cfset variables.randomProducts = application.userObject.getCategoryProducts()>
+<cfset variables.randomProducts = application.userObject.getRandomProducts()>
 <cfoutput>
     <div class="">
         <h3>
