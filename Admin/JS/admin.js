@@ -201,7 +201,7 @@ function  deleteCategory(categoryId)
             },
             error:function()
             {
-                alert("An error occured")
+                alert("An error occured");
             }
         });
     }
@@ -226,7 +226,7 @@ function  deleteSubCategory(deleteButton)
             },
             error:function()
             {
-                alert("An error occured")
+                alert("An error occured");
             }
         });
     }
@@ -251,7 +251,7 @@ function  deleteProduct(deleteButton)
             },
             error:function()
             {
-                alert("An error occured")
+                alert("An error occured");
             }
         });
     }
@@ -313,7 +313,7 @@ function listProductImages(productId)
         },
         error:function()
         {
-            alert("An error occured")
+            alert("An error occured");
         }
     });
 }
@@ -336,7 +336,7 @@ function deleteImage(imageDetails)
         },
         error:function()
         {
-            alert("An error occured")
+            alert("An error occured");
         }
     });
 }
@@ -358,7 +358,7 @@ function setDefaultImage(imageDetails)
         },
         error:function()
         {
-            alert("An error occured")
+            alert("An error occured");
         }
     });
 }

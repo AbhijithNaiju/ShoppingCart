@@ -179,6 +179,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 3%;
 }
 .randomProducts h6{
     text-overflow: ellipsis;
@@ -225,6 +226,7 @@ body{
 }
 .productDetails{
     width: 60%;
+    border-radius: 1%;
 }
 .carousel-control-prev-icon,.carousel-control-next-icon{
     background-color: #747474;
@@ -341,6 +343,7 @@ body{
 }
 .addressBody{
     flex: 1;
+    border-radius: 2%;
 }
 .addressFooter{
     position: sticky;

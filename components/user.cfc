@@ -414,6 +414,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+    <!--- Update quantity in cart --->
     <cffunction name = "updateCartQnty" returntype = "struct" returnformat = "json" access = "remote">
         <cfargument name = "cartId" type = "integer" required = "true">
         <cfargument name = "quantityChange" type = "integer" required = "true">
@@ -445,6 +446,7 @@
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
+
     <!--- Get items in cart --->
     <cffunction name = "getCartItems" returntype = "query">
         <cfargument name = "userId" type = "integer" required = "true">
@@ -535,6 +537,7 @@
         <cfreturn local.qryaddressList.resultSet>
     </cffunction>
 
+    <!--- Update profile details --->
     <cffunction name = "updateProfile" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument name = "userId" type = "integer" required = "true">
         <cfargument name = "firstName" type = "string" required = "true">
@@ -587,6 +590,7 @@
         <cfreturn local.structResult>
     </cffunction>
 
+    <!--- Add new address --->
     <cffunction name = "addAddress" returntype = "struct">
         <cfargument name = "userId" type = "integer" required = "true">
         <cfargument name = "formStruct" type = "struct" required = "true">
@@ -638,6 +642,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+    <!--- Delete address --->
     <cffunction name = "deleteAddress" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument name = "addressId" type = "integer" required = "true">
 
@@ -654,6 +659,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+    <!--- Verify card details --->
     <cffunction name = "verifyCard" returntype = "struct">
         <cfargument name = "cardNumber" type = "numeric" required = "true">
         <cfargument name = "cardCVV" type = "numeric" required = "true">
@@ -667,6 +673,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
+    <!--- Place order --->
     <cffunction name = "placeOrder" returntype = "struct">
         <cfargument name = "userId" type = "integer" required = "true">
         <cfargument name = "orderAddressId" type = "integer" required = "true">
@@ -719,7 +726,7 @@
         <!--- Sending mail if order placed --->
         <cfif structKeyExists(local.resultStruct, "success")>
             <cfmail  
-                from="abhijith1@gmail.com"  
+                from="shoppingCart@gmail.com"  
                 subject="Order placed"  
                 to="#local.emailId#"
                 type="html"
@@ -733,6 +740,8 @@
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
+
+    <!--- Get details of orders --->
     <cffunction name = "getOrderHistory" returntype = "query">
         <cfargument name = "userId" type = "integer" required = "true">
         <cfargument name = "orderId" type = "string" required = "false">

@@ -33,7 +33,7 @@
                 <div class="d-flex flex-column categoryList">
                     <cfif structCount(subCategoryData)>
                         <cfloop collection="#subCategoryData#" item="subCatoryId">
-                            <div class="categoryItem d-flex justify-content-between align-items-center">
+                            <div class="categoryItem d-flex justify-content-between align-items-center my-1">
                                 <div>#subCategoryData[subCatoryId]#</div>
                                 <div class="d-flex w-50 justify-content-between">
                                     <button 

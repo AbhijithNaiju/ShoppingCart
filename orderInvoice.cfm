@@ -4,14 +4,13 @@
 		orderId=url.orderId
 	)>
 	<cfset variables.fileName = url.orderId & '_' & dateTimeFormat(now(),"dd_mm_yyyy_hh_nn_ss_tt")&'.pdf'>
-	<cfset variables.downloadLocation = "/assets/invoiceDownloads">
-	<cfif NOT directoryExists(expandPath("/#variables.downloadLocation#"))>
-		<cfset directoryCreate(expandPath("/#variables.downloadLocation#"))>
-	</cfif>
-	<cfset variables.absoluteFileName = expandPath(variables.downloadLocation)&'\'&variables.fileName>
+
+	<cfheader 
+		name="Content-Disposition" 
+		value="attachment;filename=#variables.fileName#"
+	>
 	<cfdocument 
 		format="pdf" 
-		filename="#variables.absoluteFileName#" 
 		overwrite="Yes"
 	>
 		<html>
@@ -104,12 +103,4 @@
 			</body>
 		</html>
 	</cfdocument>
-	<cfheader 
-		name="Content-Disposition" 
-		value="attachment;filename=#variables.fileName#"
-	>
-	<cfcontent
-		type="application/pdf"
-		file="#variables.absoluteFileName#"
-	>
 </cfif>

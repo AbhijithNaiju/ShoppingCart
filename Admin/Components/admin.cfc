@@ -329,10 +329,10 @@
                 AND
                 fldActive = 1;
         </cfquery>
-        <cfif local.isProductExist.recordCount AND local.isProductExist.fldProduct_ID NEQ arguments.productId>
+        <cfif local.isProductExist.recordCount AND structKeyExists(arguments, "productId") AND local.isProductExist.fldProduct_ID NEQ arguments.productId>
             <cfset local.structResult["error"] = "Product name already exists">
         <cfelse>
-            <cfif val(arguments.productId) GT 0>
+            <cfif structKeyExists(arguments, "productId") AND val(arguments.productId) GT 0>
                 <cfquery name="local.productUpdate">
                     UPDATE
                         tblProduct

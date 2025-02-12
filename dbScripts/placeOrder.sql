@@ -2,16 +2,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `placeOrder`(
 	IN userId integer,
 	IN addressId integer,
 	IN cardPart integer,
-	IN orderId varchar(64)
+	IN orderId varchar(64),
+	OUT emailId varchar(100),
+	OUT firstName varchar(32)
 )
 placeOrder:BEGIN
 	DECLARE totalPrice DECIMAL(10, 2);
 	DECLARE totalTax DECIMAL(10, 2);
-	DECLARE quantity INTEGER;
-	DECLARE productId INTEGER;
-	DECLARE productName VARCHAR(100);
-	DECLARE unitPrice DECIMAL(10, 2);
-	DECLARE unitTax DECIMAL(10, 2);
 
 	SELECT
 		SUM(C.fldQuantity * P.fldPrice),
@@ -74,4 +71,16 @@ placeOrder:BEGIN
 			fldUserId = userId;
 
 	COMMIT;
+
+	SELECT 
+		fldEmail,
+		fldFirstName
+	INTO
+		emailId,
+		firstName
+	FROM
+		tblUser
+	WHERE
+		fldUser_ID=userId;
+
 END

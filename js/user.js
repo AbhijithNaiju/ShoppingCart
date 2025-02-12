@@ -41,11 +41,11 @@ $(document).ready(function(){
 					if(cartDeleteResult.cartCount == 0){
 						$("#placeOrder").remove();
 						// Showing message to goto home
-						alert("No products remaining in cart, add products to continue.")
+						alert("No products remaining in cart, add products to continue.");
 						location.href="./index.cfm"	
 					}
 				}else{
-					alert("Error occured please try again")
+					alert("Error occured please try again");
 				}
 			},error: function(){
 				alert("Error occured");
@@ -118,7 +118,7 @@ $(document).ready(function(){
 					if(logOutResult.success){
 						$("#address"+addressId).remove();
 					}else{
-						alert("Error occured while deleting")
+						alert("Error occured while deleting");
 					}
 				},error: function(){
 					alert("Error occured");
@@ -221,7 +221,7 @@ function logOut(){
 					location.reload();
 				}
 				else{
-					alert("Error occured try again")
+					alert("Error occured try again");
 				}
 			},error: function(){
 				alert("Error occured");
@@ -361,7 +361,7 @@ function showMore(currentData)
 					listProducts(resultJson.resultArray);
 					$("#showMoreBtn").css("display","none");
 				}else{
-					alert("No more products found")
+					alert("No more products found");
 				}
 			}else{
 				alert("Error occured while loading products");
