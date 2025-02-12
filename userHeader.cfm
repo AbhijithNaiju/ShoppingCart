@@ -10,82 +10,84 @@
     </head>
     <body>
         <cfset variables.excludedPages = ["/login.cfm","/missingpage.cfm","/errorpage.cfm","/signup.cfm"]>
-        <div class="header bg-success">
-            <a href="../index.cfm" class="logo">
-                <img src="../assets/Images/shopping cart_transparent.png">
-            </a>
-            
-            <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
-                <div class="searchBar">
-                    <form class="input-group" action="productlisting.cfm">
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            name="searchValue" 
-                            placeholder="" 
-                            aria-label="Search" 
-                            aria-describedby="basic-addon2"
-                            required
-                        >
-                        <div class="input-group-append">
-                            <button class="btn  btn-outline-light" type="submit">Search</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="menuButtons">
-                    <a 
-                        id="profileBtn"
-                        href="./profilePage.cfm"
-                    >
-                        Profile
-                    </a>
-                    <div class="cartButton">
+        <div class = "header">
+            <div class="headerLinks bg-success">
+                <a href="../index.cfm" class="logo">
+                    <img src="../assets/Images/shopping cart_transparent.png">
+                </a>
+                
+                <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
+                    <div class="searchBar">
+                        <form class="input-group" action="productlisting.cfm">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="searchValue" 
+                                placeholder="" 
+                                aria-label="Search" 
+                                aria-describedby="basic-addon2"
+                                required
+                            >
+                            <div class="input-group-append">
+                                <button class="btn  btn-outline-light" type="submit">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="menuButtons">
                         <a 
-                            id="cartBtn"
-                            href="./cartPage.cfm"
+                            id="profileBtn"
+                            href="./profilePage.cfm"
                         >
-                            Cart
+                            Profile
                         </a>
-                        <span class="badge" id="cartCount"></span>
-                    </div>
-                    <button  
-                        id="logOutBtn"
-                        onclick="logOut()"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </cfif> 
-        </div>
-        <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
-            <cfset variables.allSubcategories = application.userObject.getAllSubcategories()>
-            <div class="categoryNav px-3 py-1 border">
-                <cfoutput query="variables.allSubcategories" group="categoryId">
-                    <div  class = "navCategory" >
-                        <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName" >
-                            #variables.allSubcategories.categoryName#
-                        </a>
-                        <cfquery  name = "variables.subcategories" dbtype="query">
-                            SELECT 
-                                subcategoryId,
-                                subcategoryName
-                            FROM
-                                allSubcategories
-                            WHERE
-                                categoryId = #variables.allSubcategories.categoryId#
-                                AND subcategoryId IS NOT NULL
-                        </cfquery>
-                        <div class="categoryDropDown d-flex flex-column ">
-                            <cfloop query="variables.subcategories">
-                                <a 
-                                    href="productListing.cfm?subcatId=#variables.subcategories.subcategoryId#" 
-                                    class="navSubcategoryName btn border"
-                                >
-                                    #variables.subcategories.subcategoryName#
-                                </a>
-                            </cfloop>
+                        <div class="cartButton">
+                            <a 
+                                id="cartBtn"
+                                href="./cartPage.cfm"
+                            >
+                                Cart
+                            </a>
+                            <span class="badge" id="cartCount"></span>
                         </div>
+                        <button  
+                            id="logOutBtn"
+                            onclick="logOut()"
+                        >
+                            Logout
+                        </button>
                     </div>
-                </cfoutput>
+                </cfif> 
             </div>
-        </cfif>
+            <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
+                <cfset variables.allSubcategories = application.userObject.getAllSubcategories()>
+                <div class="categoryNav px-3 py-1 border">
+                    <cfoutput query="variables.allSubcategories" group="categoryId">
+                        <div  class = "navCategory" >
+                            <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName" >
+                                #variables.allSubcategories.categoryName#
+                            </a>
+                            <cfquery  name = "variables.subcategories" dbtype="query">
+                                SELECT 
+                                    subcategoryId,
+                                    subcategoryName
+                                FROM
+                                    allSubcategories
+                                WHERE
+                                    categoryId = #variables.allSubcategories.categoryId#
+                                    AND subcategoryId IS NOT NULL
+                            </cfquery>
+                            <div class="categoryDropDown d-flex flex-column ">
+                                <cfloop query="variables.subcategories">
+                                    <a 
+                                        href="productListing.cfm?subcatId=#variables.subcategories.subcategoryId#" 
+                                        class="navSubcategoryName btn border"
+                                    >
+                                        #variables.subcategories.subcategoryName#
+                                    </a>
+                                </cfloop>
+                            </div>
+                        </div>
+                    </cfoutput>
+                </div>
+            </cfif>
+        </div>

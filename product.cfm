@@ -3,7 +3,7 @@
     <cfset variables.productDetails = application.userObject.getProductDetails(productId=url.productId)>
     <cfif arrayLen(variables.productDetails)>
         <cfoutput>
-            <div class="productBody d-flex">
+            <div class="productBody d-flex m-3 align-items-center">
                 <div class="productImage">
                     <div id="carouselExampleIndicators" class="carousel slide"> 
                         <div class="carousel-inner">

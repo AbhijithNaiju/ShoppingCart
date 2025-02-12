@@ -7,18 +7,20 @@
   }
 body{
     font-family: sans-serif;
-    height: 100vh;
 }
 .header{
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index:1;
+}
+.headerLinks{
     padding: 0px 10px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 10%;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    height: 50px;
 }
 .logo{
     text-decoration: none;
@@ -116,8 +118,6 @@ body{
     width: 50%;
 }
 .categoryNav{
-    position: sticky;
-    top: 10%;
     background-color: #fff;
     display: flex;
     flex-wrap: wrap;
@@ -205,12 +205,10 @@ body{
     align-items: center;
     justify-content: space-evenly;
 }
-.productBody{
-    height: 85%;
-}
 .carousel-inner{
     height: 100%;
     width: 100%;
+    z-index: 0;
 }
 .carousel-item{
     height: 100%;
@@ -286,11 +284,12 @@ body{
 .qantityButtons input{
     width: 20%;
 }
-.profileBody,.cartBody,.orderBody{
-    max-height: 85%;
-}
 .orderBody{
     position: relative;
+    z-index: 0;
+}
+.totalPriceBody{
+    height: 50vh;
 }
 .profileName{
     font-size: 20px;
@@ -389,7 +388,4 @@ body{
 }
 .orderId{
     font-size: 18px;
-}
-.orderHistoryBody{
-    max-height: 85%;
 }

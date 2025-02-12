@@ -7,7 +7,7 @@
 <cfoutput>
     <div class="cartBody container h-100">
         <div class="row h-100">
-            <div class="col-8 h-100 overflow-scroll">
+            <div class="col-8 h-100 overflow-scroll pe-4">
                 <cfif variables.cartItems.recordCount>
                     <cfloop query="#variables.cartItems#">
                         <div class="cartItem row bg-white my-3" id="cartItem#variables.cartItems.cartId#">
@@ -78,7 +78,7 @@
                     </div>
                 </cfif>
             </div>
-            <div class="col-4 border h-50 p-3 d-flex flex-column justify-content-around">
+            <div class="col-4 totalPriceBody border p-3 mt-5 d-flex flex-column justify-content-around">
                 <div class="">
                     <div class="row">
                         <span class="col-6">Actual Price</span>
