@@ -4,21 +4,29 @@
     <cfif structKeyExists(url, "sortOrder") AND structKeyExists(url, "searchvalue")>
         <cfset variables.productList = application.userObject.getProductList(
             searchValue=url.searchValue,
-            sortOrder=url.sortOrder
+            sortOrder=url.sortOrder,
+            limit=10,
+            count=true
         )>
     <cfelseif structKeyExists(url, "searchvalue")>
         <cfset variables.productList = application.userObject.getProductList(
-            searchValue=url.searchValue
+            searchValue=url.searchValue,
+            limit=10,
+            count=true
         )>
         
     <cfelseif structKeyExists(url, "sortOrder") AND structKeyExists(url, "subcatId")>
         <cfset variables.productList = application.userObject.getProductList(
             sortOrder=url.sortOrder,
-            subcategoryId=url.subcatId
+            subcategoryId=url.subcatId,
+            limit=10,
+            count=true
         )>
     <cfelseif structKeyExists(url, "subcatId") >
         <cfset variables.productList = application.userObject.getProductList(
-            subcategoryId=url.subcatId
+            subcategoryId=url.subcatId,
+            limit=10,
+            count=true
         )>
     </cfif>
 

@@ -59,32 +59,22 @@
                 </cfif> 
             </div>
             <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
-                <cfset variables.allSubcategories = application.userObject.getAllSubcategories()>
+                <cfset variables.allSubcategories = application.userObject.getSubcategories()>
                 <div class="categoryNav px-3 py-1 border">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
                         <div  class = "navCategory" >
                             <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName" >
                                 #variables.allSubcategories.categoryName#
                             </a>
-                            <cfquery  name = "variables.subcategories" dbtype="query">
-                                SELECT 
-                                    subcategoryId,
-                                    subcategoryName
-                                FROM
-                                    allSubcategories
-                                WHERE
-                                    categoryId = #variables.allSubcategories.categoryId#
-                                    AND subcategoryId IS NOT NULL
-                            </cfquery>
                             <div class="categoryDropDown d-flex flex-column ">
-                                <cfloop query="variables.subcategories">
+                                <cfoutput>
                                     <a 
-                                        href="productListing.cfm?subcatId=#variables.subcategories.subcategoryId#" 
+                                        href="productListing.cfm?subcatId=#variables.allSubcategories.subcategoryId#" 
                                         class="navSubcategoryName btn border"
                                     >
-                                        #variables.subcategories.subcategoryName#
+                                        #variables.allSubcategories.subcategoryName#
                                     </a>
-                                </cfloop>
+                                </cfoutput>
                             </div>
                         </div>
                     </cfoutput>

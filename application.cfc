@@ -1,4 +1,5 @@
 <cfcomponent>
+    <cfset this.name = "shoppingCart">
     <cfset this.dataSource = "shoppingSiteDS">
     <cfset this.sessionManagement = true>
 
@@ -10,13 +11,13 @@
 
     <cffunction  name="onRequestStart" returnType="boolean"> 
         <cfargument  name="requestedPage">
-
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
         <cfif listfirst(CGI.script_name,'/') EQ "admin">
             <cfset local.adminPublicPages = ["/admin/login.cfm"]>
-            <cfif arrayFindNoCase(local.adminPublicPages, arguments.requestedPage) OR structKeyExists(session, "userId")>
+            <cfif arrayFindNoCase(local.adminPublicPages, arguments.requestedPage) 
+                OR (structKeyExists(session, "userId") AND session.roleId EQ 1)>
                 <cfreturn true>
             <cfelse>
                 <cflocation url="../admin/login.cfm" addtoken ="false"> 
@@ -36,7 +37,7 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="onError" returntype ="void"> 
+    <!--- <cffunction  name="onError" returntype ="void"> 
         <cfargument name="exception" type="any" required=true>
         <cfargument name="eventName" type="String" required=true>
 
@@ -53,6 +54,6 @@
             </cfmail>
             <cflocation  url="errorPage.cfm" addtoken="false">
         </cfif>
-    </cffunction>
+    </cffunction> --->
 
 </cfcomponent>

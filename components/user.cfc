@@ -58,6 +58,7 @@
                 </cfquery>
                 <cfset local.structResult["success"] = true>
                 <cfset session.userId = local.signUpresult.generatedKey>
+                <cfset session.roleId = 2>
             </cfif>
         <cfelse>
             <cfif len(trim(arguments.password)) LT 8>
@@ -101,6 +102,7 @@
                     hash(arguments.password & local.userDetails.fldUserSaltString,'SHA-512', 'utf-8', 125)
                 >
                     <cfset session.userId = local.userDetails.fldUser_ID>
+                    <cfset session.roleId = 2>
                     <cfset local.structResult["success"] = true>
                 <cfelse>
                     <cfset local.structResult["error"] = "Invalid password">
@@ -123,8 +125,9 @@
     </cffunction>
 
     <!--- subcategory list for nav bar in header --->
-    <cffunction name = "getAllSubcategories" returntype = "query">
-        <cfquery  name = "local.getAllSubcategories">
+    <cffunction name = "getSubcategories" returntype = "query">
+        <cfargument name = "categoryId" type = "integer" required = "false">
+        <cfquery  name = "local.subcategories">
             SELECT 
                 SC.fldSubcategory_ID AS subcategoryId,
                 SC.fldSubcategoryName AS subcategoryName,
@@ -135,69 +138,14 @@
             INNER JOIN tblSubCategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
             WHERE
                 C.fldActive=1
+                <cfif structKeyExists(arguments, "categoryId")>
+                    AND
+                    C.fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                </cfif>
             ORDER BY
                 C.fldCategory_id
         </cfquery>
-        <cfreturn local.getAllSubcategories>
-    </cffunction>
-    
-    <!--- get 10 random products --->
-    <cffunction name = "getRandomProducts" returntype = "query">
-        <cfquery  name = "local.getRandomProducts">
-            SELECT 
-                P.fldProduct_ID AS productId,
-                P.fldproductName AS productName,
-                P.fldPrice AS productPrice,
-                P.fldTax AS productTax,
-                B.fldBrandName AS brandName,
-                PI.fldImageFileName AS imageFileName,
-                SC.fldSubcategory_ID AS subcategoryId,
-                SC.fldSubcategoryName AS subcategoryName,
-                C.fldCategoryName AS categoryName
-            FROM
-                tblCategory C
-            INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
-            INNER JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
-            INNER JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
-            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
-            WHERE
-                C.fldActive = 1
-            ORDER BY
-                RAND()
-            LIMIT 10
-        </cfquery>
-        <cfreturn local.getRandomProducts>
-    </cffunction>
-
-    <!--- Get products from categoryid --->
-    <cffunction name = "getCategoryProducts" returntype = "query">
-        <cfargument  name = "categoryId" type = "integer" required = "true">
-        <cfquery  name = "local.getCategoryProducts">
-            SELECT 
-                P.fldProduct_ID AS productId,
-                P.fldproductName AS productName,
-                P.fldPrice AS productPrice,
-                P.fldTax AS productTax,
-                B.fldBrandName AS brandName,
-                PI.fldImageFileName AS imageFileName,
-                SC.fldSubcategory_ID AS subcategoryId,
-                SC.fldSubcategoryName AS subcategoryName,
-                C.fldCategoryName AS categoryName
-            FROM
-                tblCategory C
-            INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
-            LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
-            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
-            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
-            WHERE
-                C.fldActive=1
-                AND
-                C.fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
-            ORDER BY
-                fldSubcategory_ID,
-                RAND()
-        </cfquery>
-        <cfreturn local.getCategoryProducts>
+        <cfreturn local.subcategories>
     </cffunction>
 
     <!--- Details to set header --->
@@ -219,7 +167,7 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
-    <!--- get list of products for productListingPage --->
+    <!--- get list of products --->
     <cffunction name = "getProductList" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument  name = "subcategoryId" type = "integer" required = "false">
         <cfargument  name = "searchValue" type = "string" required = "false">
@@ -227,6 +175,8 @@
         <cfargument  name = "minPrice" type = "float" required = "false">
         <cfargument  name = "maxPrice" type = "float" required = "false">
         <cfargument  name = "excludedIdList" type = "string" required = "false">
+        <cfargument  name = "count" type = "string" required = "false">
+        <cfargument  name = "limit" type = "integer" required = "false">
         <cfset local.resultStruct = structNew()>
         <cfquery  name = "local.getProducts" returntype="struct">
             SELECT 
@@ -241,8 +191,8 @@
             FROM
                 tblCategory C
             INNER JOIN tblSubcategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
-            LEFT JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
-            LEFT JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+            INNER JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
+            INNER JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1 AND PI.fldActive = 1
             WHERE
                 C.fldActive=1
@@ -279,19 +229,12 @@
                     <cfelse>
                         RAND()
                     </cfif>
-                <cfif NOT (
-                    structKeyExists(arguments, "excludedIdList") 
-                    OR structKeyExists(arguments, "minPrice") 
-                    OR structKeyExists(arguments, "maxPrice")
-                )>
-                    LIMIT 10
+                <cfif structKeyExists(arguments, "limit")
+                >
+                    LIMIT <cfqueryparam value = "#arguments.limit#" cfSqlType = "integer">
                 </cfif>
         </cfquery>
-        <cfif NOT (
-            structKeyExists(arguments, "excludedIdList") 
-            OR structKeyExists(arguments, "minPrice") 
-            OR structKeyExists(arguments, "maxPrice")
-        )>
+        <cfif structKeyExists(arguments, "count")>
             <cfquery name = "local.totalProducts">
                 SELECT
                     COUNT(*) AS productCount
@@ -314,14 +257,6 @@
                             OR
                             B.fldBrandName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                         )
-                    </cfif>
-                ORDER BY
-                    <cfif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "asc">
-                        (P.fldPrice+P.fldTax) ASC
-                    <cfelseif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "desc">
-                        (P.fldPrice+P.fldTax) DESC
-                    <cfelse>
-                        RAND()
                     </cfif>
             </cfquery>
             <cfset local.resultStruct["productCount"] = local.totalProducts.productCount>
@@ -719,12 +654,8 @@
                     variable = "local.firstName"
                 >
             </cfstoredproc>
-            <cfset local.resultStruct["success"] = true>
-        <cfelse>
-            <cfset local.resultStruct["error"] = "Invalid Card Details">
-        </cfif>
-        <!--- Sending mail if order placed --->
-        <cfif structKeyExists(local.resultStruct, "success")>
+            <cfset local.orderDetails = getOrderHistory(userId=arguments.userId,orderId=local.UUID)>
+            <!--- Sending mail if order placed --->
             <cfmail  
                 from="shoppingCart@gmail.com"  
                 subject="Order placed"  
@@ -732,11 +663,93 @@
                 type="html"
             >
                 <cfmailpart type="text/html">
-                    <h3>Dear #local.firstName#,</h3>
-                    <p>Your order placed successfully.</p>
-                    <p>Order ID : #local.UUID#</p>
+                    <html>
+                        <head>
+                            <style>
+                                .pdfHeader{
+                                    padding: 20px;
+                                    font-size:22px;
+                                }
+                                table{
+                                    text-align: center;
+                                    width:100%;
+                                }
+                                th,td{
+                                    text-align:center;
+                                    padding:10px;
+                                    border:1px solid ##000;
+                                }
+                                .invoiceBody{
+                                    padding:3px;
+                                }
+                                .addressDetails{
+                                    font-size: 14px;
+                                    margin-top:10px;
+                                    text-align:left;
+                                }
+                                .priceDetails{
+                                    text-align:right;
+                                }
+                                .orderDate{
+                                    text-align:left;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h3>Dear #local.firstName#,</h3>
+                            <p>Your order placed successfully.</p>
+                            <p>Order ID : #local.UUID#</p>
+                                <table border=1 style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Brand</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Tax</th>
+                                            <th>Total Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <cfloop query="local.orderDetails">
+                                        <tr>
+                                            <td>#local.orderDetails.productName#</td>
+                                            <td>#local.orderDetails.brandName#</td>
+                                            <td>#local.orderDetails.Quantity#</td>
+                                            <td>#local.orderDetails.unitPrice#</td>
+                                            <td>#local.orderDetails.unitTax#</td>
+                                            <td>#(local.orderDetails.unitPrice + local.orderDetails.unitTax)*local.orderDetails.quantity#</td>
+                                        </tr>
+                                    </cfloop>
+                                </table>
+                                <div class = "orderDate">
+                                    Order Date : #local.orderDetails.orderDate#
+                                </div>
+                                <div class = "addressDetails">
+                                    <b>Address details :</b> 
+                                    <div>
+                                        #local.orderDetails.firstName & ' ' & local.orderDetails.lastName#
+                                    </div>
+                                    <div>
+                                        #local.orderDetails.addressLine1 & ', '#
+                                        # local.orderDetails.addressLine2 & ', ' & local.orderDetails.city#
+                                        #local.orderDetails.state & ' - ' & local.orderDetails.pincode#
+                                    </div>
+                                    <div>Phone : #local.orderDetails.phoneNumber#</div>
+                                </div>
+                                <div class = "priceDetails">
+                                    <p>Actual Price : #local.orderDetails.totalPrice#</p>
+                                    <p>Total Tax : #local.orderDetails.totalTax#</p>
+                                    <hr>
+                                    <b>Total Price : #local.orderDetails.totalPrice + local.orderDetails.totalTax#</b>
+                                </div>
+                            </div>
+                        </body>
+                    </html>
                 </cfmailpart>
             </cfmail>
+            <cfset local.resultStruct["success"] = true>
+        <cfelse>
+            <cfset local.resultStruct["error"] = "Invalid Card Details">
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>

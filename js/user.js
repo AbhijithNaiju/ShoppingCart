@@ -317,21 +317,17 @@ function addToCart(productId,redirect){
 		data:{productId:productId},
 		success: function(result) {
 			addToCartResult=JSON.parse(result)
-			if(addToCartResult.success){
-				if(addToCartResult.redirect){
-					if(redirect && redirect==="order"){
-						location.href="login.cfm?redirect=order&productId="+productId
-					}else{
-						location.href="login.cfm?redirect=cart&productId="+productId
-					}
+			if(addToCartResult.redirect){
+				if(redirect && redirect==="order"){
+					location.href="login.cfm?redirect=order&productId="+productId
 				}else{
-					$("#productMessages").text("Product added to cart")
-					if(addToCartResult.increasedItemCount){
-						setCartCount();
-					}
+					location.href="login.cfm?redirect=cart&productId="+productId
 				}
 			}else{
-				alert("Error occured while adding product to cart");
+				$("#productMessages").text("Product added to cart")
+				if(addToCartResult.increasedItemCount){
+					setCartCount();
+				}
 			}
 		},error: function(){
 			alert("Error occured");
