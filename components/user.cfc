@@ -124,7 +124,7 @@
         <cfreturn local.logOutResult>
     </cffunction>
 
-    <!--- subcategory list for nav bar in header --->
+    <!--- subcategory list --->
     <cffunction name = "getSubcategories" returntype = "query">
         <cfargument name = "categoryId" type = "integer" required = "false">
         <cfquery  name = "local.subcategories">
@@ -175,8 +175,8 @@
         <cfargument  name = "minPrice" type = "float" required = "false">
         <cfargument  name = "maxPrice" type = "float" required = "false">
         <cfargument  name = "excludedIdList" type = "string" required = "false">
-        <cfargument  name = "count" type = "string" required = "false">
-        <cfargument  name = "limit" type = "integer" required = "false">
+        <cfargument name = "count" type = "string" required = "false">
+        <cfargument name = "limit" type = "integer" required = "false">
         <cfset local.resultStruct = structNew()>
         <cfquery  name = "local.getProducts" returntype="struct">
             SELECT 
