@@ -13,9 +13,9 @@
         userId=session.userId
     )>
 </cfif>
-<div class="container overflow-scroll orderHistoryBody">
+<div class="container orderHistoryBody">
     <cfoutput>
-        <div class="d-flex justify-content-between align-items-center bg-white">
+        <div class="d-flex justify-content-between align-items-center bg-white my-3">
             <h2>
                 <cfif structKeyExists(form, "orderSearchButton")
                     AND structKeyExists(form, "orderSearchId")
@@ -60,13 +60,13 @@
                 </div>
             </form>
         </div>
+        <cfif variables.orderHistory.recordCount EQ 0>
+            <div class="text-center my-2">
+                <h3>No order found</h3>
+            </div>
+        </cfif>
     </cfoutput>
-    <cfif variables.orderHistory.recordCount EQ 0>
-        <div class="text-center my-2">
-            <h3>No order found</h3>
-        </div>
-    </cfif>
-    <div class = "d-flex flex-column" id="orderListingBody">
+    <div class = "d-flex flex-column mb-3" id="orderListingBody">
         <cfoutput query="variables.orderHistory" group="orderId">
             <div class = "border d-flex flex-column my-2">
                 <div class = "d-flex justify-content-between align-items-center px-2 w-100 bg-success-subtle">

@@ -8,47 +8,59 @@ $(document).ready(function(){
 
 	$('.removeButton').click(function(){
 		const cartId = $(this).val();
-		$.ajax({
-			type:"POST",
-			url:"components/user.cfc?method=removeFromCart",
-			data:{cartId:cartId},
-			success: function(result) {
-				cartDeleteResult=JSON.parse(result)
-				if(cartDeleteResult.success){
-					// updating total price
-					cartItem = $("#cartItem"+cartId)
-					itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
-					itemTax = parseFloat($(cartItem).find(".itemTax").text());
-					itemQuantity = parseFloat($(cartItem).find(".cartQuantity").val());
+		Swal.fire({
+			title: "Are you sure?",
+			text: "This product will be removed from the cart!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Remove !"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					type:"POST",
+					url:"components/user.cfc?method=removeFromCart",
+					data:{cartId:cartId},
+					success: function(result) {
+						cartDeleteResult=JSON.parse(result)
+						if(cartDeleteResult.success){
+							// updating total price
+							cartItem = $("#cartItem"+cartId)
+							itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
+							itemTax = parseFloat($(cartItem).find(".itemTax").text());
+							itemQuantity = parseFloat($(cartItem).find(".cartQuantity").val());
 
-					actualPriceElement = $('#actualPrice');
-					totalTaxElement = $('#totalTax');
-					totalPriceElement = $('#totalPrice');
+							actualPriceElement = $('#actualPrice');
+							totalTaxElement = $('#totalTax');
+							totalPriceElement = $('#totalPrice');
 
-					updatedActualPrice = (parseFloat(actualPriceElement.text())-(itemPrice*itemQuantity)).toFixed(2);
-					updatedTotalTax = (parseFloat(totalTaxElement.text())-(itemTax*itemQuantity)).toFixed(2);
-					updatedTotalPrice = parseFloat(updatedActualPrice) + parseFloat(updatedTotalTax);
+							updatedActualPrice = (parseFloat(actualPriceElement.text())-(itemPrice*itemQuantity)).toFixed(2);
+							updatedTotalTax = (parseFloat(totalTaxElement.text())-(itemTax*itemQuantity)).toFixed(2);
+							updatedTotalPrice = parseFloat(updatedActualPrice) + parseFloat(updatedTotalTax);
 
-					actualPriceElement.text(updatedActualPrice);
-					totalTaxElement.text(updatedTotalTax);
-					totalPriceElement.text(updatedTotalPrice);
+							actualPriceElement.text(updatedActualPrice);
+							totalTaxElement.text(updatedTotalTax);
+							totalPriceElement.text(updatedTotalPrice);
 
-					// removing deleted item
-					cartItem.remove();
+							// removing deleted item
+							cartItem.remove();
 
-					// Changing cart count
-					$("#cartCount").text(cartDeleteResult.cartCount);
-					if(cartDeleteResult.cartCount == 0){
-						$("#placeOrder").remove();
-						// Showing message to goto home
-						alert("No products remaining in cart, add products to continue.");
-						location.href="./index.cfm"	
+							// Changing cart count
+							$("#cartCount").text(cartDeleteResult.cartCount);
+							if(cartDeleteResult.cartCount == 0){
+								$("#placeOrder").remove();
+								// Showing message to goto home
+								alert("No products remaining in cart, add products to continue.");
+								location.href="./index.cfm"	
+							}
+						}else{
+							alert("Error occured please try again");
+						}
+					},error: function(){
+						alert("Error occured");
 					}
-				}else{
-					alert("Error occured please try again");
-				}
-			},error: function(){
-				alert("Error occured");
+				});
 			}
 		});
 	});
@@ -65,71 +77,49 @@ $(document).ready(function(){
 		}
 	});
 
-	$("#openProfileEdit").click(function(){
-		$("#profileModal").addClass('profileEditModal');
-		$("#profileModal").removeClass('displayNone');
-		$("#profileEditBody").removeClass('displayNone');
-	});
-
-	$("#addAddress").click(function(){
-		$("#profileModal").addClass('profileEditModal');
-		$("#profileModal").removeClass('displayNone');
-		$("#addAddressBody").removeClass('displayNone');
-	});
-
 	$(".closeProfileEdit").click(function(){
-		$("#profileModal").addClass('displayNone');
-		$("#profileModal").removeClass('profileEditModal');
-		$("#profileEditBody").addClass('displayNone');
-		$("#addAddressBody").addClass('displayNone');
 		$("#updateProfileError").text('');
-		$("#updateProfileSuccess").text('');
-	});
-
-	$("#changeAddress").click(function(){
-		$("#selectAddressModal").addClass('profileEditModal');
-		$("#selectAddressModal").removeClass('displayNone');
-	});
-
-	$("#closeSelectAddress").click(function(){
-		$("#selectAddressModal").removeClass('profileEditModal');
-		$("#selectAddressModal").addClass('displayNone');
-	});
-
-	$("#orderAddAddress").click(function(){
-		$("#addAddressModal").addClass('profileEditModal');
-		$("#addAddressModal").removeClass('displayNone');
-	});
-
-	$("#closeAddAddress").click(function(){
-		$("#addAddressModal").removeClass('profileEditModal');
-		$("#addAddressModal").addClass('displayNone');
 	});
 
 	$(".deleteAddress").click(function(){
 		const addressId=this.value;
-		if(confirm("This address will be deleted from your profile")){
-			$.ajax({
-				type:"POST",
-				url:"components/user.cfc?method=deleteAddress",
-				data:{addressId:addressId},
-				success: function(result) {
-					logOutResult=JSON.parse(result)
-					if(logOutResult.success){
-						$("#address"+addressId).remove();
-					}else{
-						alert("Error occured while deleting");
+		Swal.fire({
+			title: "Are you sure?",
+			text: "This address will be deleted from your profile!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Delete !"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					type:"POST",
+					url:"components/user.cfc?method=deleteAddress",
+					data:{addressId:addressId},
+					success: function(result) {
+						logOutResult=JSON.parse(result)
+						if(logOutResult.success){
+							$("#address"+addressId).remove();
+						}else{
+							Swal.fire({
+								title: "Error occured while deleting!",
+								text: "Please try again.",
+								icon: "error"
+							  });
+						}
+					},error: function(){
+						alert("Error occured");
 					}
-				},error: function(){
-					alert("Error occured");
-				}
-			});
-		}
+				});
+			}
+		});
 	});
 
 	$(".orderAddress").change(function(){
 		const addressId=this.value;
-		addressItem=$("#addressItem"+addressId)
+		$("#orderAddressId").val(addressId);
+		addressItem=$("#addressItem"+addressId);
 		$("#selectedAddress").empty()
 		$("#selectedAddress").append(addressItem.find(".addressName").clone())
 		$("#selectedAddress").append(addressItem.find(".addressDetails").clone())
@@ -169,12 +159,16 @@ $(document).ready(function(){
 					$("#lastName").attr("value",lastName);
 					$("#emailId").attr("value",emailId);
 					$("#phoneNumber").attr("value",phoneNumber);
-					
-					$("#updateProfileSuccess").text("Profile edited successfully");
+					$("#profileEditModal").modal("hide");
+					Swal.fire({
+						icon: "success",
+						title: "Profile edited successfully",
+						showConfirmButton: false,
+						timer: 1000
+					  });
 					$("#updateProfileError").text("");
 				}else if(editProfileResult.error){
 					$("#updateProfileError").text(editProfileResult.error);
-					$("#updateProfileSuccess").text("");
 				}
 			},error: function(){
 				alert("Error occured");
@@ -211,23 +205,37 @@ function emptyHeader(){
 }
 
 function logOut(){
-	if(confirm("You will log out of this page and need to authenticate again to login")){
-		$.ajax({
-			type:"POST",
-			url:"components/user.cfc?method=logOut",
-			success: function(result) {
-				logOutResult=JSON.parse(result)
-				if(logOutResult.success){
-					location.reload();
+	Swal.fire({
+		title: "Are you sure?",
+		text: "You will log out of this page and need to authenticate again to login",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: "Logout !"
+	  }).then((result) => {
+		if (result.isConfirmed) {
+			$.ajax({
+				type:"POST",
+				url:"components/user.cfc?method=logOut",
+				success: function(result) {
+					logOutResult=JSON.parse(result)
+					if(logOutResult.success){
+						location.reload();
+					}
+					else{
+						Swal.fire({
+							title: "Error!",
+							text: "Please try again.",
+							icon: "error"
+						  });
+					}
+				},error: function(){
+					alert("Error occured");
 				}
-				else{
-					alert("Error occured try again");
-				}
-			},error: function(){
-				alert("Error occured");
-			}
-		});
-	}
+			});
+		}
+	});
 }
 
 function setFilter(range){
@@ -278,7 +286,7 @@ function filterProducts(currentData){
 						$('#listingMessage').text("");
 						listProducts(productList.resultArray)
 					}else{
-						$('#listingMessage').text("No products Found");
+						$('#listingMessage').text("No products found");
 					}
 					$(".dropdown-toggle").dropdown('toggle');
 				}else{
@@ -324,7 +332,12 @@ function addToCart(productId,redirect){
 					location.href="login.cfm?redirect=cart&productId="+productId
 				}
 			}else{
-				$("#productMessages").text("Product added to cart")
+				Swal.fire({
+					icon: "success",
+					title: "Product added to cart",
+					showConfirmButton: false,
+					timer: 1000
+				  });
 				if(addToCartResult.increasedItemCount){
 					setCartCount();
 				}
@@ -337,6 +350,8 @@ function addToCart(productId,redirect){
 
 function showMore(currentData)
 {
+	let excludedList = $("#showMoreBtn");
+	let totalProductCount=parseInt($("#totalProductCount").val());
 	const productData = new Object();
 	if(currentData.subcategoryId){
 		productData.subcategoryId = currentData.subcategoryId;
@@ -344,8 +359,8 @@ function showMore(currentData)
 		productData.searchValue = currentData.searchValue;
 	}
 	productData.sortOrder = currentData.sortOrder;
-	productData.excludedIdList = currentData.excludedIdList;
-
+	productData.limit = 5;
+	productData.excludedIdList = excludedList.val();
 	$.ajax({
 		type:"POST",
 		url:"components/user.cfc?method=getProductList",
@@ -354,9 +369,29 @@ function showMore(currentData)
 			resultJson=JSON.parse(result);
 			if(resultJson.resultArray){
 				if(resultJson.resultArray.length){
-					listProducts(resultJson.resultArray);
-					$("#showMoreBtn").css("display","none");
+					productIdList=[];
+					resultJson.resultArray.forEach(productData => {
+						let productBody = `
+							<a 
+								href="product.cfm?productId=${productData.productId}" 
+								class="randomProducts p-3 d-flex flex-column align-items-center border"
+							>
+								<img src="./assets/productimages/${productData.imageFileName}"></img>
+								<div class="w-100 my-2">
+									<h6>${productData.productName}</h6>
+									<p>${productData.brandName}</p>
+									<p class="mt-auto">Rs : ${productData.productPrice+productData.productTax}</p>
+								</div>
+							</a>
+						`;
+						excludedList.val(excludedList.val() + ',' +productData.productId);
+						$("#productListingParent").append(productBody);
+					});
+					if(totalProductCount == excludedList.val().split(",").length){
+						excludedList.remove();
+					}
 				}else{
+					excludedList.remove();
 					alert("No more products found");
 				}
 			}else{

@@ -9,7 +9,7 @@
 <cfset variables.profileDetails=application.userObject.getProfileDetails(userId=session.userId)>
 <cfset variables.addressList=application.userObject.getAddressList(userId=session.userId)>
 <cfoutput>
-    <div class="profileBody container border w-50 h-100 d-flex flex-column">
+    <div class="profileBody container w-50 h-100 d-flex flex-column my-3 shadow p-3 bg-body">
         <div class="profileHeader d-flex justify-content-between align-items-center mx-2">
             <div class="profileDetails">
                 Hello,
@@ -18,15 +18,20 @@
                 </span>
                 <p id="profileEmail">#variables.profileDetails.email#</p>
             </div>
-            <button class="btn btn-primary btn-sm" id="openProfileEdit">Edit</button>
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="##profileEditModal">
+                <img src="./assets/images/edit-icon-white.png">
+            </button>
         </div>
         <cfif structKeyExists(variables,"addAddressResult") and structKeyExists(variables.addAddressResult, "error")>
             <div class = "text-center errorMessage">#variables.addAddressResult.error#</div>
         </cfif>
         <h2>Addresses</h2>
-        <div class="addressBody border overflow-scroll">
+        <div class="addressBody mb-2">
             <cfloop array="#variables.addressList#" item="variables.addressItem">
-                <div class = "border p-3 d-flex justify-content-between align-items-center" id="address#variables.addressItem.addressId#">
+                <div 
+                    class = "border rounded-1 p-3 my-2 d-flex justify-content-between align-items-center" 
+                    id="address#variables.addressItem.addressId#"
+                >
                     <div class="d-flex flex-column">
                         <span class="addressName">#variables.addressItem.firstName & ' ' & variables.addressItem.lastName#</span>
                         <span>
@@ -44,87 +49,26 @@
                         class = "btn btn-danger btn-sm deleteAddress" 
                         value="#variables.addressItem.addressId#"
                     >
-                        Delete
+                        <img src="./assets/images/delete-white.png">
                     </button>
                 </div>
             </cfloop>
         </div>
         <div class="profileFooter d-flex">
-            <button class="w-50 btn m-1 btn-success" id="addAddress">Add Address</button>
-            <a href="./orderHistory.cfm" class="w-50 btn m-1 border border-success">Order History</a>
+            <button type="button" class="btn btn-outline-primary w-50 m-1" data-bs-toggle="modal" data-bs-target="##addAddressModal">
+                Add Address
+            </button>
+            <a href="./orderHistory.cfm" class="w-50 btn m-1 btn-outline-primary">Order History</a>
         </div>
     </div>
-    <div id="profileModal" class="displayNone">
-        <div class="displayNone" id="profileEditBody">
-            <form class="profileModalBody" id="editProfileForm" method="post">
-                <div class="m-4">
-                    <div class="form-group my-2">
-                        <label for="firstName">First Name *</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="firstName" 
-                        name="firstName"
-                        value="#variables.profileDetails.firstName#"
-                        required
-                        >
-                    </div>
-                    <div class="form-group my-2">
-                        <label for="lastName">Last Name *</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="lastName" 
-                            name="lastName"
-                            value="#variables.profileDetails.lastName#"
-                            required
-                        >
-                    </div>
-                    <div class="form-group my-2">
-                        <label for="emailId">Email Address *</label>
-                        <input 
-                            type="email" 
-                            class="form-control" 
-                            id="emailId" 
-                            name="emailId"
-                            value="#variables.profileDetails.email#"
-                            required
-                        >
-                    </div>
-                    <div class="form-group my-2">
-                        <label for="phoneNumber">Phone Number *</label>
-                        <input 
-                            type="tel" 
-                            class="form-control" 
-                            id="phoneNumber" 
-                            name="phoneNumber"
-                            minlength="8"
-                            maxlength="15"
-                            pattern="[0-9]{10}"
-                            value="#variables.profileDetails.phone#"
-                            required
-                        >
-                    </div>
+    <div class="modal" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
+        <form method="post" class = "modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class = "text-center errorMessage" id="updateProfileError"></div>
-                <div class = "text-center text-success" id="updateProfileSuccess"></div>
-                <div class="editFooter w-100 d-flex">
-                    <button type="reset" class="btn btn-secondary m-2 w-50 closeProfileEdit">Close</button>
-                    <button 
-                        type="submit" 
-                        id="editProfile" 
-                        value="#session.userId#" 
-                        name="editProfile" 
-                        class="btn btn-primary m-2 w-50"
-                    >
-                        Edit
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="displayNone" id="addAddressBody">
-            <form method="post" class = "profileModalBody overflow-scroll">
-                <div class="m-4">
+                <div class="modal-body">
                     <div class="form-group my-2">
                         <label for="">First Name *</label>
                     <input 
@@ -203,12 +147,95 @@
                         >
                     </div>
                 </div>
-                <div class="addressFooter w-100 d-flex bg-white">
-                    <button type="reset" class="btn btn-secondary m-2 w-50 closeProfileEdit">Close</button>
-                    <button type="submit" class="btn btn-primary m-2 w-50" name = "addAddress">Add</button>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary m-2 closeProfileEdit" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary m-2" name = "addAddress">Add</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal" tabindex="-1" id="profileEditModal" data-bs-backdrop="static">
+        <form class="profileModalBody modal-dialog" id="editProfileForm" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close closeProfileEdit" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div>
+                    <div class="m-4">
+                        <div class="form-group my-2">
+                            <label for="firstName">First Name *</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="firstName" 
+                            name="firstName"
+                            value="#variables.profileDetails.firstName#"
+                            required
+                            >
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="lastName">Last Name *</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="lastName" 
+                                name="lastName"
+                                value="#variables.profileDetails.lastName#"
+                                required
+                            >
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="emailId">Email Address *</label>
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="emailId" 
+                                name="emailId"
+                                value="#variables.profileDetails.email#"
+                                required
+                            >
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="phoneNumber">Phone Number *</label>
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                id="phoneNumber" 
+                                name="phoneNumber"
+                                minlength="8"
+                                maxlength="15"
+                                pattern="[0-9]{10}"
+                                value="#variables.profileDetails.phone#"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class = "text-center errorMessage" id="updateProfileError"></div>
+                <div class = "text-center text-success" id="updateProfileSuccess"></div>
+                <div class="modal-footer">
+                    <button 
+                        type="reset" 
+                        class="btn btn-secondary m-2 closeProfileEdit" 
+                        data-bs-dismiss="modal"
+                    >
+                        Close
+                    </button>
+                    <button 
+                        type="submit" 
+                        id="editProfile" 
+                        value="#session.userId#" 
+                        name="editProfile" 
+                        class="btn btn-primary m-2"
+                    >
+                        Edit
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </cfoutput>
 <cfinclude  template="userFooter.cfm">

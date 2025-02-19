@@ -27,7 +27,7 @@
                         onclick="openSubCategoryModal({
                                                         CategoryId:#url.categoryId#
                                                     })">
-                        ADD
+                        Add +
                     </button>
                 </div>
                 <div class="d-flex flex-column categoryList">
@@ -35,23 +35,23 @@
                         <cfloop collection="#subCategoryData#" item="subCatoryId">
                             <div class="categoryItem d-flex justify-content-between align-items-center my-1">
                                 <div>#subCategoryData[subCatoryId]#</div>
-                                <div class="d-flex w-50 justify-content-between">
+                                <div class="d-flex justify-content-between categoryButtons">
                                     <button 
-                                        class="btn btn-primary" 
+                                        class="btn btn-sm" 
                                         onclick="openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subCatoryId#,subCategoryName:'#subCategoryData[subCatoryId]#'})"
                                         value="#subCatoryId#">
-                                        Edit
+                                        <img src="../assets/images/edit-icon.png">
                                     </button>
                                     <button 
-                                        class="btn btn-danger" 
+                                        class="btn btn-sm" 
                                         onclick="deleteSubCategory(this)" 
                                         value="#subCatoryId#">
-                                        Delete
+                                        <img src="../assets/images/delete-icon.png">
                                     </button>
                                     <a 
                                         href="product.cfm?subCategoryId=#subCatoryId#&subCategoryName=#subCategoryData[subCatoryId]#"
-                                        class="btn btn-success">
-                                        Open
+                                        class="btn btn-sm">
+                                        <img src="../assets/images/open-icon.png">
                                     </a>
                                 </div>
                             </div>

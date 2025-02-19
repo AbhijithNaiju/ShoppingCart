@@ -29,7 +29,7 @@
                 Hash(arguments.password & local.qryAdminData.fldUserSaltString, 'SHA-512', 'utf-8', 125)
             >
                 <cfset session.userId = local.qryAdminData.fldUser_ID>
-                <cfset session.roleId = 1>
+                    <cfset session.roleId = 1>
                 <cflocation  url="./index.cfm" addtoken ="false">
             <cfelse>
                 <cfset local.structResult["error"] = "Invalid username or password">

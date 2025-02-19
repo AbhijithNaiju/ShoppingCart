@@ -26,22 +26,21 @@
                     </div>
                 </div>
                 <div class="productDetails my-3 mx-2 px-2 py-3 border d-flex flex-column">
-                    <div class="productNavLinks d-flex">
-                        <a 
-                            href="./category.cfm?catId=#variables.productDetails[1].categoryID#"
-                        >
-                            #variables.productDetails[1].categoryName#
-                        </a>-
-                        <a 
-                            href="./productListing.cfm?subcatId=#variables.productDetails[1].subCategoryId#"
-                        >
-                            #variables.productDetails[1].SubcategoryName#
-                        </a>-
-                        <span
-                        >
-                            #variables.productDetails[1].productName#
-                        </span>
-                    </div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="./category.cfm?catId=#variables.productDetails[1].categoryID#">
+                                    #variables.productDetails[1].categoryName#
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="./productListing.cfm?subcatId=#variables.productDetails[1].subCategoryId#">
+                                    #variables.productDetails[1].SubcategoryName#
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">#variables.productDetails[1].productName#</li>
+                        </ol>
+                    </nav>
                     <div class = "m-3" >
                         <h3 class="productName">
                             #variables.productDetails[1].productName#
@@ -83,7 +82,6 @@
                                 BUY NOW
                             </button>
                         </div>
-                        <div id="productMessages" class = "text-center text-success my-1" ></div>
                     </div>
                 </div>
             </div>

@@ -116,7 +116,7 @@ body
 
 .categoryBody 
 {
-    width: 35%;
+    width: 40%;
     max-height: 90%;
     overflow: scroll;
 }
@@ -158,9 +158,12 @@ body
 }
 .productModalBody,.subCategoryModalBody,.categoryModalBody
 {
-    width: 30%;
+    width: 50%;
     background-color: #fff;
-    max-height: 90%;
+    max-height: 100%;
+}
+#productDescription{
+    height: 100px;
 }
 .categoryModalBody
 {
@@ -174,21 +177,24 @@ body
 {
     max-height: 90%;
 }
+.categoryButtons{
+    width: 35%;
+}
 .productModalScroll
 {
-    height: 80%;
+    height: 85%;
     overflow-y: scroll;
 }
 .thumbnailImage
 {
-    height: 50px;
-    width: 50px;
-    margin: 10px;
+    max-height: 100px;
     border: none;
+    padding: none;
+    background-color: #fff;
 }
 .thumbnailImage img
 {
-    width: 100%;
+    max-width: 100%;
     height: 100%;
 }
 .productName
@@ -212,4 +218,17 @@ body
 {
     right: 10px;
     top:10px;
+}
+.categoryItem img{
+    height: 25px;
+}
+.productButtons{
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: #fff;
+}
+.productButtons img{
+    height: 100%;
+    width: 100%;
 }

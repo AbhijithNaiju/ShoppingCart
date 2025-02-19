@@ -58,8 +58,28 @@
                     <cfelseif structKeyExists(url, "subcatId")>
                         <input type="hidden" name="subcatId" value="#url.subcatId#">
                     </cfif>
-                    <button type="submit" name="sortOrder" value="asc" class="btn">Price : Low to high</button>
-                    <button type="submit" name="sortOrder" value="desc" class="btn">Price : High to Low</button>
+                    <button 
+                        type="submit" 
+                        name="sortOrder" 
+                        value="asc" 
+                        class="btn"
+                        <cfif variables.sortOrder EQ "asc">
+                            disabled
+                        </cfif>
+                    >
+                        Price : Low to high
+                    </button>
+                    <button 
+                        type="submit" 
+                        name="sortOrder" 
+                        value="desc" 
+                        class="btn"
+                        <cfif variables.sortOrder EQ "desc">
+                            disabled
+                        </cfif>
+                    >
+                        Price : High to low
+                    </button>
                 </form>
                 <div class="dropdown">
                     <button 
@@ -72,38 +92,49 @@
                         Price Filter
                     </button>
                     <ul class="dropdown-menu p-2">
-                        <li class = "form-control">
+                        <li class = "form-control dropdown-item">
                             <input 
                                 type="radio" 
                                 name="filterRadio" 
                                 id="filter1" 
                                 onclick='setFilter({min:0,max:1000})'
                             >
-                            <label for="filter1">0-1000</label>
+                            <label for="filter1">0 - 1000</label>
                         </li>
-                        <li class = "form-control">
+                        <li class = "form-control dropdown-item">
                             <input 
                                 type="radio" 
                                 name="filterRadio" 
                                 id="filter2" 
                                 onclick='setFilter({min:1000,max:10000})'
                             >
-                            <label for="filter2">1000-10000</label>
+                            <label for="filter2">1000 - 10000</label>
                         </li>
-                        <li class = "form-control">
+                        <li class = "form-control dropdown-item">
                             <input 
                                 type="radio" 
                                 name="filterRadio" 
                                 id="filter3" 
                                 onclick='setFilter({min:10000,max:15000})'
                             >
-                            <label for="filter3">10000-15000</label>
+                            <label for="filter3">10000 - 15000</label>
                         </li>
-                        <li class="d-flex flex-column align-items-center my-1">
-                            <input type="number" id="filterMin" placeholder="Min" class="form-control filterInput">
+                        <li class="d-flex flex-column align-items-center my-1 ">
+                            <input 
+                                type="number" 
+                                id="filterMin" 
+                                placeholder="Min" 
+                                class="form-control filterInput"
+                            >
                             TO
-                            <input type="number" id="filterMax" placeholder="Max" class="form-control filterInput">
+                            <input 
+                                type="number" 
+                                id="filterMax" 
+                                placeholder="Max" 
+                                class="form-control filterInput"
+                            >
                         </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <button 
                                 class = "btn w-100 border my-1" 
@@ -143,7 +174,7 @@
                             <img src="./assets/productimages/#productDetails.imageFileName#"></img>
                             <div class="w-100 my-2">
                                 <h6>#productDetails.productName#</h6>
-                                <p>#productDetails.brandName#</p>
+                                <p class = "productBrand text-secondary">#productDetails.brandName#</p>
                                 <p class="mt-auto">Rs : #productDetails.productPrice + productDetails.productTax#</p>
                             </div>
                         </a>
@@ -155,17 +186,22 @@
                         <button 
                             class="btn border my-1"
                             id="showMoreBtn"
+                            value="#arraytolist(variables.arrayProductId)#"
                             onclick="showMore({
                                 subcategoryId:#variables.subcatId#,
                                 searchValue:'#variables.searchValue#',
-                                sortOrder:'#variables.sortOrder#',
-                                excludedIdList:'#arraytolist(variables.arrayProductId)#'
+                                sortOrder:'#variables.sortOrder#'
                             })" 
                             aria-expanded="false"
                         >
                             Show more
                         </button>
                     </div>
+                    <input 
+                        type="hidden" 
+                        value="#variables.productList.productCount#"
+                        id="totalProductCount"
+                    >
                 </cfif>
                 <div class="text-center" id="listingMessage"></div>
             <cfelse>

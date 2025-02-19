@@ -14,21 +14,16 @@
                     <button 
                         class="btn btn-success" 
                         onclick="openProductModal({categoryId:#categoryData.fldCategoryID#,subCategoryId:#url.subCategoryId#})">
-                        ADD
+                        Add +
                     </button>
                 </div>
                 <div class="d-flex flex-column categoryList">
                     <cfif productData.recordCount>
                         <cfloop query="productData">
-                            <div class="productItem my-2 border p-1 justify-content-between align-items-center">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <div class="productName">#productData.fldProductName#</div>
-                                        <div class="brandName">#productData.fldBrandName#</div>
-                                    </div>
-                                    <div>#productData.fldprice#</div>
+                            <div class="productItem my-2 border p-3 justify-content-between align-items-center">
+                                <div class="row">
                                     <button 
-                                        class="thumbnailImage"
+                                        class="thumbnailImage col-4"
                                         onclick="openImageModal({productId:'#productData.fldProduct_ID#'})"
                                     >
                                         <img 
@@ -36,22 +31,30 @@
                                             alt="Image not found" 
                                             class="">
                                     </button>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <button 
-                                        class="btn btn-secondary w-50" 
-                                        onclick="openProductModal({categoryId:#categoryData.fldCategoryID#,subCategoryId:#url.subCategoryId#,productId:#productData.fldProduct_ID#})"
-                                        value="#productData.fldProduct_ID#"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button 
-                                        class="btn btn-secondary w-50" 
-                                        onclick="deleteProduct(this)" 
-                                        value="#productData.fldProduct_ID#"
-                                    >
-                                        Delete
-                                    </button>
+                                    <div class="col-6 d-flex flex-column">
+                                        <div class="productName">#productData.fldProductName#</div>
+                                        <div class="brandName">#productData.fldBrandName#</div>
+                                        <div class = "mt-auto">
+                                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                                            #productData.fldprice#
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex flex-column justify-content-around">
+                                        <button 
+                                            class="productButtons" 
+                                            onclick="openProductModal({categoryId:#categoryData.fldCategoryID#,subCategoryId:#url.subCategoryId#,productId:#productData.fldProduct_ID#})"
+                                            value="#productData.fldProduct_ID#"
+                                        >
+                                            <img src="../assets/images/edit-icon.png">
+                                        </button>
+                                        <button 
+                                            class="productButtons" 
+                                            onclick="deleteProduct(this)" 
+                                            value="#productData.fldProduct_ID#"
+                                        >
+                                            <img src="../assets/images/delete-icon.png">
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </cfloop>
@@ -75,47 +78,53 @@
                 enctype="multipart/form-data">
                 <h4 id="modalHeading"></h4>
                 <div class = "productModalScroll" >
-                    <div class = "form-group">
+                    <div class = "form-group my-3">
                         <cfoutput>
-                            <label for="categorySelect">Category Name</label>
-                            <select name="formCategoryId" id = "categorySelect" onchange="listSubcategories(this.value)" class = "form-control" required>
-                                <cfloop query="categoryList">
-                                    <option value="#categoryList.fldCategory_ID#">
-                                        #categoryList.fldcategoryName#
-                                    </option>
-                                </cfloop>
-                            </select>
-                            <label for="subCategorySelect">Subcategory name</label>
-                            <select name="formSubCategoryId" id = "subCategorySelect" class = "form-control" required>
-                            </select>
-                            <label for="brandSelect">Brand Name</label>
-                            <select name="formBrandId" id="brandSelect" class="form-control" required>
-                                <cfloop query="brandData">
-                                    <option value="#brandData.fldBrand_ID#">
-                                        #brandData.fldBrandName#
-                                    </option>
-                                </cfloop>
-                            </select>
+                            <div class = "my-3">
+                                <label class="mb-2" for="categorySelect">Category Name</label>
+                                <select name="formCategoryId" id = "categorySelect" onchange="listSubcategories(this.value)" class = "form-control" required>
+                                    <cfloop query="categoryList">
+                                        <option value="#categoryList.fldCategory_ID#">
+                                            #categoryList.fldcategoryName#
+                                        </option>
+                                    </cfloop>
+                                </select>
+                            </div>
+                            <div class = "my-3">
+                                <label class="mb-2" for="subCategorySelect">Subcategory name</label>
+                                <select name="formSubCategoryId" id = "subCategorySelect" class = "form-control" required>
+                                </select>
+                            </div>
+                            <div class = "my-3">
+                                <label class="mb-2" for="brandSelect">Brand Name</label>
+                                <select name="formBrandId" id="brandSelect" class="form-control" required>
+                                    <cfloop query="brandData">
+                                        <option value="#brandData.fldBrand_ID#">
+                                            #brandData.fldBrandName#
+                                        </option>
+                                    </cfloop>
+                                </select>
+                            </div>
                         </cfoutput>
                     </div>
-                    <div class = "form-group" >
-                        <label for="productName">Product Name</label>
+                    <div class = "form-group my-3" >
+                        <label class="mb-2" for="productName">Product Name</label>
                         <input type="text" id="productName" name="productName" class="form-control" required>
                     </div>
-                    <div class = "form-group" >
-                        <label for="productDescription">Product Description</label>
+                    <div class = "form-group my-3" >
+                        <label class="mb-2" for="productDescription">Product Description</label>
                         <textarea id="productDescription" name="productDescription" class="form-control" required></textarea>
                     </div>
-                    <div class = "form-group" >
-                        <label for="productPrice">Product Price</label>
+                    <div class = "form-group my-3" >
+                        <label class="mb-2" for="productPrice">Product Price</label>
                         <input type="number" step="0.01" id="productPrice" name="productPrice" class="form-control" required>
                     </div>
-                    <div class = "form-group" >
-                        <label for="productTax">Product Tax</label>
+                    <div class = "form-group my-3" >
+                        <label class="mb-2" for="productTax">Product Tax</label>
                         <input type="number" step="0.01" id="productTax" name="productTax" class="form-control" required>
                     </div>
-                    <div class = "form-group" >
-                        <label for="productImages">Product Images</label>
+                    <div class = "form-group my-3" >
+                        <label class="mb-2" for="productImages">Product Images</label>
                         <input type="file" multiple id="productImages" name="productImages" class="form-control" required>
                     </div>
                     <input type="hidden" id="productId" value="" name="productId" class="form-control">

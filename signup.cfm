@@ -82,7 +82,7 @@
                 </div>
             </cfoutput>
         </cfif>
-        <input type="submit" id="" class="btn btn-success" name="signupButton">
+        <input type="submit" id="" class="btn btn-success" name="signupButton" value="Submit">
         <div class="d-flex my-2">
             Already have an account ? 
             <a href="./login.cfm" class = "mx-1" >Login</a>

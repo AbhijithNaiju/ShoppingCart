@@ -17,7 +17,7 @@
     <div class="categoryBody m-auto border p-3">
         <div class="categoryHeading d-flex justify-content-between my-2">
             <h3 class="">CATEGORIES</h3>
-            <button class="btn btn-success" onclick="openCategoryModal(0)">ADD</button>
+            <button class="btn btn-success" onclick="openCategoryModal(0)">Add +</button>
         </div>
         <div class="d-flex flex-column">
             <cfset categoryData = application.adminObject.getCategories()>
@@ -26,23 +26,23 @@
                 <cfloop query="categoryData">
                     <div class="categoryItem d-flex justify-content-between align-items-center my-1">
                         <div>#categoryData.fldCategoryName#</div>
-                        <div class="d-flex w-50 justify-content-between">
+                        <div class="d-flex justify-content-between categoryButtons">
                             <button 
-                                class="btn btn-primary" 
+                                class="btn  btn-sm" 
                                 onclick="openCategoryModal({categoryId:#categoryData.fldCategory_ID#,categoryName:'#categoryData.fldCategoryName#'})"
                                 value="#categoryData.fldCategory_ID#">
-                                Edit
+                                <img src="../assets/images/edit-icon.png">
                             </button>
                             <button 
-                                class="btn btn-danger" 
+                                class="btn btn-sm" 
                                 onclick="deleteCategory(this)" 
                                 value="#categoryData.fldCategory_ID#">
-                                Delete
+                                <img src="../assets/images/delete-icon.png">
                             </button>
                             <a 
-                                href="subcategory.cfm?categoryId=#categoryData.fldCategory_ID#&categoryName=#categoryData.fldCategoryName#" 
-                                class="btn btn-success">
-                                Open
+                            href="subcategory.cfm?categoryId=#categoryData.fldCategory_ID#&categoryName=#categoryData.fldCategoryName#" 
+                            class="btn btn-sm">
+                            <img src="../assets/images/open-icon.png">
                             </a>
                         </div>
                     </div>

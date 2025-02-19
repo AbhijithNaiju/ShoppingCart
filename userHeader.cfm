@@ -18,17 +18,17 @@
                 
                 <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
                     <div class="searchBar">
-                        <form class="input-group" action="productlisting.cfm">
+                        <form class="d-flex" action="productlisting.cfm">
                             <input 
                                 type="text" 
-                                class="form-control" 
+                                class="form-control me-2" 
                                 name="searchValue" 
                                 placeholder="" 
                                 aria-label="Search" 
                                 aria-describedby="basic-addon2"
                                 required
                             >
-                            <div class="input-group-append">
+                            <div class="">
                                 <button class="btn  btn-outline-light" type="submit">Search</button>
                             </div>
                         </form>
@@ -60,20 +60,22 @@
             </div>
             <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
                 <cfset variables.allSubcategories = application.userObject.getSubcategories()>
-                <div class="categoryNav px-3 py-1 border">
+                <div class="categoryNav px-3 py-2">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
                         <div  class = "navCategory" >
                             <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName" >
                                 #variables.allSubcategories.categoryName#
                             </a>
-                            <div class="categoryDropDown d-flex flex-column ">
+                            <div class="categoryDropDown dropdown-menu d-flex flex-column ">
                                 <cfoutput>
-                                    <a 
-                                        href="productListing.cfm?subcatId=#variables.allSubcategories.subcategoryId#" 
-                                        class="navSubcategoryName btn border"
-                                    >
-                                        #variables.allSubcategories.subcategoryName#
-                                    </a>
+                                    <li>
+                                        <a 
+                                            href="productListing.cfm?subcatId=#variables.allSubcategories.subcategoryId#" 
+                                            class="navSubcategoryName dropdown-item py-2 btn"
+                                        >
+                                            #variables.allSubcategories.subcategoryName#
+                                        </a>
+                                    </li>
                                 </cfoutput>
                             </div>
                         </div>
