@@ -57,8 +57,8 @@
                         );
                 </cfquery>
                 <cfset local.structResult["success"] = true>
-                <cfset session.userId = local.signUpresult.generatedKey>
-                <cfset session.roleId = 2>
+                <cfset session.userSession.userId = local.signUpresult.generatedKey>
+                <cfset session.userSession.roleId = 2>
             </cfif>
         <cfelse>
             <cfif len(trim(arguments.password)) LT 8>
@@ -101,8 +101,8 @@
                     EQ
                     hash(arguments.password & local.userDetails.fldUserSaltString,'SHA-512', 'utf-8', 125)
                 >
-                    <cfset session.userId = local.userDetails.fldUser_ID>
-                    <cfset session.roleId = 2>
+                    <cfset session.userSession.userId = local.userDetails.fldUser_ID>
+                    <cfset session.userSession.roleId = 2>
                     <cfset local.structResult["success"] = true>
                 <cfelse>
                     <cfset local.structResult["error"] = "Invalid password">
@@ -119,7 +119,9 @@
 
     <!--- logout --->
     <cffunction  name="logOut" returntype="struct" returnformat = "json" access="remote">
-        <cfset structClear(session)>
+        <cfif structKeyExists(session, "userSession")>
+            <cfset structClear(session.userSession)>
+        </cfif>
         <cfset local.logOutResult["success"] = true>
         <cfreturn local.logOutResult>
     </cffunction>
@@ -150,7 +152,7 @@
 
     <!--- Details to set header --->
     <cffunction name = "headerDetails" returntype = "struct" access = "remote" returnformat = "json">
-        <cfif structKeyExists(session,"userId")>
+        <cfif structKeyExists(session,"userSession") AND structKeyExists(session.userSession, "userId")>
             <cfset local.resultStruct["sessionExist"] = true>
             <cfquery  name = "local.getCartCount">
                 SELECT 
@@ -158,7 +160,7 @@
                 FROM
                     tblCart
                 WHERE
-                    fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+                    fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
             </cfquery>
             <cfset local.resultStruct["cartCount"] = local.getCartCount.cartCount>
         <cfelse>
@@ -301,7 +303,7 @@
         <cfargument  name = "productid" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>
-        <cfif structKeyExists(session, "userId")>
+        <cfif structKeyExists(session.userSession, "userId")>
             <!--- user is logged in --->
             <!--- checking whether product already in the cart --->
             <cfquery  name = "local.isProductExist">
@@ -312,7 +314,7 @@
                 WHERE
                     fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
                     AND
-                    fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer"> 
+                    fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer"> 
             </cfquery>
             <cfif local.isProductExist.recordCount>
                 <!--- product is present in cart(increase quantity) --->
@@ -336,7 +338,7 @@
                         )VALUES(
                             <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">,
                             1,
-                            <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+                            <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
                         );
                 </cfquery>
                 <cfset local.resultStruct["increasedItemCount"] = 1>
@@ -420,7 +422,7 @@
             FROM
                 tblcart
             WHERE 
-                fldUserId = <cfqueryparam value = "#session.userId#" cfSqlType = "integer">
+                fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
         </cfquery>
         <cfset local.structResult["success"] = true>
         <cfset local.structResult["cartCount"] = local.getCartCount.cartCount>

@@ -1,6 +1,6 @@
 <cfif structKeyExists(url, "orderId")>
 	<cfset variables.orderHistory=application.userObject.getOrderHistory(
-		userId=session.userId,
+		userId=session.userSession.userId,
 		orderId=url.orderId
 	)>
 	<cfset variables.fileName = url.orderId & '_' & dateTimeFormat(now(),"dd_mm_yyyy_hh_nn_ss_tt")&'.pdf'>

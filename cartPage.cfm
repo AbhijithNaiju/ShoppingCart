@@ -1,6 +1,6 @@
 <cfinclude  template="userHeader.cfm">
 
-<cfset variables.cartItems=application.userObject.getCartItems(userId=session.userId)>
+<cfset variables.cartItems=application.userObject.getCartItems(userId=session.userSession.userId)>
 <cfset variables.actualPrice = 0>
 <cfset variables.totalTax = 0>
 <cfset variables.totalPrice = 0>

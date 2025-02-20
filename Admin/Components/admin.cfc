@@ -28,8 +28,7 @@
                 EQ
                 Hash(arguments.password & local.qryAdminData.fldUserSaltString, 'SHA-512', 'utf-8', 125)
             >
-                <cfset session.userId = local.qryAdminData.fldUser_ID>
-                    <cfset session.roleId = 1>
+                <cfset session.adminSession.userId = local.qryAdminData.fldUser_ID>
                 <cflocation  url="./index.cfm" addtoken ="false">
             <cfelse>
                 <cfset local.structResult["error"] = "Invalid username or password">
@@ -41,7 +40,9 @@
     </cffunction>
 
     <cffunction  name="logOut" returntype="boolean" access="remote">
-        <cfset structClear(session)>
+        <cfif structKeyExists(session, "adminSession")>
+            <cfset structClear(session.adminSession)>
+        </cfif>
         <cfreturn true>
     </cffunction>
 
@@ -88,7 +89,7 @@
                         tblCategory
                     SET
                         fldCategoryName = <cfqueryparam value = "#trim(arguments.categoryName)#" cfSqlType="varchar">,
-                        fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">
+                        fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                     WHERE
                         fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">
                 </cfquery>
@@ -102,7 +103,7 @@
                     )
                     VALUES(
                         <cfqueryparam value = '#trim(arguments.categoryName)#' cfSqlType="varchar">,
-                        <cfqueryparam value = "#session.userId#" cfSqlType="integer">
+                        <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                     )
                 </cfquery>
             </cfif>
@@ -117,7 +118,7 @@
             UPDATE
                 tblCategory
             SET
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">,
+                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">,
                 fldactive = 0
             WHERE
                 fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">
@@ -181,7 +182,7 @@
                     SET
                         fldcategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">,
                         fldSubCategoryName = <cfqueryparam value = "#trim(arguments.subCategoryName)#" cfSqlType="varchar">,
-                        fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">
+                        fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                     WHERE
                         fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType="integer">;
                 </cfquery>
@@ -198,7 +199,7 @@
                     (
                         <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">,
                         <cfqueryparam value = '#trim(arguments.subCategoryName)#' cfSqlType="varchar">,
-                        <cfqueryparam value = "#session.userId#" cfSqlType="integer">
+                        <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                     )
                 </cfquery>
             </cfif>
@@ -213,7 +214,7 @@
             UPDATE
                 tblSubCategory
             SET
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">,
+                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">,
                 fldactive = 0
             WHERE
                 fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType="integer">
@@ -344,7 +345,7 @@
                         fldDescription = <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
                         fldPrice = <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
                         fldTax = <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
-                        fldUpdatedBy = <cfqueryparam value='#session.userId#' cfsqltype="integer">
+                        fldUpdatedBy = <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
                     WHERE 
                         fldProduct_ID = <cfqueryparam value='#arguments.productId#' cfsqltype="integer">
                 </cfquery>
@@ -371,7 +372,7 @@
                         <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
                         <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
                         <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
-                        <cfqueryparam value='#session.userId#' cfsqltype="integer">
+                        <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
                     )
                 </cfquery>
                 <cfset local.defaultImage = 1>
@@ -393,7 +394,7 @@
                         <cfqueryparam value='#local.productid#' cfsqltype="integer">,
                         <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,
                         <cfqueryparam value='#local.defaultImage#' cfsqltype="varchar">,
-                        <cfqueryparam value='#session.userId#' cfsqltype="integer">
+                        <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
                     )
                 </cfquery>
                 <cfset local.defaultImage = 0>
@@ -408,7 +409,7 @@
             UPDATE
                 tblProduct
             SET
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">,
+                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">,
                 fldactive = 0
             WHERE
                 fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType="integer">
@@ -423,7 +424,7 @@
             UPDATE
                 tblProductImages
             SET
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">,
+                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">,
                 fldactive = 0
             WHERE
                 fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="integer">;
@@ -441,7 +442,7 @@
                 tblProductImages
             SET
                 fldDefaultImage = 0,
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">
+                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
             WHERE
                 fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType="integer">
                 AND fldDefaultImage =1;
@@ -451,7 +452,7 @@
                 tblProductImages
             SET
                 fldDefaultImage = 1,
-                fldUpdatedBy = <cfqueryparam value = "#session.userId#" cfSqlType="integer">
+                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
             WHERE
                 fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="integer">;
         </cfquery>

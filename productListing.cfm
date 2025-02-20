@@ -165,17 +165,19 @@
                 AND 
                 structKeyExists(variables.productList.resultArray[1],"productId"
             )>
-                <div class="productListingParent m-3" id="productListingParent">
+                <div class="productListingParent my-3 mx-5" id="productListingParent">
                     <cfloop array = "#variables.productList.resultArray#" item="productDetails">
                         <a 
-                        href="product.cfm?productId=#productDetails.productId#" 
-                        class="randomProducts p-3 align-items-center border"
+                            href="product.cfm?productId=#productDetails.productId#" 
+                            class="randomProducts d-flex flex-column justify-content-between align-items-center border shadow-sm"
                         >
-                            <img src="./assets/productimages/#productDetails.imageFileName#"></img>
-                            <div class="w-100 my-2">
-                                <h6>#productDetails.productName#</h6>
-                                <p class = "productBrand text-secondary">#productDetails.brandName#</p>
-                                <p class="mt-auto">Rs : #productDetails.productPrice + productDetails.productTax#</p>
+                            <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
+                                <img src="./assets/productimages/#productDetails.imageFileName#"></img>
+                            </div>
+                            <div class="w-100 d-flex flex-column">
+                                <h6 class="card-title p-2">#productDetails.productName#</h6>
+                                <span class = "productBrand text-secondary px-2">#productDetails.brandName#</span>
+                                <span class="mt-auto px-2">Rs : #productDetails.productPrice + productDetails.productTax#</span>
                             </div>
                         </a>
                         <cfset arrayAppend(variables.arrayProductId, productDetails.productId)>

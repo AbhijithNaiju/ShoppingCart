@@ -24,9 +24,8 @@
                     </cfif>
                     <button 
                         class="btn btn-success" 
-                        onclick="openSubCategoryModal({
-                                                        CategoryId:#url.categoryId#
-                                                    })">
+                        onclick="openSubCategoryModal({CategoryId:#url.categoryId#})"
+                    >
                         Add +
                     </button>
                 </div>

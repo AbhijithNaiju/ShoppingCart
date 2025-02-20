@@ -68,7 +68,6 @@
         </div>
         <cfset categoryList = application.adminObject.getCategories()>
         <cfset brandData = application.adminObject.getBrands()>
-        <cfset subCategoryData = application.adminObject.getSubCategories(categoryid=categoryData.fldCategoryID)>
         <div id="addModal" class="displayNone">
             <form 
                 method="post" 

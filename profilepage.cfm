@@ -2,12 +2,12 @@
 
 <cfif structKeyExists(form,"addAddress")>
     <cfset variables.addAddressResult = application.userObject.addAddress(
-        userId = session.userId,
+        userId = session.userSession.userId,
         formStruct = form
     )>
 </cfif>
-<cfset variables.profileDetails=application.userObject.getProfileDetails(userId=session.userId)>
-<cfset variables.addressList=application.userObject.getAddressList(userId=session.userId)>
+<cfset variables.profileDetails=application.userObject.getProfileDetails(userId=session.userSession.userId)>
+<cfset variables.addressList=application.userObject.getAddressList(userId=session.userSession.userId)>
 <cfoutput>
     <div class="profileBody container w-50 h-100 d-flex flex-column my-3 shadow p-3 bg-body">
         <div class="profileHeader d-flex justify-content-between align-items-center mx-2">
@@ -36,7 +36,7 @@
                         <span class="addressName">#variables.addressItem.firstName & ' ' & variables.addressItem.lastName#</span>
                         <span>
                             #variables.addressItem.addressLine1 & ', '#
-                            <cfif structKeyExists(variables.addressItem,"addressLine2")>
+                            <cfif structKeyExists(variables.addressItem,"addressLine2") AND LEN(variables.addressItem.addressLine2)>
                                 #variables.addressItem.addressLine2 & ', '#
                             </cfif>
                             #variables.addressItem.city & ', '#

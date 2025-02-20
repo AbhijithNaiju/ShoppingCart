@@ -27,18 +27,20 @@
                                 View all
                             </a>
                         </div>
-                        <div class="productListingParent m-3">
+                        <div class="productListingParent my-3 mx-5">
                             <cfloop array="#variables.subcategoryProductList.resultArray#" item="variables.subcategoryProduct">
                                 <cfif structKeyExists(variables.subcategoryProduct,"productId")>
                                     <a 
-                                    href="product.cfm?productId=#variables.subcategoryProduct.productId#" 
-                                    class="randomProducts p-3 d-flex flex-column align-items-center border"
+                                        href="product.cfm?productId=#variables.subcategoryProduct.productId#" 
+                                        class="border randomProducts d-flex flex-column justify-content-between align-items-center shadow"
                                     >
-                                        <img src="./assets/productimages/#variables.subcategoryProduct.imageFileName#"></img>
-                                        <div class="w-100 my-2">
-                                            <h6>#variables.subcategoryProduct.productName#</h6>
-                                            <p class = "productBrand text-secondary">#variables.subcategoryProduct.brandName#</p>
-                                            <p class="mt-auto">Rs : #variables.subcategoryProduct.productPrice + variables.subcategoryProduct.productTax#</p>
+                                        <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
+                                            <img src="./assets/productimages/#variables.subcategoryProduct.imageFileName#"></img>
+                                        </div>
+                                        <div class="w-100 d-flex flex-column">
+                                            <h6 class="card-title p-2">#variables.subcategoryProduct.productName#</h6>
+                                            <span class = "productBrand text-secondary px-2">#variables.subcategoryProduct.brandName#</span>
+                                            <span class="mt-auto px-2">Rs : #variables.subcategoryProduct.productPrice + variables.subcategoryProduct.productTax#</span>
                                         </div>
                                     </a>
                                 </cfif>

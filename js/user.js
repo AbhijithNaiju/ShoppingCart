@@ -51,8 +51,13 @@ $(document).ready(function(){
 							if(cartDeleteResult.cartCount == 0){
 								$("#placeOrder").remove();
 								// Showing message to goto home
-								alert("No products remaining in cart, add products to continue.");
-								location.href="./index.cfm"	
+								Swal.fire({
+									title: "Message !",
+									text: "No products remaining in cart, add products to continue. !",
+									icon: "info"
+								  }).then((result)=>{
+									  location.href="./index.cfm"	
+								  });
 							}
 						}else{
 							alert("Error occured please try again");
@@ -161,10 +166,12 @@ $(document).ready(function(){
 					$("#phoneNumber").attr("value",phoneNumber);
 					$("#profileEditModal").modal("hide");
 					Swal.fire({
+						position: "top-end",
+						toast: true,
 						icon: "success",
 						title: "Profile edited successfully",
 						showConfirmButton: false,
-						timer: 1000
+						timer: 1500
 					  });
 					$("#updateProfileError").text("");
 				}else if(editProfileResult.error){
@@ -304,13 +311,15 @@ function listProducts(productList){
 		let productBody = `
 			<a 
 				href="product.cfm?productId=${productData.productId}" 
-				class="randomProducts p-3 d-flex flex-column align-items-center border"
+				class="randomProducts d-flex flex-column justify-content-between align-items-center border shadow-sm"
 			>
-				<img src="./assets/productimages/${productData.imageFileName}"></img>
-				<div class="w-100 my-2">
-					<h6>${productData.productName}</h6>
-					<p>${productData.brandName}</p>
-					<p class="mt-auto">Rs : ${productData.productPrice+productData.productTax}</p>
+				<div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
+					<img src="./assets/productimages/${productData.imageFileName}"></img>
+				</div>
+				<div class="w-100 d-flex flex-column">
+					<h6 class="card-title p-2">${productData.productName}</h6>
+					<span>${productData.brandName}</span>
+					<span class="mt-auto px-2">Rs : ${productData.productPrice+productData.productTax}</span>
 				</div>
 			</a>
 		`;
@@ -333,10 +342,12 @@ function addToCart(productId,redirect){
 				}
 			}else{
 				Swal.fire({
+					position: "top",
+					toast: true,
 					icon: "success",
 					title: "Product added to cart",
 					showConfirmButton: false,
-					timer: 1000
+					timer: 1500
 				  });
 				if(addToCartResult.increasedItemCount){
 					setCartCount();
@@ -374,13 +385,15 @@ function showMore(currentData)
 						let productBody = `
 							<a 
 								href="product.cfm?productId=${productData.productId}" 
-								class="randomProducts p-3 d-flex flex-column align-items-center border"
+								class="randomProducts d-flex flex-column justify-content-between align-items-center border shadow-sm"
 							>
-								<img src="./assets/productimages/${productData.imageFileName}"></img>
-								<div class="w-100 my-2">
-									<h6>${productData.productName}</h6>
-									<p>${productData.brandName}</p>
-									<p class="mt-auto">Rs : ${productData.productPrice+productData.productTax}</p>
+								<div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
+									<img src="./assets/productimages/${productData.imageFileName}"></img>
+								</div>
+								<div class="w-100 d-flex flex-column">
+									<h6 class="card-title p-2">${productData.productName}</h6>
+									<span class = "productBrand text-secondary px-2">${productData.brandName}</span>
+									<span class="mt-auto px-2">Rs : ${productData.productPrice+productData.productTax}</span>
 								</div>
 							</a>
 						`;

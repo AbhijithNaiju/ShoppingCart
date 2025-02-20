@@ -2,6 +2,7 @@
     <cfset this.name = "shoppingCart">
     <cfset this.dataSource = "shoppingSiteDS">
     <cfset this.sessionManagement = true>
+    <cfset this.sessiontimeout = CreateTimeSpan(0,0,30,0)>
 
     <cffunction  name="onApplicationStart" returnType="boolean">
         <cfset application.adminObject = createObject("component","admin.components.admin")>
@@ -23,14 +24,16 @@
         <cfif listfirst(CGI.script_name,'/') EQ "admin">
             <cfset local.adminPublicPages = ["/admin/login.cfm"]>
             <cfif arrayFindNoCase(local.adminPublicPages, arguments.requestedPage) 
-                OR (structKeyExists(session, "userId") AND session.roleId EQ 1)>
+                OR (structKeyExists(session, "adminSession") AND structKeyExists(session.adminSession, "userId"))>
                 <cfreturn true>
             <cfelse>
                 <cflocation url="../admin/login.cfm" addtoken ="false"> 
             </cfif>
         <cfelse>
             <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm","/orderHistory.cfm"]>
-            <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) AND NOT structKeyExists(session, "userId")>
+            <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) 
+                AND NOT (structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId"))
+            >
                 <cflocation url="/login.cfm" addtoken ="false"> 
             <cfelse>
                 <cfreturn true>
@@ -43,7 +46,7 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="onError" returntype ="void"> 
+    <!--- <cffunction  name="onError" returntype ="void"> 
         <cfargument name="exception" type="any" required=true>
         <cfargument name="eventName" type="String" required=true>
         <cfif NOT (arguments.eventName IS "onSessionEnd") OR (arguments.eventName IS "onApplicationEnd")>
@@ -73,6 +76,6 @@
             </cfmail>
             <cflocation  url="errorPage.cfm" addtoken="false">
         </cfif>
-    </cffunction>
+    </cffunction> --->
 
 </cfcomponent>

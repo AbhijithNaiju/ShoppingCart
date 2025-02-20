@@ -3,7 +3,7 @@
 <cfif structKeyExists(form, "placeOrder")>
     <cfif structKeyExists(form, "orderAddressId")>
         <cfset variables.placeOrder = application.userObject.placeOrder(
-            userId = session.userId,
+            userId = session.userSession.userId,
             orderAddressId = form.orderAddressId,
             cardNumber = form.cardNumber,
             cardCVV = form.cardCVV
@@ -13,12 +13,12 @@
     </cfif>
 <cfelseif structKeyExists(form,"addAddress")>
     <cfset variables.addAddressResult = application.userObject.addAddress(
-        userId = session.userId,
+        userId = session.userSession.userId,
         formStruct = form
     )>
 </cfif>
-<cfset variables.cartItems=application.userObject.getCartItems(userId=session.userId)>
-<cfset variables.addressList=application.userObject.getAddressList(userId=session.userId)>
+<cfset variables.cartItems=application.userObject.getCartItems(userId=session.userSession.userId)>
+<cfset variables.addressList=application.userObject.getAddressList(userId=session.userSession.userId)>
 <cfset variables.actualPrice = 0>
 <cfset variables.totalTax = 0>
 <cfset variables.totalPrice = 0>
@@ -256,7 +256,7 @@
             <form method="post" class = "modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Modal title</h5>
+                        <h5 class="modal-title">Add address</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -353,7 +353,7 @@
             <div class = "modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add address</h5>
+                        <h5 class="modal-title">Change Address</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

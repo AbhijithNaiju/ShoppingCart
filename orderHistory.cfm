@@ -5,12 +5,12 @@
     AND len(trim(form.orderSearchId))
 >
     <cfset variables.orderHistory=application.userObject.getOrderHistory(
-        userId=session.userId,
+        userId=session.userSession.userId,
         orderSearchId=form.orderSearchId
     )>
 <cfelse>
     <cfset variables.orderHistory=application.userObject.getOrderHistory(
-        userId=session.userId
+        userId=session.userSession.userId
     )>
 </cfif>
 <div class="container orderHistoryBody">

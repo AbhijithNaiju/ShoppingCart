@@ -153,25 +153,42 @@ function listSubcategories(categoryId,subCategoryId)
 function productSubmit()
 {
     event.preventDefault();
-    productData = new FormData(document.getElementById("modalForm"))
-    $.ajax({
-        type: "POST",
-        url: "components/admin.cfc?method=addOrEditProduct",
-        data: productData,
-        processData: false,
-        contentType: false,
-        success: function(result) {
-            resultJson=JSON.parse(result);
-            if(resultJson.error){
-                $("#modalError").text(resultJson.error);
-            }
-            else
-            {
-                closeModal();
-                location.reload();
-            }
+    $("#modalError").text("");
+    let isWrongExtention = false;
+    var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
+    let imageList = document.getElementById("productImages");
+    for (var i = 0; i < imageList.files.length; ++i) {
+        var inputFileName = imageList.files.item(i).name;
+        fileExtension = String(/[^.]+$/.exec(inputFileName));
+        if(!allowedExtentions.includes(fileExtension.toLowerCase())){
+            isWrongExtention = true;
+            break;
         }
-    });
+    }
+    if(isWrongExtention){
+        $("#modalError").text("Only jpg, jpeg, bmp, gif, png and svg files are allowed");
+    }
+    else{
+        productData = new FormData(document.getElementById("modalForm"))
+        $.ajax({
+            type: "POST",
+            url: "components/admin.cfc?method=addOrEditProduct",
+            data: productData,
+            processData: false,
+            contentType: false,
+            success: function(result) {
+                resultJson=JSON.parse(result);
+                if(resultJson.error){
+                    $("#modalError").text(resultJson.error);
+                }
+                else
+                {
+                    closeModal();
+                    location.reload();
+                }
+            }
+        });
+    }
     return false
 
 }
@@ -233,7 +250,7 @@ function  deleteSubCategory(deleteButton)
 }
 function  deleteProduct(deleteButton)
 {
-    if(confirm("This will delete the sub category and its contents. Confirm delete?"))
+    if(confirm("This will delete the product and its contents. Confirm delete?"))
     {
         $.ajax({
             type:"POST",
