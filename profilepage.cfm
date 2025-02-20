@@ -61,7 +61,7 @@
             <a href="./orderHistory.cfm" class="w-50 btn m-1 btn-outline-primary">Order History</a>
         </div>
     </div>
-    <div class="modal" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
+    <div class="modal fade" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
         <form method="post" class = "modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -156,7 +156,7 @@
             </div>
         </form>
     </div>
-    <div class="modal" tabindex="-1" id="profileEditModal" data-bs-backdrop="static">
+    <div class="modal fade" tabindex="-1" id="profileEditModal" data-bs-backdrop="static">
         <form class="profileModalBody modal-dialog" id="editProfileForm" method="post">
             <div class="modal-content">
                 <div class="modal-header">
@@ -227,7 +227,7 @@
                     <button 
                         type="submit" 
                         id="editProfile" 
-                        value="#session.userId#" 
+                        value="#session.userSession.userId#" 
                         name="editProfile" 
                         class="btn btn-primary m-2"
                     >

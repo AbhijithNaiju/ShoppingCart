@@ -427,18 +427,17 @@ function changeQuantity(buttonObject,changeDetails){
 		success: function(result){
 			changeQuantityResult=JSON.parse(result)
 			if(changeQuantityResult.success){
+				newQuantity=changeQuantityResult.cartItemQuantity;
 				if(changeDetails.change == -1){
 					quantityElement= $(buttonObject).next();
-					newQuantity = parseInt(quantityElement.val())-1
 					if(newQuantity==1){
 						// disabling reduce button
 						$(buttonObject).prop("disabled",true);
 					}
 				}else{
 					quantityElement= $(buttonObject).prev();
-					newQuantity = parseInt(quantityElement.val())+1
 					if(newQuantity==2){
-						// disabling reduce button
+						// enabling reduce button
 						$(quantityElement).prev().prop("disabled",false)
 					}
 				}
@@ -467,7 +466,14 @@ function changeQuantity(buttonObject,changeDetails){
 				totalTaxElement.text(updatedTotalTax);
 				totalPriceElement.text(updatedTotalPrice);
 			}else if(changeQuantityResult.error){
-				alert(changeQuantityResult.error);
+				Swal.fire({
+					position: "top-end",
+					toast: true,
+					icon: "error",
+					title: changeQuantityResult.error,
+					showConfirmButton: false,
+					timer: 1500
+				  });
 			}else{
 				alert("An unexpected error occured");
 			}

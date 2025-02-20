@@ -18,18 +18,38 @@ function loginValidate()
     if(error)
         return false
 }
-function logOut()
-{
-	if(confirm("You will log out of this page and need to authenticate again to login"))
-	{
-		$.ajax({
-			type:"POST",
-			url:"components/admin.cfc?method=logOut",
-			success: function() {
-				location.reload();
-			}
-		});
-	}
+function logOut(){
+	Swal.fire({
+		title: "Are you sure?",
+		text: "You will log out of this page and need to authenticate again to login",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: "Logout !"
+	  }).then((result) => {
+		if (result.isConfirmed) {
+			$.ajax({
+				type:"POST",
+				url:"components/admin.cfc?method=logOut",
+				success: function(result) {
+					logOutResult=JSON.parse(result)
+					if(logOutResult.success){
+						location.reload();
+					}
+					else{
+						Swal.fire({
+							title: "Error!",
+							text: "Please try again.",
+							icon: "error"
+						  });
+					}
+				},error: function(){
+					alert("Error occured");
+				}
+			});
+		}
+	});
 }
 
 function openCategoryModal(categoryData)
@@ -112,7 +132,7 @@ function openProductModal(productData)
         $("#productImages").attr("required","required");
     }
 }
-function listSubcategories(categoryId,subCategoryId)
+function listSubcategories(categoryId,currentSubCategoryId)
 {
     $("#subCategorySelect").empty();
     $.ajax({
@@ -122,22 +142,18 @@ function listSubcategories(categoryId,subCategoryId)
         success: function(result) {
             if(result)
             {
-                subContactDetails=JSON.parse(result);
-                const jsonKeys=Object.keys(subContactDetails);
-                for(i=0;i<jsonKeys.length;i++)
-                {
-                    subContactId=jsonKeys[i];
+                subCategoryDetails=JSON.parse(result);
+                subCategoryDetails.forEach(element => {
                     var optionObj = document.createElement('option');
-                    optionObj.innerHTML=subContactDetails[subContactId];
-                    optionObj.value=subContactId;
+                    optionObj.innerHTML=element.subcategoryName;
+                    optionObj.value=element.subcategoryId;
                     document.getElementById("subCategorySelect").appendChild(optionObj);
 
-                    if(subCategoryId)
-                        $("#subCategorySelect").val(subCategoryId);
+                    if(currentSubCategoryId)
+                        $("#subCategorySelect").val(currentSubCategoryId);
                     else
                         $("#subCategorySelect").val(0);
-
-                }
+                });
             }
             else
             {
@@ -200,87 +216,110 @@ function closeModal()
 
 function  deleteCategory(categoryId)
 {
-    if(confirm("This will delete the category and its contents. Confirm delete?"))
-    {
-        $.ajax({
-            type:"POST",
-            url:"components/admin.cfc?method=deleteCategory",
-            data:{categoryId:categoryId.value},
-            success: function(result) {
-                if(result)
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will delete the category and its contents.!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Delete !"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type:"POST",
+                url:"components/admin.cfc?method=deleteCategory",
+                data:{categoryId:categoryId.value},
+                success: function(result) {
+                    if(result)
+                    {
+                        categoryId.parentElement.parentElement.remove();
+                    }
+                    else
+                    {
+                        alert("Error occured while deleteing");
+                    }
+                },
+                error:function()
                 {
-                    categoryId.parentElement.parentElement.remove();
+                    alert("An error occured");
                 }
-                else
-                {
-                    alert("Error occured while deleteing");
-                }
-            },
-            error:function()
-            {
-                alert("An error occured");
-            }
-        });
-    }
+            });
+        }
+    });
 }
 function  deleteSubCategory(deleteButton)
 {
-    if(confirm("This will delete the sub category and its contents. Confirm delete?"))
-    {
-        $.ajax({
-            type:"POST",
-            url:"components/admin.cfc?method=deleteSubCategory",
-            data:{subCategoryId:deleteButton.value},
-            success: function(result) {
-                if(result)
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will delete the sub category and its contents!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Delete !"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type:"POST",
+                url:"components/admin.cfc?method=deleteSubCategory",
+                data:{subCategoryId:deleteButton.value},
+                success: function(result) {
+                    if(result)
+                    {
+                        deleteButton.parentElement.parentElement.remove();
+                    }
+                    else
+                    {
+                        alert("Error occured while deleteing");
+                    }
+                },
+                error:function()
                 {
-                    deleteButton.parentElement.parentElement.remove();
+                    alert("An error occured");
                 }
-                else
-                {
-                    alert("Error occured while deleteing");
-                }
-            },
-            error:function()
-            {
-                alert("An error occured");
-            }
-        });
-    }
+            });
+        }
+    });
 }
 function  deleteProduct(deleteButton)
 {
-    if(confirm("This will delete the product and its contents. Confirm delete?"))
-    {
-        $.ajax({
-            type:"POST",
-            url:"components/admin.cfc?method=deleteProduct",
-            data:{productId:deleteButton.value},
-            success: function(result) {
-                if(result)
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will delete the product and its contents!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Delete !"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type:"POST",
+                url:"components/admin.cfc?method=deleteProduct",
+                data:{productId:deleteButton.value},
+                success: function(result) {
+                    if(result)
+                    {
+                        $("#product"+deleteButton.value).remove();
+                    }
+                    else
+                    {
+                        alert("Error occured while deleteing");
+                    }
+                },
+                error:function()
                 {
-                    deleteButton.parentElement.parentElement.remove();
+                    alert("An error occured");
                 }
-                else
-                {
-                    alert("Error occured while deleteing");
-                }
-            },
-            error:function()
-            {
-                alert("An error occured");
-            }
-        });
-    }
+            });
+        }
+    });
 }
 function openImageModal(productData)
 {
     $("#imageModal").removeClass("displayNone");
     listProductImages(productData.productId)
-}
-function closeImageModal()
-{
-    $("#imageModal").addClass("displayNone");
 }
 function listProductImages(productId)
 {
@@ -313,13 +352,14 @@ function listProductImages(productId)
                         <div class="carousel-item">
                         <img src="../assets/productImages/${productImages.remainingImages[remainingImageId]}" class="d-block w-100">
                             <div class="carouselButtons">
-                                <button onclick="deleteImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">DELETE</button>
-                                <button onclick="setDefaultImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary">
+                                <button onclick="deleteImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-danger">DELETE</button>
+                                <button onclick="setDefaultImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary text-nowrap">
                                     Make Default
                                 </button>
                             </div>
                         </div>`;
                         $("#carouselInner").append(slideBody)
+                        console.log()
                     }
                 }
             }

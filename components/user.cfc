@@ -356,6 +356,7 @@
         <cfargument name = "cartId" type = "integer" required = "true">
         <cfargument name = "quantityChange" type = "integer" required = "true">
         <cfset local.resultStruct = structNew()>
+
         <cfquery name = "local.getCartItemQuantity">
             SELECT
                 fldQuantity AS cartItemQuantity
@@ -365,21 +366,30 @@
                 fldCart_id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">;
         </cfquery>
         <cfif local.getCartItemQuantity.cartItemQuantity EQ 1 AND arguments.quantityChange EQ -1>
+            <cfset local.resultStruct["cartItemQuantity"] = local.getCartItemQuantity.cartItemQuantity>
             <cfset local.resultStruct["error"] = "Unable to set quatity to 0">
         <cfelse>
             <cfquery>
                 UPDATE 
                     tblCart
                 SET
-                    <cfif arguments.quantityChange EQ 1>
-                        fldQuantity=fldQuantity+1
-                    <cfelseif arguments.quantityChange EQ -1>
-                        fldQuantity=fldQuantity-1
-                    </cfif>
+                    fldQuantity = 
+                CASE 
+                    WHEN <cfqueryparam value="#arguments.quantityChange#" cfsqltype="varchar"> = '1' THEN fldQuantity + 1
+                    WHEN <cfqueryparam value="#arguments.quantityChange#" cfsqltype="varchar"> = '-1' THEN fldQuantity - 1
+                    ELSE fldQuantity
+                END
                 WHERE
                     fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
             </cfquery>
             <cfset local.resultStruct["success"] = true>
+            <cfif arguments.quantityChange EQ -1>
+                <cfset local.resultStruct["cartItemQuantity"] = local.getCartItemQuantity.cartItemQuantity-1>
+            <cfelseif arguments.quantityChange EQ 1>
+                <cfset local.resultStruct["cartItemQuantity"] = local.getCartItemQuantity.cartItemQuantity+1>
+            <cfelse>
+                <cfset local.resultStruct["cartItemQuantity"] = local.getCartItemQuantity.cartItemQuantity>
+            </cfif>
         </cfif>
         <cfreturn local.resultStruct>
     </cffunction>

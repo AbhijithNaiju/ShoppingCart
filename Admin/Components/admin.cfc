@@ -39,11 +39,12 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="logOut" returntype="boolean" access="remote">
+    <cffunction  name="logOut" returntype="struct" returnformat = "json" access="remote">
         <cfif structKeyExists(session, "adminSession")>
             <cfset structClear(session.adminSession)>
         </cfif>
-        <cfreturn true>
+        <cfset local.resultStruct["success"] = true>
+        <cfreturn local.resultStruct>
     </cffunction>
 
     <cffunction  name="getCategories" returnType="query">
@@ -127,25 +128,24 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="getSubCategories" returnType="struct" access= "remote" returnFormat = "JSON">
+    <cffunction  name="getSubCategories" returnType="array" access= "remote" returnFormat = "JSON">
         <cfargument  name="categoryId" required="true" type="integer">
 
         <cfset local.subcategoryStruct = structNew()>
-        <cfquery name="local.subCategoryData">
+        <cfquery name="local.subCategoryData" returntype="struct">
             SELECT
-                fldSubCategoryName,
-                fldSubCategory_ID
+                SC.fldSubCategoryName AS subcategoryName,
+                SC.fldSubCategory_ID AS subcategoryId,
+                C.fldCategoryName AS categoryName
             FROM
-                tblSubCategory
+                tblSubCategory SC
+            INNER JOIN tblCategory C ON C.fldCategory_ID = SC.fldCategoryId AND C.fldActive = 1
             WHERE
-                fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
                 AND
-                fldActive = 1;
+                SC.fldActive = 1;
         </cfquery>
-        <cfloop query="local.subCategoryData">
-            <cfset local.subcategoryStruct[local.subCategoryData.fldSubCategory_ID] = local.subCategoryData.fldSubCategoryName>
-        </cfloop>
-        <cfreturn local.subcategoryStruct>
+        <cfreturn local.subCategoryData.resultSet>
     </cffunction>
 
     <cffunction  name="editSubCategory" returntype="struct">
@@ -225,23 +225,26 @@
 
     <cffunction  name="getProducts" returnType="query">
         <cfargument  name="subCategoryId" required="true" type = "integer">
-
         <cfquery name="local.productData">
             SELECT
-                tp.fldProductName,
-                tp.fldProduct_ID,
-                tp.fldBrandId,
-                tp.fldPrice,
-                tb.fldBrandName,
-                tpi.fldImageFileName
+                P.fldProductName,
+                P.fldProduct_ID,
+                P.fldBrandId,
+                P.fldPrice,
+                B.fldBrandName,
+                PI.fldImageFileName,
+                SC.fldSubcategoryName subcategoryName,
+                SC.fldCategoryId AS categoryId
             FROM
-                tblProduct tp
-            LEFT JOIN tblbrands tb ON tp.fldBrandId = tb.fldBrand_ID
-            LEFT JOIN tblProductImages tpi ON tp.fldProduct_ID = tpi.fldProductId AND tpi.fldDefaultImage = 1
+                tblProduct P
+            INNER JOIN tblSubcategory SC ON SC.fldSubcategory_ID = P.fldsubcategoryId AND SC.fldActive = 1
+            INNER JOIN tblCategory C ON C.fldCategory_ID = SC.fldCategoryId AND C.fldActive = 1
+            INNER JOIN tblbrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldDefaultImage = 1
             WHERE
-                tp.fldSubCategoryId = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType = "integer">
+                P.fldSubCategoryId = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType = "integer">
                 AND
-                tp.fldActive = 1;
+                P.fldActive=1
         </cfquery>
 
         <cfreturn local.productData>
@@ -251,17 +254,17 @@
 
         <cfquery name="local.productData">
             SELECT
-                tp.fldProductName,
-                tp.fldDescription,
-                tp.fldBrandId,
-                tp.fldTax,
-                tp.fldPrice
+                P.fldProductName,
+                P.fldDescription,
+                P.fldBrandId,
+                P.fldTax,
+                P.fldPrice
             FROM
-                tblProduct tp
+                tblProduct P
             WHERE
-                tp.fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
+                P.fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
                 AND
-                tp.fldActive = 1;
+                P.fldActive = 1;
         </cfquery>
         <cfset local.resultStruct = structNew()>
         <cfset local.resultStruct["productName"] = local.productData.fldProductName>
@@ -271,17 +274,19 @@
         <cfset local.resultStruct["price"] = local.productData.fldPrice>
         <cfreturn local.resultStruct>
     </cffunction>
+
     <cffunction  name="getCategoryData" returntype="query">
         <cfargument  name="subCategoryId" required="true" type = "integer">
         <cfquery name="local.categoryData">
             SELECT
-                fldCategoryName,
-                fldCategoryID
+                C.fldCategoryName AS categoryName,
+                SC.fldCategoryID AS categoryId,
+                SC.fldSubcategoryName AS subcategoryName
             FROM
-                tblSubCategory tsc
-            LEFT JOIN tblCategory  tc ON tsc.fldCategoryId = tc.fldCategory_ID
+                tblSubCategory SC
+            LEFT JOIN tblCategory  C ON SC.fldCategoryId = C.fldCategory_ID
             WHERE
-                tsc.fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType = "integer">
+                SC.fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType = "integer">
         </cfquery>
         <cfreturn local.categoryData>
     </cffunction>

@@ -250,9 +250,9 @@
                     #variables.placeOrder.error#
                 </cfif>
             </div>
-            <input type="hidden" id="orderAddressId" name="orderAddressId">
+            <input type="hidden" id="orderAddressId" name="orderAddressId" value="#variables.addressList[1].addressId#">
         </form>
-        <div class="modal" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
+        <div class="modal fade" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
             <form method="post" class = "modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -349,7 +349,7 @@
                 </div>
             </form>
         </div>
-        <div class="modal" tabindex="-1" id="changeAddressModal" data-bs-backdrop="static">
+        <div class="modal fade" tabindex="-1" id="changeAddressModal" data-bs-backdrop="static">
             <div class = "modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -407,11 +407,13 @@
             <h2>Order placed Successfully</h2>
             <p>Check your email for your order Confirmation</p>
             <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
+            <a href="./orderHistory.cfm" class="btn btn-primary">Order history</a>
         </div>
     <cfelse>
         <div class = "text-center m-3">
             <h2>No products available to order please add products to continue</h2>
             <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
+            <a href="./orderHistory.cfm" class="btn btn-primary">Order history</a>
         </div>
     </cfif>
 </cfif>

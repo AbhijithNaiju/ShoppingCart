@@ -10,12 +10,6 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction name = "onSessionEnd" returntype = "">
-        <cfargument name="SessionScope" required=true>
-        <cfargument name="ApplicationScope" required=true>
-        <cfdump  var="#arguments#">
-    </cffunction>
-
     <cffunction  name="onRequestStart" returnType="boolean"> 
         <cfargument  name="requestedPage">
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
