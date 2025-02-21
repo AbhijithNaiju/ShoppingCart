@@ -15,7 +15,7 @@ $(document).ready(function(){
 			showCancelButton: true,
 			confirmButtonColor: "#3085d6",
 			cancelButtonColor: "#d33",
-			confirmButtonText: "Remove !"
+			confirmButtonText: "Remove"
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
@@ -95,7 +95,7 @@ $(document).ready(function(){
 			showCancelButton: true,
 			confirmButtonColor: "#3085d6",
 			cancelButtonColor: "#d33",
-			confirmButtonText: "Delete !"
+			confirmButtonText: "Delete"
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
@@ -219,7 +219,7 @@ function logOut(){
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		confirmButtonText: "Logout !"
+		confirmButtonText: "Logout"
 	  }).then((result) => {
 		if (result.isConfirmed) {
 			$.ajax({
@@ -316,10 +316,12 @@ function listProducts(productList){
 				<div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
 					<img src="./assets/productimages/${productData.imageFileName}"></img>
 				</div>
-				<div class="w-100 d-flex flex-column">
+				<div class="w-100 d-flex flex-column randomProductsDetails">
 					<h6 class="card-title p-2">${productData.productName}</h6>
 					<span>${productData.brandName}</span>
-					<span class="mt-auto px-2">Rs : ${productData.productPrice+productData.productTax}</span>
+					<span class="mt-auto px-2 randomProductPrice">
+						Rs : ${productData.productPrice+productData.productTax}
+					</span>
 				</div>
 			</a>
 		`;
@@ -390,10 +392,12 @@ function showMore(currentData)
 								<div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
 									<img src="./assets/productimages/${productData.imageFileName}"></img>
 								</div>
-								<div class="w-100 d-flex flex-column">
+								<div class="w-100 d-flex flex-column randomProductsDetails">
 									<h6 class="card-title p-2">${productData.productName}</h6>
 									<span class = "productBrand text-secondary px-2">${productData.brandName}</span>
-									<span class="mt-auto px-2">Rs : ${productData.productPrice+productData.productTax}</span>
+									<span class="mt-auto px-2 randomProductPrice">
+										Rs : ${productData.productPrice+productData.productTax}
+									</span>
 								</div>
 							</a>
 						`;
@@ -416,49 +420,40 @@ function showMore(currentData)
 	});
 }
 
-function changeQuantity(buttonObject,changeDetails){
+function changeQuantity(change,cartId){
 	$.ajax({
 		type:"POST",
 		url:"components/user.cfc?method=updateCartQnty",
 		data:{
-			cartId:changeDetails.cartId,
-			quantityChange:changeDetails.change
+			cartId:cartId,
+			quantityChange:change
 		},
 		success: function(result){
 			changeQuantityResult=JSON.parse(result)
-			if(changeQuantityResult.success){
-				newQuantity=changeQuantityResult.cartItemQuantity;
-				if(changeDetails.change == -1){
-					quantityElement= $(buttonObject).next();
-					if(newQuantity==1){
-						// disabling reduce button
-						$(buttonObject).prop("disabled",true);
-					}
-				}else{
-					quantityElement= $(buttonObject).prev();
-					if(newQuantity==2){
-						// enabling reduce button
-						$(quantityElement).prev().prop("disabled",false)
-					}
+				quantityElement= $("#quantityButton"+cartId).find(".cartQuantity");
+			if(changeQuantityResult.cartItemQuantity){
+				quantityElement.val(changeQuantityResult.cartItemQuantity);
+				if(changeQuantityResult.cartItemQuantity==1){
+					// disabling reduce button
+					$("#quantityButton"+cartId).find(".reduceQuantity").prop("disabled",true);
 				}
-				// setting input value
-				quantityElement.val(newQuantity);
-
+				if(changeQuantityResult.cartItemQuantity==2){
+					// enabling reduce button
+					$("#quantityButton"+cartId).find(".reduceQuantity").prop("disabled",false);
+				}
+			}
+			if(changeQuantityResult.success){
 				// setting total price
-				cartItem = $("#cartItem"+changeDetails.cartId)
-				itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
-				itemTax = parseFloat($(cartItem).find(".itemTax").text());
-				
 				actualPriceElement = $('#actualPrice');
 				totalTaxElement = $('#totalTax');
 				totalPriceElement = $('#totalPrice');
 
-				if(changeDetails.change == -1){
-					updatedActualPrice = (parseFloat(actualPriceElement.text())-(itemPrice)).toFixed(2);
-					updatedTotalTax = (parseFloat(totalTaxElement.text())-(itemTax)).toFixed(2);
+				if(change == -1){
+					updatedActualPrice = (parseFloat(actualPriceElement.text())-(changeQuantityResult.unitPrice)).toFixed(2);
+					updatedTotalTax = (parseFloat(totalTaxElement.text())-(changeQuantityResult.unitTax)).toFixed(2);
 				}else{
-					updatedActualPrice = (parseFloat(actualPriceElement.text())+(itemPrice)).toFixed(2);
-					updatedTotalTax = (parseFloat(totalTaxElement.text())+(itemTax)).toFixed(2);
+					updatedActualPrice = (parseFloat(actualPriceElement.text())+(changeQuantityResult.unitPrice)).toFixed(2);
+					updatedTotalTax = (parseFloat(totalTaxElement.text())+(changeQuantityResult.unitTax)).toFixed(2);
 				}
 				updatedTotalPrice = (parseFloat(updatedActualPrice) + parseFloat(updatedTotalTax)).toFixed(2);
 
@@ -467,13 +462,13 @@ function changeQuantity(buttonObject,changeDetails){
 				totalPriceElement.text(updatedTotalPrice);
 			}else if(changeQuantityResult.error){
 				Swal.fire({
-					position: "top-end",
+					position: "top",
 					toast: true,
 					icon: "error",
 					title: changeQuantityResult.error,
 					showConfirmButton: false,
 					timer: 1500
-				  });
+				});
 			}else{
 				alert("An unexpected error occured");
 			}

@@ -71,8 +71,8 @@
 										<td>#variables.orderHistory.brandName#</td>
 										<td>#variables.orderHistory.Quantity#</td>
 										<td>#variables.orderHistory.unitPrice#</td>
-										<td>#variables.orderHistory.unitTax#</td>
-										<td>#(variables.orderHistory.unitPrice + variables.orderHistory.unitTax)*variables.orderHistory.quantity#</td>
+										<td>#numberFormat(variables.orderHistory.unitTax,'__.00')#</td>
+										<td>#variables.orderHistory.unitPrice + variables.orderHistory.unitTax#</td>
 									</tr>
 								</cfloop>
 							</table>

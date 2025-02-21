@@ -166,21 +166,23 @@
                 structKeyExists(variables.productList.resultArray[1],"productId"
             )>
                 <div class="productListingParent my-3 mx-5" id="productListingParent">
-                    <cfloop array = "#variables.productList.resultArray#" item="productDetails">
+                    <cfloop array = "#variables.productList.resultArray#" item="variables.productDetails">
                         <a 
-                            href="product.cfm?productId=#productDetails.productId#" 
+                            href="product.cfm?productId=#variables.productDetails.productId#" 
                             class="randomProducts d-flex flex-column justify-content-between align-items-center border shadow-sm"
                         >
                             <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
-                                <img src="./assets/productimages/#productDetails.imageFileName#"></img>
+                                <img src="./assets/productimages/#variables.productDetails.imageFileName#"></img>
                             </div>
-                            <div class="w-100 d-flex flex-column">
-                                <h6 class="card-title p-2">#productDetails.productName#</h6>
-                                <span class = "productBrand text-secondary px-2">#productDetails.brandName#</span>
-                                <span class="mt-auto px-2">Rs : #productDetails.productPrice + productDetails.productTax#</span>
+                            <div class="w-100 d-flex flex-column randomProductsDetails">
+                                <h6 class="card-title p-2">#variables.productDetails.productName#</h6>
+                                <span class = "productBrand text-secondary px-2">#variables.productDetails.brandName#</span>
+                                <span class="mt-auto px-2 randomProductPrice">
+                                    Rs : #variables.productDetails.productPrice + variables.productDetails.productTax#
+                                </span>
                             </div>
                         </a>
-                        <cfset arrayAppend(variables.arrayProductId, productDetails.productId)>
+                        <cfset arrayAppend(variables.arrayProductId, variables.productDetails.productId)>
                     </cfloop>
                 </div>
                 <cfif variables.productList.productCount GT 10>

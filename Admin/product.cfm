@@ -53,7 +53,7 @@
                                         <div class="brandName">#productData.fldBrandName#</div>
                                         <div class = "mt-auto">
                                             <i class="fa-solid fa-indian-rupee-sign"></i>
-                                            #productData.fldprice#
+                                            #productData.fldprice+(productData.fldprice*productData.fldtax)/100#
                                         </div>
                                     </div>
                                     <div class="col-2 d-flex flex-column justify-content-around">
@@ -145,7 +145,15 @@
                         </div>
                         <div class = "form-group my-3" >
                             <label class="mb-2" for="productTax">Product Tax</label>
-                            <input type="number" step="0.01" id="productTax" name="productTax" class="form-control" required>
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                id="productTax" 
+                                name="productTax" 
+                                class="form-control" 
+                                max="100.00"
+                                required
+                            >
                         </div>
                         <div class = "form-group my-3" >
                             <label class="mb-2" for="productImages">Product Images</label>

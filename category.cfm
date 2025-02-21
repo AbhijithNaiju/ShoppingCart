@@ -37,10 +37,12 @@
                                         <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
                                             <img src="./assets/productimages/#variables.subcategoryProduct.imageFileName#"></img>
                                         </div>
-                                        <div class="w-100 d-flex flex-column">
+                                        <div class="w-100 d-flex flex-column randomProductsDetails">
                                             <h6 class="card-title p-2">#variables.subcategoryProduct.productName#</h6>
                                             <span class = "productBrand text-secondary px-2">#variables.subcategoryProduct.brandName#</span>
-                                            <span class="mt-auto px-2">Rs : #variables.subcategoryProduct.productPrice + variables.subcategoryProduct.productTax#</span>
+                                            <span class="mt-auto px-2 randomProductPrice">
+                                                Rs : #variables.subcategoryProduct.productPrice + variables.subcategoryProduct.productTax#
+                                            </span>
                                         </div>
                                     </a>
                                 </cfif>

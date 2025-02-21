@@ -195,10 +195,13 @@ body{
     max-width: 100%;
 }
 .randomProductImage{
-    height: 60%;
+    height: 65%;
 }
-.randomProducts:hover{
-    transform: scale(1.01);
+.randomProductsDetails{
+    height: 35%;
+}
+.randomProductPrice{
+    font-weight: bold;
 }
 .productListingParent{
     display: grid;
@@ -290,7 +293,7 @@ body{
     font-size: 18px;
     font-weight: bold;
 }
-.qantityButtons input{
+.quantityButtons input{
     width: 20%;
 }
 .orderBody{

@@ -185,7 +185,7 @@
                 P.fldProduct_ID AS productId,
                 P.fldproductName AS productName,
                 P.fldPrice AS productPrice,
-                P.fldTax AS productTax,
+                (P.fldPrice*P.fldTax/100) AS productTax,
                 P.fldSubcategoryId AS subCategoryId,
                 B.fldBrandName AS brandName,
                 PI.fldImageFileName AS imageFileName,
@@ -276,7 +276,7 @@
                     P.fldproductName AS productName,
                     P.fldDescription AS description,
                     P.fldPrice AS productPrice,
-                    P.fldTax AS productTax,
+                    (P.fldPrice*P.fldTax/100) AS productTax,
                     B.fldBrandName AS brandName,
                     PI.fldImageFileName AS imageFileName,
                     PI.fldDefaultImage AS defaultImage,
@@ -359,12 +359,17 @@
 
         <cfquery name = "local.getCartItemQuantity">
             SELECT
-                fldQuantity AS cartItemQuantity
+                C.fldQuantity AS cartItemQuantity,
+                P.fldPrice AS unitPrice,
+                (P.fldPrice*P.fldTax/100) AS unitTax
             FROM 
-                tblCart
+                tblCart C
+            INNER JOIN tblProduct P ON P.fldProduct_ID = C.fldProductId AND P.fldActive = 1
             WHERE 
-                fldCart_id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">;
+                C.fldCart_id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">;
         </cfquery>
+            <cfset local.resultStruct["unitPrice"] = local.getCartItemQuantity.unitPrice>
+            <cfset local.resultStruct["unitTax"] = local.getCartItemQuantity.unitTax>
         <cfif local.getCartItemQuantity.cartItemQuantity EQ 1 AND arguments.quantityChange EQ -1>
             <cfset local.resultStruct["cartItemQuantity"] = local.getCartItemQuantity.cartItemQuantity>
             <cfset local.resultStruct["error"] = "Unable to set quatity to 0">
@@ -404,7 +409,7 @@
                 C.fldProductId AS productId,
                 P.fldProductName AS productName,
                 P.fldPrice AS price,
-                P.fldTax AS tax,
+                (P.fldPrice*P.fldTax/100) AS tax,
                 PI.fldImageFileName AS imageFileName
             FROM
                 tblCart C
@@ -728,7 +733,7 @@
                                             <td>#local.orderDetails.brandName#</td>
                                             <td>#local.orderDetails.Quantity#</td>
                                             <td>#local.orderDetails.unitPrice#</td>
-                                            <td>#local.orderDetails.unitTax#</td>
+                                            <td>#numberFormat(local.orderDetails.unitTax,'__.00')#</td>
                                             <td>#(local.orderDetails.unitPrice + local.orderDetails.unitTax)*local.orderDetails.quantity#</td>
                                         </tr>
                                     </cfloop>
@@ -779,7 +784,7 @@
                 DATE_FORMAT(O.fldOrderDate, '%d/%m/%Y %l:%i %p') AS orderDate,
                 OI.fldQuantity AS quantity,
                 OI.fldUnitPrice AS unitPrice,
-                OI.fldUnitTax AS unitTax,
+                (OI.fldUnitPrice*OI.fldUnitTax/100) AS unitTax,
                 P.fldProduct_ID AS productId,
                 P.fldProductName AS productName,
                 PI.fldImageFileName AS imageFileName,

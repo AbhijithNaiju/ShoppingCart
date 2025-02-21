@@ -11,10 +11,12 @@
                     <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
                         <img src="./assets/productimages/#productItem.imageFileName#" >
                     </div>
-                    <div class="w-100 d-flex flex-column">
+                    <div class="w-100 d-flex flex-column randomProductsDetails">
                         <h6 class="card-title p-2">#variables.productItem.productName#</h6>
                         <span class = "productBrand text-secondary px-2">#variables.productItem.brandName#</span>
-                        <span class="mt-auto px-2">Rs : #variables.productItem.productPrice + variables.productItem.productTax#</span>
+                        <span class="mt-auto px-2 randomProductPrice">
+                            Rs : #variables.productItem.productPrice + variables.productItem.productTax#
+                        </span>
                     </div>
                 </a>
             </cfloop>

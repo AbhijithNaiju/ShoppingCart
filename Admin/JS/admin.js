@@ -26,7 +26,7 @@ function logOut(){
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		confirmButtonText: "Logout !"
+		confirmButtonText: "Logout"
 	  }).then((result) => {
 		if (result.isConfirmed) {
 			$.ajax({

@@ -231,6 +231,7 @@
                 P.fldProduct_ID,
                 P.fldBrandId,
                 P.fldPrice,
+                P.fldTax,
                 B.fldBrandName,
                 PI.fldImageFileName,
                 SC.fldSubcategoryName subcategoryName,

@@ -109,11 +109,14 @@
                                         Unit Price : #variables.orderHistory.unitPrice#
                                     </span>
                                     <span class="orderHistoryTax text-secondary">
-                                        Unit tax : #variables.orderHistory.unitTax#
+                                        Unit tax : 
+                                        #numberFormat(variables.orderHistory.unitTax,'__.00')#
                                     </span>
                                 </div>
                                 <span class="orderHistoryUnitTotal fw-bold">
-                                    Unit total : #variables.orderHistory.unitPrice + variables.orderHistory.unitTax#
+                                    Unit total : 
+                                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    #variables.orderHistory.unitPrice + variables.orderHistory.unitTax#
                                 </span>
                             </div>
                         </div>
@@ -140,7 +143,9 @@
                             data-bs-placement="top"
                             title="#'Price : ' & variables.orderHistory.totalPrice & ' + Tax : ' & variables.orderHistory.totalTax#"
                         >
-                            Total Price : #variables.orderHistory.totalPrice + variables.orderHistory.totalTax#
+                            Total Price : 
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                            #variables.orderHistory.totalPrice + variables.orderHistory.totalTax#
                         </div>
                         <span class="orderDate"> 
                             Ordered on : 

@@ -104,10 +104,10 @@
                                         <a href="./product.cfm?productId=#variables.cartItems.productId#">
                                             #variables.cartItems.productName#
                                         </a>
-                                        <div class="qantityButtons">
+                                        <div class="quantityButtons" id="quantityButton#variables.cartItems.cartId#">
                                             <button 
-                                                class="btn btn-sm btn-primary" 
-                                                onclick="changeQuantity(this,{change:-1,cartId:#variables.cartItems.cartId#})"
+                                                class="btn btn-sm btn-primary reduceQuantity" 
+                                                onclick="changeQuantity(-1,#variables.cartItems.cartId#)"
                                             >   
                                                 -
                                             </button>
@@ -117,8 +117,8 @@
                                                 readonly
                                             >
                                             <button 
-                                                class="btn btn-sm btn-primary" 
-                                                onclick="changeQuantity(this,{change:1,cartId:#variables.cartItems.cartId#})"
+                                                class="btn btn-sm btn-primary addQuantity" 
+                                                onclick="changeQuantity(1,#variables.cartItems.cartId#)"
                                             >
                                                 +
                                             </button>
@@ -135,7 +135,7 @@
                                             <small>
                                                 Unit tax : Rs 
                                                 <span class="itemTax">
-                                                    #variables.cartItems.tax#
+                                                    #numberFormat(variables.cartItems.tax,'__.00')#
                                                 </span>
                                             </small>
                                             <b>
