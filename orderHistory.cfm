@@ -26,10 +26,10 @@
                     Order History
                 </cfif>
             </h2>
-            <form class="input-group w-50 orderSearch" method="post">
+            <form class="d-flex w-50 orderSearch" method="post">
                 <input 
                     type="text" 
-                    class="form-control form-control-sm" 
+                    class="form-control form-control-sm me-2" 
                     name="orderSearchId"
                     id="orderSearchField"
                     placeholder="" 
@@ -40,9 +40,9 @@
                         value="#form.orderSearchId#"
                     </cfif>
                 >
-                <div class="input-group-append">
+                <div class="d-flex">
                     <button 
-                        class="btn btn-outline-success h-100" 
+                        class="btn btn-outline-success h-100 me-2" 
                         id="orderSearchButton" 
                         type="submit"
                         name = "orderSearchButton"

@@ -81,9 +81,10 @@
                         Price : High to low
                     </button>
                 </form>
-                <div class="dropdown">
+                <form class="dropdown" id="dropdownForm">
                     <button 
-                        class="btn btn-secondary dropdown-toggle" 
+                        class="btn btn-secondary dropdown-toggle"
+                        id="filterDropdown"
                         type="button" 
                         data-bs-toggle="dropdown" 
                         data-bs-auto-close="outside" 
@@ -138,12 +139,14 @@
                         <li>
                             <button 
                                 class = "btn w-100 border my-1" 
+                                type = "button"
                                 onclick="clearFilter()"
                             >
                                 Clear
                             </button>
                             <button 
                                 class="btn w-100 border my-1"
+                                type = "button"
                                 onclick="filterProducts({
                                     subcategoryId:#variables.subcatId#,
                                     searchValue:'#variables.searchValue#',
@@ -158,7 +161,7 @@
                             <small class = "text-danger" id="filterError"></small>
                         </li>
                     </ul>
-                </div>
+                </form>
             </div>
             <cfif 
                 arrayLen(variables.productList.resultArray) 
@@ -191,7 +194,7 @@
                             class="btn border my-1"
                             id="showMoreBtn"
                             value="#arraytolist(variables.arrayProductId)#"
-                            onclick="showMore({
+                            onclick="listProducts({
                                 subcategoryId:#variables.subcatId#,
                                 searchValue:'#variables.searchValue#',
                                 sortOrder:'#variables.sortOrder#'

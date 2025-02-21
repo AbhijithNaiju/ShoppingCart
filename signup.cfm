@@ -14,7 +14,7 @@
 
 <cfinclude  template="userHeader.cfm">
 <div class="mainBody">
-    <form method="post" class="loginForm">
+    <form method="post" class="loginForm" id="signupForm">
         <div class="formHeader">
             User Login
         </div>
@@ -26,8 +26,8 @@
                 id="firstName" 
                 name="firstName" 
                 placeholder="First name" 
-                required
             >
+            <div class = "errorMessage text-center" id="firstNameError"></div>
         </div>
         <div class="form-group my-2">
             <label for="lastName">Last name</label>
@@ -37,8 +37,8 @@
                 id="lastName" 
                 name="lastName" 
                 placeholder="Last name" 
-                required
             >
+            <div class = "errorMessage text-center" id="lastNameError"></div>
         </div>
         <div class="form-group my-2">
             <label for="emailId">Email Id</label>
@@ -48,8 +48,8 @@
                 id="emailId" 
                 name="emailId" 
                 placeholder="Email Id" 
-                required
             >
+            <div class = "errorMessage text-center" id="emailError"></div>
         </div>
         <div class="form-group my-2">
             <label for="phoneNumber">Phone</label>
@@ -60,8 +60,8 @@
                 name="phoneNumber" 
                 placeholder="Phone"
                 maxlength="15"
-                required
             >
+            <div class = "errorMessage text-center" id="phoneNumberError"></div>
         </div>
         <div class="form-group my-2">
             <label for="password">Password</label>
@@ -71,9 +71,19 @@
                 id="password" 
                 name="password" 
                 placeholder="Password" 
-                minlength="8"
-                required
             >
+            <div class = "errorMessage text-center" id="passwordError"></div>
+        </div>
+        <div class="form-group my-2">
+            <label for="confirmPassword">Confirm Password</label>
+            <input 
+                type="password" 
+                class="form-control" 
+                id="confirmPassword" 
+                name="confirmPassword" 
+                placeholder="Password" 
+            >
+            <div class = "errorMessage text-center" id="confirmPasswordError"></div>
         </div>
         <cfif structKeyExists(variables, "signupResult") AND structKeyExists(variables.signupResult, "error")>
             <cfoutput>

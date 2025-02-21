@@ -36,7 +36,7 @@
             <cfelse>
                 <cfset local.saltString = generateSecretKey("AES")>
                 <cfset local.hashedPassword = hash(arguments.password & local.saltString,'SHA-512', 'utf-8', 125)>
-                <cfquery result="local.signUpresult">
+                <!--- <cfquery result="local.signUpresult">
                     INSERT INTO
                         tbluser(
                             fldFirstName,
@@ -55,7 +55,7 @@
                             <cfqueryparam value = '#local.saltString#' cfsqltype = "varchar">,
                             2
                         );
-                </cfquery>
+                </cfquery> --->
                 <cfset local.structResult["success"] = true>
                 <cfset session.userSession.userId = local.signUpresult.generatedKey>
                 <cfset session.userSession.roleId = 2>
@@ -260,6 +260,14 @@
                             B.fldBrandName LIKE <cfqueryparam value = "%#arguments.searchValue#%" cfSqlType = "varchar">
                         )
                     </cfif>
+                    <cfif structKeyExists(arguments, "minPrice") AND val(arguments.minPrice) GTE 0>
+                    AND
+                    (P.fldPrice+P.fldTax) >= <cfqueryparam value = '#val(arguments.minPrice)#' cfSqlType = "decimal" scale="2">
+                </cfif>
+                <cfif structKeyExists(arguments, "maxPrice") AND val(arguments.maxPrice) GTE 0>
+                    AND
+                    (P.fldPrice+P.fldTax) <= <cfqueryparam value = '#val(arguments.maxPrice)#' cfSqlType = "decimal" scale="2">
+                </cfif>
             </cfquery>
             <cfset local.resultStruct["productCount"] = local.totalProducts.productCount>
         </cfif>

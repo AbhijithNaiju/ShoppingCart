@@ -62,7 +62,7 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
-        <form method="post" class = "modal-dialog modal-dialog-scrollable">
+        <form method="post" class = "modal-dialog modal-dialog-scrollable" id="addAddressForm">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add address</h5>
@@ -75,8 +75,10 @@
                         type="text" 
                         class="form-control" 
                         name="firstName"
+                        id="addressFirstName"
                         required
                         >
+                        <div class = "errorMessage text-center" id="FirstNameError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="">Last Name *</label>
@@ -84,8 +86,10 @@
                             type="text" 
                             class="form-control" 
                             name="lastName"
+                            id="addressLastName"
                             required
                         >
+                        <div class = "errorMessage text-center" id="LastNameError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="">Address Line 1 *</label>
@@ -93,16 +97,20 @@
                             type="text" 
                             class="form-control" 
                             name="addressLine1"
+                            id="addressLine1"
                             required
                         >
+                        <div class = "errorMessage text-center" id="addressLine1Error"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Address Line 2 *</label>
+                        <label for="">Address Line 2</label>
                         <input 
                             type="text" 
                             class="form-control" 
                             name="addressLine2"
+                            id="addressLine2"
                         >
+                        <div class = "errorMessage text-center" id="addressLine2Error"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="">City *</label>
@@ -110,8 +118,10 @@
                             type="text" 
                             class="form-control" 
                             name="city"
+                            id="city"
                             required
                         >
+                        <div class = "errorMessage text-center" id="cityError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="">State *</label>
@@ -119,8 +129,10 @@
                             type="text" 
                             class="form-control" 
                             name="state"
+                            id="state"
                             required
                         >
+                        <div class = "errorMessage text-center" id="stateError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="">Phone Number *</label>
@@ -128,11 +140,13 @@
                             type="tel" 
                             class="form-control"  
                             name="phoneNumber"
+                            id="addressPhoneNumber"
                             minlength="8"
                             maxlength="15"
                             pattern="[0-9-]"
                             required
                         >
+                        <div class = "errorMessage text-center" id="addressPhoneNumberError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="">Pincode *</label>
@@ -140,11 +154,13 @@
                             type="tel" 
                             class="form-control" 
                             name="pincode"
+                            id="pincode"
                             minlength="6"
                             maxlength="6"
                             pattern="[0-9]{6}"
                             required
                         >
+                        <div class = "errorMessage text-center" id="pincodeError"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -175,6 +191,7 @@
                             value="#variables.profileDetails.firstName#"
                             required
                             >
+                            <div class = "errorMessage text-center" id="firstNameError"></div>
                         </div>
                         <div class="form-group my-2">
                             <label for="lastName">Last Name *</label>
@@ -186,6 +203,7 @@
                                 value="#variables.profileDetails.lastName#"
                                 required
                             >
+                            <div class = "errorMessage text-center" id="lastNameError"></div>
                         </div>
                         <div class="form-group my-2">
                             <label for="emailId">Email Address *</label>
@@ -195,8 +213,8 @@
                                 id="emailId" 
                                 name="emailId"
                                 value="#variables.profileDetails.email#"
-                                required
                             >
+                            <div class = "errorMessage text-center" id="emailError"></div>
                         </div>
                         <div class="form-group my-2">
                             <label for="phoneNumber">Phone Number *</label>
@@ -205,12 +223,9 @@
                                 class="form-control" 
                                 id="phoneNumber" 
                                 name="phoneNumber"
-                                minlength="8"
-                                maxlength="15"
-                                pattern="[0-9]{10}"
                                 value="#variables.profileDetails.phone#"
-                                required
                             >
+                            <div class = "errorMessage text-center" id="phoneNumberError"></div>
                         </div>
                     </div>
                 </div>
