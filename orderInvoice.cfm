@@ -72,7 +72,9 @@
 										<td>#variables.orderHistory.Quantity#</td>
 										<td>#variables.orderHistory.unitPrice#</td>
 										<td>#numberFormat(variables.orderHistory.unitTax,'__.00')#</td>
-										<td>#variables.orderHistory.unitPrice + variables.orderHistory.unitTax#</td>
+										<td>
+											#numberFormat(variables.orderHistory.unitPrice + variables.orderHistory.unitTax,'__.00')#
+										</td>
 									</tr>
 								</cfloop>
 							</table>

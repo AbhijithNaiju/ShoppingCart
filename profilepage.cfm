@@ -143,7 +143,6 @@
                             id="addressPhoneNumber"
                             minlength="8"
                             maxlength="15"
-                            pattern="[0-9-]"
                             required
                         >
                         <div class = "errorMessage text-center" id="addressPhoneNumberError"></div>
@@ -157,7 +156,6 @@
                             id="pincode"
                             minlength="6"
                             maxlength="6"
-                            pattern="[0-9]{6}"
                             required
                         >
                         <div class = "errorMessage text-center" id="pincodeError"></div>

@@ -1,46 +1,35 @@
-<cfinclude  template="userHeader.cfm">
-<cfif structKeyExists(url, "searchValue") OR ( structKeyExists(url, "subcatId") AND isNumeric(url.subcatId))>
+<cfinclude template="userHeader.cfm">
+<cfparam name="url.sortOrder" default="0">
+<cfparam name="url.searchValue" default="">
+<cfparam name="url.subcatId" default="0">
+<cfparam name="url.minPrice" default="-1">
+<cfparam name="url.maxPrice" default="-1">
+<cfif url.minPrice EQ "">
+    <cfset url.minPrice = -1>
+</cfif>
+<cfif url.maxPrice EQ "">
+    <cfset url.maxPrice = -1>
+</cfif>
+<cfif url.searchvalue NEQ "" OR (url.subcatId NEQ 0 AND isNumeric(url.subcatId))>
     <cfset variables.arrayProductId = arrayNew(1)>
-    <cfif structKeyExists(url, "sortOrder") AND structKeyExists(url, "searchvalue")>
+    <cfif url.searchvalue NEQ "">
         <cfset variables.productList = application.userObject.getProductList(
             searchValue=url.searchValue,
             sortOrder=url.sortOrder,
             limit=10,
-            count=true
+            count=true,
+            minPrice=url.minPrice,
+            maxPrice=url.maxPrice
         )>
-    <cfelseif structKeyExists(url, "searchvalue")>
-        <cfset variables.productList = application.userObject.getProductList(
-            searchValue=url.searchValue,
-            limit=10,
-            count=true
-        )>
-        
-    <cfelseif structKeyExists(url, "sortOrder") AND structKeyExists(url, "subcatId")>
-        <cfset variables.productList = application.userObject.getProductList(
-            sortOrder=url.sortOrder,
-            subcategoryId=url.subcatId,
-            limit=10,
-            count=true
-        )>
-    <cfelseif structKeyExists(url, "subcatId") >
-        <cfset variables.productList = application.userObject.getProductList(
-            subcategoryId=url.subcatId,
-            limit=10,
-            count=true
-        )>
-    </cfif>
-
-    <cfif structKeyExists(url, "subcatId")>
-        <cfset variables.subcatId = url.subcatId>
-        <cfset variables.searchValue = ''>
-    <cfelseif structKeyExists(url, "searchValue")>
-        <cfset variables.searchValue = url.searchValue>
-        <cfset variables.subcatId = 0>
-    </cfif>
-    <cfif structKeyExists(url, "sortOrder")>
-        <cfset variables.sortOrder = url.sortOrder>
     <cfelse>
-        <cfset variables.sortOrder = 0>
+        <cfset variables.productList = application.userObject.getProductList(
+            sortOrder=url.sortOrder,
+            subcategoryId=url.subcatId,
+            limit=10,
+            count=true,
+            minPrice=url.minPrice,
+            maxPrice=url.maxPrice
+        )>
     </cfif>
     <cfoutput>
         <div class="m-3">
@@ -51,19 +40,28 @@
                     #variables.productList.resultArray[1].subcategoryName#
                 </cfif>
             </h3>
-            <div class="d-flex justify-content-between mx-2">
-                <form method="get">
-                    <cfif structKeyExists(url, "searchvalue")>
+            <form method="get" class="d-flex justify-content-between mx-2">
+                <div class="d-flex justify-content-between mx-2">
+                    <cfif LEN(url.searchValue)>
                         <input type="hidden" name="searchValue" value="#url.searchValue#">
                     <cfelseif structKeyExists(url, "subcatId")>
                         <input type="hidden" name="subcatId" value="#url.subcatId#">
                     </cfif>
+                    <input 
+                        type="hidden" 
+                        name="sortOrder" 
+                        id="sortOrder" 
+                        <cfif url.sortOrder EQ "asc">
+                            value="asc"
+                        <cfelseif url.sortOrder EQ "desc">
+                            value="desc"
+                        </cfif>
+                    >
                     <button 
                         type="submit" 
-                        name="sortOrder" 
                         value="asc" 
-                        class="btn"
-                        <cfif variables.sortOrder EQ "asc">
+                        class="btn me-1 sortProductsBtn"
+                        <cfif url.sortOrder EQ "asc">
                             disabled
                         </cfif>
                     >
@@ -71,17 +69,16 @@
                     </button>
                     <button 
                         type="submit" 
-                        name="sortOrder" 
                         value="desc" 
-                        class="btn"
-                        <cfif variables.sortOrder EQ "desc">
+                        class="btn sortProductsBtn"
+                        <cfif url.sortOrder EQ "desc">
                             disabled
                         </cfif>
                     >
                         Price : High to low
                     </button>
-                </form>
-                <form class="dropdown" id="dropdownForm">
+                </div>
+                <div class="dropdown" id="dropdownForm">
                     <button 
                         class="btn btn-secondary dropdown-toggle"
                         id="filterDropdown"
@@ -96,7 +93,7 @@
                         <li class = "form-control dropdown-item">
                             <input 
                                 type="radio" 
-                                name="filterRadio" 
+                                class="filterRadio" 
                                 id="filter1" 
                                 onclick='setFilter({min:0,max:1000})'
                             >
@@ -105,7 +102,7 @@
                         <li class = "form-control dropdown-item">
                             <input 
                                 type="radio" 
-                                name="filterRadio" 
+                                class="filterRadio" 
                                 id="filter2" 
                                 onclick='setFilter({min:1000,max:10000})'
                             >
@@ -114,7 +111,7 @@
                         <li class = "form-control dropdown-item">
                             <input 
                                 type="radio" 
-                                name="filterRadio" 
+                                class="filterRadio" 
                                 id="filter3" 
                                 onclick='setFilter({min:10000,max:15000})'
                             >
@@ -126,6 +123,10 @@
                                 id="filterMin" 
                                 placeholder="Min" 
                                 class="form-control filterInput"
+                                name="minPrice"
+                                <cfif LEN(url.minPrice) AND url.minPrice GTE 0>
+                                    value="#url.minPrice#"
+                                </cfif>
                             >
                             TO
                             <input 
@@ -133,6 +134,10 @@
                                 id="filterMax" 
                                 placeholder="Max" 
                                 class="form-control filterInput"
+                                name="maxPrice"
+                                <cfif LEN(url.maxPrice) AND url.maxPrice GTE 0>
+                                    value="#url.maxPrice#"
+                                </cfif>
                             >
                         </li>
                         <li><hr class="dropdown-divider"></li>
@@ -146,12 +151,8 @@
                             </button>
                             <button 
                                 class="btn w-100 border my-1"
-                                type = "button"
-                                onclick="filterProducts({
-                                    subcategoryId:#variables.subcatId#,
-                                    searchValue:'#variables.searchValue#',
-                                    sortOrder:'#variables.sortOrder#'
-                                })"
+                                type = "submit"
+                                onclick="filterProducts()"
                                 aria-expanded="false"
                             >
                                 Submit
@@ -161,8 +162,8 @@
                             <small class = "text-danger" id="filterError"></small>
                         </li>
                     </ul>
-                </form>
-            </div>
+                </div>
+            </form>
             <cfif 
                 arrayLen(variables.productList.resultArray) 
                 AND 
@@ -194,11 +195,13 @@
                             class="btn border my-1"
                             id="showMoreBtn"
                             value="#arraytolist(variables.arrayProductId)#"
-                            onclick="listProducts({
-                                subcategoryId:#variables.subcatId#,
-                                searchValue:'#variables.searchValue#',
-                                sortOrder:'#variables.sortOrder#'
-                            })" 
+                            onclick="showMore(
+                                #url.subcatId#,
+                                '#url.searchValue#',
+                                '#url.sortOrder#',
+                                #url.minPrice#,
+                                #url.maxPrice#
+                            )" 
                             aria-expanded="false"
                         >
                             Show more

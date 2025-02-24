@@ -8,7 +8,6 @@
         <cfargument  name="password" type ="string" required = "true">
 
         <cfset local.structResult = structNew()>
-
         <cfif 
             len(trim(arguments.firstName))
             AND 
@@ -20,45 +19,57 @@
             AND
             len(trim(arguments.password)) GTE 8
         >
-            <cfquery name="local.isEmailExist">
-                SELECT
-                    fldUser_ID
-                FROM
-                    tbluser
-                WHERE 
-                    fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
-                    OR
-                    fldPhone = <cfqueryparam value = "#arguments.phoneNumber#" cfSqlType= "varchar">
-            </cfquery>
-
-            <cfif local.isEmailExist.recordCount>
-                <cfset local.structResult["error"] = "Email or phone number already exists">
+            <!--- check whether the field are valid --->
+            <cfif isValid("regex", arguments.firstName,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.lastName,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
+            <cfelseif NOT isValid("email", arguments.emailId)>
+                <cfset local.structResult["error"] = "Please enter a valid email">
+            <cfelseif NOT isValid("regex", arguments.phoneNumber,"^(\+?[0-9-]{8,15})$")>
+                <cfset local.structResult["error"] = "Please enter a valid phone number">
             <cfelse>
-                <cfset local.saltString = generateSecretKey("AES")>
-                <cfset local.hashedPassword = hash(arguments.password & local.saltString,'SHA-512', 'utf-8', 125)>
-                <!--- <cfquery result="local.signUpresult">
-                    INSERT INTO
-                        tbluser(
-                            fldFirstName,
-                            fldLastName,
-                            fldPhone,
-                            fldEmail,
-                            fldHashedPassword,
-                            fldUserSaltString,
-                            fldRoleId
-                        )VALUES(
-                            <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
-                            <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
-                            <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
-                            <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">,
-                            <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "varchar">,
-                            <cfqueryparam value = '#local.saltString#' cfsqltype = "varchar">,
-                            2
-                        );
-                </cfquery> --->
-                <cfset local.structResult["success"] = true>
-                <cfset session.userSession.userId = local.signUpresult.generatedKey>
-                <cfset session.userSession.roleId = 2>
+                <cfquery name="local.isEmailExist">
+                    SELECT
+                        fldUser_ID
+                    FROM
+                        tbluser
+                    WHERE 
+                        fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
+                        OR
+                        fldPhone = <cfqueryparam value = "#arguments.phoneNumber#" cfSqlType= "varchar">
+                </cfquery>
+
+                <cfif local.isEmailExist.recordCount>
+                    <cfset local.structResult["error"] = "Email or phone number already exists">
+                <cfelse>
+                    <cfset local.saltString = generateSecretKey("AES")>
+                    <cfset local.hashedPassword = hash(arguments.password & local.saltString,'SHA-512', 'utf-8', 125)>
+                    <cfquery result="local.signUpresult">
+                        INSERT INTO
+                            tbluser(
+                                fldFirstName,
+                                fldLastName,
+                                fldPhone,
+                                fldEmail,
+                                fldHashedPassword,
+                                fldUserSaltString,
+                                fldRoleId
+                            )VALUES(
+                                <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
+                                <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
+                                <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
+                                <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">,
+                                <cfqueryparam value = '#local.hashedPassword#' cfsqltype = "varchar">,
+                                <cfqueryparam value = '#local.saltString#' cfsqltype = "varchar">,
+                                2
+                            );
+                    </cfquery>
+                    <cfset local.structResult["success"] = true>
+                    <cfset session.userSession.userId = local.signUpresult.generatedKey>
+                    <cfset session.userSession.name = arguments.firstName>
+                    <cfset session.userSession.roleId = 2>
+                </cfif>
             </cfif>
         <cfelse>
             <cfif len(trim(arguments.password)) LT 8>
@@ -81,6 +92,7 @@
             <cfquery name="local.userDetails">
                 SELECT
                     fldUser_ID,
+                    fldFirstName,
                     fldHashedPassword,
                     fldUserSaltString
                 FROM
@@ -103,6 +115,8 @@
                 >
                     <cfset session.userSession.userId = local.userDetails.fldUser_ID>
                     <cfset session.userSession.roleId = 2>
+                    <cfset session.userSession.name = local.userDetails.fldFirstName>
+                    <cfset session.userSession.cartCount = headerDetails(session.userSession.userId).cartCount>
                     <cfset local.structResult["success"] = true>
                 <cfelse>
                     <cfset local.structResult["error"] = "Invalid password">
@@ -179,6 +193,7 @@
         <cfargument  name = "excludedIdList" type = "string" required = "false">
         <cfargument name = "count" type = "string" required = "false">
         <cfargument name = "limit" type = "integer" required = "false">
+
         <cfset local.resultStruct = structNew()>
         <cfquery  name = "local.getProducts" returntype="struct">
             SELECT 
@@ -334,7 +349,6 @@
                     WHERE
                         fldCart_Id=<cfqueryparam value = "#local.isProductExist.fldCart_ID#" cfSqlType = "integer">
                 </cfquery>
-                <cfset local.resultStruct["increasedItemCount"] = 0>
             <cfelse>
                 <!--- product is not present in cart(add product) --->
                 <cfquery>
@@ -349,8 +363,9 @@
                             <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
                         );
                 </cfquery>
-                <cfset local.resultStruct["increasedItemCount"] = 1>
+                <cfset session.userSession.cartCount += 1>
             </cfif>
+            <cfset local.resultStruct["cartCount"] = session.userSession.cartCount>
             <cfset local.resultStruct["success"] = true>
         <cfelse>
             <!--- user is not loged in --->
@@ -433,22 +448,17 @@
     <cffunction name = "removeFromCart" returntype = "struct" returnformat = "JSON" access = "remote">
         <cfargument name = "cartId" type = "integer" required = "true">
         <cfset local.structResult = structNew()>
-        <cfquery>
+        <cfquery result="local.deleteResult">
             DELETE FROM
                 tblcart
             WHERE 
                 fldCart_ID = <cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
         </cfquery>
-        <cfquery name = "local.getCartCount">
-            SELECT
-                count(*) AS cartCount
-            FROM
-                tblcart
-            WHERE 
-                fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
-        </cfquery>
+        <cfif local.deleteResult.recordCount>
+            <cfset session.userSession.cartCount -= 1>
+        </cfif>
         <cfset local.structResult["success"] = true>
-        <cfset local.structResult["cartCount"] = local.getCartCount.cartCount>
+        <cfset local.structResult["cartCount"] = session.userSession.cartCount>
         <cfreturn local.structResult>
     </cffunction>
 
@@ -512,37 +522,46 @@
             len(trim(arguments.lastName))
             AND 
             len(trim(arguments.emailId))
-            AND 
-            isValid("email", arguments.emailId)
             AND
             len(trim(arguments.phoneNumber))
         >
-            <cfquery name="local.isEmailExist">
-                SELECT
-                    fldUser_ID
-                FROM
-                    tbluser
-                WHERE 
-                    fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
-                    AND
-                    NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
-            </cfquery>
-
-            <cfif local.isEmailExist.recordCount>
-                <cfset local.structResult["error"] = "Email already exists">
+            <!--- check whether the field are valid --->
+            <cfif isValid("regex", arguments.firstName,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.lastName,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
+            <cfelseif NOT isValid("email", arguments.emailId)>
+                <cfset local.structResult["error"] = "Please enter a valid email">
+            <cfelseif NOT isValid("regex", arguments.phoneNumber,"^(\+?[0-9-]{8,15})$")>
+                <cfset local.structResult["error"] = "Please enter a valid phone number">
             <cfelse>
-                <cfquery result="local.signUpresult">
-                    UPDATE
+                <cfquery name="local.isEmailExist">
+                    SELECT
+                        fldUser_ID
+                    FROM
                         tbluser
-                    SET
-                        fldFirstName = <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
-                        fldLastName = <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
-                        fldPhone = <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
-                        fldEmail = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">
                     WHERE 
-                        flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
+                        fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
+                        AND
+                        NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
                 </cfquery>
-                <cfset local.structResult["success"] = true>
+
+                <cfif local.isEmailExist.recordCount>
+                    <cfset local.structResult["error"] = "Email already exists">
+                <cfelse>
+                    <cfquery result="local.signUpresult">
+                        UPDATE
+                            tbluser
+                        SET
+                            fldFirstName = <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
+                            fldLastName = <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
+                            fldPhone = <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
+                            fldEmail = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">
+                        WHERE 
+                            flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
+                    </cfquery>
+                    <cfset local.structResult["success"] = true>
+                </cfif>
             </cfif>
         <cfelse>
             <cfset local.structResult["error"] = "Please fill all the fields">
@@ -571,31 +590,48 @@
             AND 
             len(trim(arguments.formStruct.pincode))
         >
-            <cfquery name = "">
-                INSERT INTO 
-                    tbladdress( 
-                        fldUserId, 
-                        fldFirstName, 
-                        fldLastName, 
-                        fldAddressLine1, 
-                        fldAddressLine2, 
-                        fldCity, 
-                        fldState, 
-                        fldPincode, 
-                        fldPhoneNumber
-                    )VALUES (
-                        <cfqueryparam value = '#arguments.userId#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.firstName#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.lastName#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.addressLine1#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.addressLine2#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.city#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.state#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.pincode#' cfsqltype = "varchar">,
-                        <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">
-                    );
-            </cfquery>
-            <cfset local.resultStruct["success"] = true>
+            <!--- check whether the field are valid --->
+            <cfif isValid("regex", arguments.firstName,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.lastName,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.addressLine1,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "Address line 1 should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.addressLine2,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "Address line 2 should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.city,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "City not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.state,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "State should not contain any special charector or whitespace">
+            <cfelseif NOT isValid("regex", arguments.phoneNumber,"^(\+?[0-9-]{8,15})$")>
+                <cfset local.structResult["error"] = "Please enter a valid phone number">
+            <cfelse>
+                <cfquery name = "">
+                    INSERT INTO 
+                        tbladdress( 
+                            fldUserId, 
+                            fldFirstName, 
+                            fldLastName, 
+                            fldAddressLine1, 
+                            fldAddressLine2, 
+                            fldCity, 
+                            fldState, 
+                            fldPincode, 
+                            fldPhoneNumber
+                        )VALUES (
+                            <cfqueryparam value = '#arguments.userId#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.firstName#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.lastName#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.addressLine1#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.addressLine2#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.city#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.state#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.pincode#' cfsqltype = "varchar">,
+                            <cfqueryparam value = '#arguments.formStruct.phoneNumber#' cfsqltype = "varchar">
+                        );
+                </cfquery>
+                <cfset local.resultStruct["success"] = true>
+            </cfif>
         <cfelse>
             <cfset local.resultStruct["error"] = "Please enter all the Fields">
         </cfif>

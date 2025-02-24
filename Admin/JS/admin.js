@@ -1,3 +1,73 @@
+$(document).ready(function(){
+    $("#addCategoryForm").submit(function(){
+        let categoryName= $("#categoryName").val();
+		let isCategoryNameValid = checkSpecialCharacter(categoryName,"modalError");
+		if(isCategoryNameValid){
+            return true;
+        }else{
+            return false;
+        }
+
+    });
+    $("#addSubcategoryForm").submit(function(){
+        let subcategoryName= $("#subCategoryName").val();
+		let isSubcategoryNameValid = checkSpecialCharacter(subcategoryName,"modalError");
+		if(isSubcategoryNameValid){
+            return true;
+        }else{
+            return false;
+        }
+
+    });
+    $("#productModalForm").submit(function(){
+        let productName= $("#productName").val();
+		let isproductNameValid = checkSpecialCharacter(productName,"productNameError");
+		if(isproductNameValid){
+            $("#modalError").text("");
+            let isWrongExtention = false;
+            var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
+            let imageList = document.getElementById("productImages");
+            for (var i = 0; i < imageList.files.length; ++i) {
+                var inputFileName = imageList.files.item(i).name;
+                fileExtension = String(/[^.]+$/.exec(inputFileName));
+                if(!allowedExtentions.includes(fileExtension.toLowerCase())){
+                    isWrongExtention = true;
+                    break;
+                }
+            }
+            if(isWrongExtention){
+                $("#modalError").text("Only jpg, jpeg, bmp, gif, png and svg files are allowed");
+            }
+            else{
+                productData = new FormData(document.getElementById("productModalForm"))
+                $.ajax({
+                    type: "POST",
+                    url: "components/admin.cfc?method=addOrEditProduct",
+                    data: productData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        resultJson=JSON.parse(result);
+                        if(resultJson.error){
+                            $("#modalError").text(resultJson.error);
+                        }
+                        else
+                        {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
+        return false
+    });
+
+    if(modalElement = document.getElementById('addModal')){
+        modalElement.addEventListener('hidden.bs.modal', event => {
+            $(".modalError").text('');
+        })
+    }
+});
 function loginValidate()
 {
     
@@ -166,64 +236,17 @@ function listSubcategories(categoryId,currentSubCategoryId)
         }
     });
 }
-function productSubmit()
-{
-    event.preventDefault();
-    $("#modalError").text("");
-    let isWrongExtention = false;
-    var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
-    let imageList = document.getElementById("productImages");
-    for (var i = 0; i < imageList.files.length; ++i) {
-        var inputFileName = imageList.files.item(i).name;
-        fileExtension = String(/[^.]+$/.exec(inputFileName));
-        if(!allowedExtentions.includes(fileExtension.toLowerCase())){
-            isWrongExtention = true;
-            break;
-        }
-    }
-    if(isWrongExtention){
-        $("#modalError").text("Only jpg, jpeg, bmp, gif, png and svg files are allowed");
-    }
-    else{
-        productData = new FormData(document.getElementById("modalForm"))
-        $.ajax({
-            type: "POST",
-            url: "components/admin.cfc?method=addOrEditProduct",
-            data: productData,
-            processData: false,
-            contentType: false,
-            success: function(result) {
-                resultJson=JSON.parse(result);
-                if(resultJson.error){
-                    $("#modalError").text(resultJson.error);
-                }
-                else
-                {
-                    closeModal();
-                    location.reload();
-                }
-            }
-        });
-    }
-    return false
-
-}
-function closeModal()
-{
-    $("#addModal").addClass("displayNone")
-    $("#modalForm")[0].reset();
-}
 
 function  deleteCategory(categoryId)
 {
     Swal.fire({
         title: "Are you sure?",
-        text: "This will delete the category and its contents.!",
+        text: "This will delete the category and its contents.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Delete !"
+        confirmButtonText: "Delete"
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
@@ -252,12 +275,12 @@ function  deleteSubCategory(deleteButton)
 {
     Swal.fire({
         title: "Are you sure?",
-        text: "This will delete the sub category and its contents!",
+        text: "This will delete the sub category and its contents",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Delete !"
+        confirmButtonText: "Delete"
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
@@ -286,12 +309,12 @@ function  deleteProduct(deleteButton)
 {
     Swal.fire({
         title: "Are you sure?",
-        text: "This will delete the product and its contents!",
+        text: "This will delete the product and its contents",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Delete !"
+        confirmButtonText: "Delete"
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({

@@ -1,5 +1,5 @@
 <cfinclude  template="./header.cfm">
-<cfif structKeyExists(url, "CategoryId") AND len(url.CategoryId)>
+<cfif structKeyExists(url, "categoryId") AND len(url.categoryId) AND isNumeric(url.categoryId)>
     <div class="mainBody">
         <cfif structKeyExists(form, "modalSubCatSubmit")>
             <cfset resultStruct = application.adminObject.editSubCategory(
@@ -80,10 +80,10 @@
         <cfset categoryData = application.adminObject.getCategories()>
         <div class="modal fade" tabindex="-1" id="addModal" data-bs-backdrop="static">
             <div class="modal-dialog">
-                <form method="post" id="modalForm" class="modal-content">
+                <form method="post" id="addSubcategoryForm" class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="modalHeading"></h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class = "form-group my-2">
@@ -102,9 +102,10 @@
                             <label for="subCategoryName">Subcategory Name</label>
                             <input type="text" id="subCategoryName" name="subCategoryName" class="form-control" required>
                         </div>
+                        <div class = "text-center text-danger modalError" id="modalError"></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button 
                             class="btn btn-success mx-1" 
                             id="modalSubCatSubmit" 

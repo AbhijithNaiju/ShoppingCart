@@ -1,5 +1,5 @@
 <cfinclude  template="./header.cfm">
-<cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId)>
+<cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId) AND isNumeric(url.subCategoryId)>
     <div class="mainBody">
         <cfset productData = application.adminObject.getProducts(subCategoryId = url.subCategoryId)>
         <cfif productData.recordCount EQ 0>
@@ -92,14 +92,14 @@
             <div class="modal-dialog modal-dialog-scrollable">
                 <form 
                     method="post" 
-                    id="modalForm" 
+                    id="productModalForm" 
                     class="modal-content"
                     onsubmit="return productSubmit()"
                     enctype="multipart/form-data"
                 >
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="modalHeading"></h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class = "form-group my-3">
@@ -135,6 +135,7 @@
                             <label class="mb-2" for="productName">Product Name</label>
                             <input type="text" id="productName" name="productName" class="form-control" required>
                         </div>
+                        <div class = "text-center text-danger modalError" id="productNameError"></div>
                         <div class = "form-group my-3" >
                             <label class="mb-2" for="productDescription">Product Description</label>
                             <textarea id="productDescription" name="productDescription" class="form-control" required></textarea>
@@ -162,7 +163,7 @@
                         <input type="hidden" id="productId" value="" name="productId" class="form-control">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button 
                             class="btn btn-success mx-1" 
                             id="modalProductSubmit" 

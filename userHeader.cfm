@@ -33,29 +33,26 @@
                             </div>
                         </form>
                     </div>
-                    <div class="menuButtons">
-                        <a 
-                            id="profileBtn"
-                            href="./profilePage.cfm"
-                        >
-                            Profile
-                        </a>
-                        <div class="cartButton">
-                            <a 
-                                id="cartBtn"
-                                href="./cartPage.cfm"
-                            >
-                                Cart
-                            </a>
-                            <span class="badge" id="cartCount"></span>
+                    <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
+                        <cfoutput>
+                            <div class="menuButtons">
+                                <a id="profileBtn" href="./profilePage.cfm" >#session.userSession.name#</a>
+                                <div class="cartButton">
+                                    <a id="cartBtn" href="./cartPage.cfm">Cart</a>
+                                    <span class="badge" id="cartCount">#session.userSession.cartCount#</span>
+                                </div>
+                                <button id="logOutBtn" onclick="logOut()" > Logout </button>
+                            </div>
+                        </cfoutput>
+                    <cfelse>
+                        <div class="menuButtons">
+                            <a id="profileBtn" href="./login.cfm?redirect=profilePage" > Profile </a>
+                            <div class="cartButton">
+                                <a id="cartBtn" href="./login.cfm?redirect=cart" > Cart </a>
+                            </div>
+                            <a id="logOutBtn" href="login.cfm" > Login </button>
                         </div>
-                        <button  
-                            id="logOutBtn"
-                            onclick="logOut()"
-                        >
-                            Logout
-                        </button>
-                    </div>
+                    </cfif>
                 </cfif> 
             </div>
             <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>

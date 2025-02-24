@@ -1,6 +1,4 @@
 $(document).ready(function(){ 
-	setCartCount();
-
 	// Used to unselect radio when custom min max are used
 	$('.filterInput').click(function(){
 		$('[name=filterRadio]').prop('checked',false);
@@ -10,7 +8,7 @@ $(document).ready(function(){
 		const cartId = $(this).val();
 		Swal.fire({
 			title: "Are you sure?",
-			text: "This product will be removed from the cart!",
+			text: "This product will be removed from the cart.",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#3085d6",
@@ -53,14 +51,21 @@ $(document).ready(function(){
 								// Showing message to goto home
 								Swal.fire({
 									title: "Message !",
-									text: "No products remaining in cart, add products to continue. !",
+									text: "No products remaining in cart, add products to continue.",
 									icon: "info"
 								  }).then((result)=>{
 									  location.href="./index.cfm"	
 								  });
 							}
 						}else{
-							alert("Error occured please try again");
+							Swal.fire({
+							position: "top",
+							toast: true,
+							icon: "error",
+							title: "Error occured please try again",
+							showConfirmButton: false,
+							timer: 1500
+						});
 						}
 					},error: function(){
 						alert("Error occured");
@@ -145,8 +150,8 @@ $(document).ready(function(){
 		let phoneNumber= $("#phoneNumber").val();
 		let userId= $("#editProfile").val();
 
-		let isFirstNameValid = checkSpecialCharector(firstName,"firstNameError");
-		let isLastNameValid = checkSpecialCharector(lastName,"lastNameError");
+		let isFirstNameValid = hasSpecialCharsOrWhitespace(firstName,"firstNameError");
+		let isLastNameValid = hasSpecialCharsOrWhitespace(lastName,"lastNameError");
 		let isEmailValid = validateEmail(emailId,"emailError");
 		let isPhoneValid = validatePhoneNumber(phoneNumber,"phoneNumberError");
 		if(isFirstNameValid &&
@@ -205,14 +210,14 @@ $(document).ready(function(){
 		let addressPhoneNumber= $("#addressPhoneNumber").val();
 		let pincode= $("#pincode").val();
 
-		let isaddressFirstNameValid = checkSpecialCharector(addressFirstName,"FirstNameError");
-		let isaddressLastNameValid = checkSpecialCharector(addressLastName,"LastNameError");
-		let isaddressLine1Valid = checkSpecialCharector(addressLine1,"addressLine1Error");
-		let isaddressLine2Valid = checkSpecialCharector(addressLine2,"addressLine2Error");
-		let iscityValid = checkSpecialCharector(city,"cityError");
-		let isstateValid = checkSpecialCharector(state,"stateError");
+		let isaddressFirstNameValid = hasSpecialCharsOrWhitespace(addressFirstName,"FirstNameError");
+		let isaddressLastNameValid = hasSpecialCharsOrWhitespace(addressLastName,"LastNameError");
+		let isaddressLine1Valid = hasSpecialCharsOrWhitespace(addressLine1,"addressLine1Error");
+		let isaddressLine2Valid = hasSpecialCharsOrWhitespace(addressLine2,"addressLine2Error");
+		let iscityValid = hasSpecialCharsOrWhitespace(city,"cityError");
+		let isstateValid = hasSpecialCharsOrWhitespace(state,"stateError");
 		let isaddressPhoneNumberValid = validatePhoneNumber(addressPhoneNumber,"addressPhoneNumberError");
-		let ispincodeValid = checkSpecialCharector(pincode,"pincodeError");
+		let ispincodeValid = validatePincode(pincode,"pincodeError");
 		if(isaddressFirstNameValid &&
 			isaddressLastNameValid &&
 			isaddressLine1Valid &&
@@ -240,8 +245,8 @@ $(document).ready(function(){
 		let password =$("#password").val();
 		let confirmPassword =$("#confirmPassword").val();
 
-		let isFirstNameValid = checkSpecialCharector(firstName,"firstNameError");
-		let isLastNameValid = checkSpecialCharector(lastName,"lastNameError");
+		let isFirstNameValid = hasSpecialCharsOrWhitespace(firstName,"firstNameError");
+		let isLastNameValid = hasSpecialCharsOrWhitespace(lastName,"lastNameError");
 		let isEmailValid = validateEmail(emailId,"emailError");
 		let isPhoneValid = validatePhoneNumber(phoneNumber,"phoneNumberError");
 		let isPasswordValid = validatePassword(password,"passwordError");
@@ -256,34 +261,12 @@ $(document).ready(function(){
 			}else{
 				return false;
 			}
-	})
-});
-
-function setCartCount(){
-	$.ajax({
-		type:"POST",
-		url:"components/user.cfc?method=headerDetails",
-		success: function(result) {
-			headerDetails=JSON.parse(result)
-			if(headerDetails.sessionExist){
-				$("#cartCount").show();
-				$("#cartCount").text(headerDetails.cartCount);
-				return headerDetails.cartCount;
-			}else{
-				emptyHeader();
-			}
-		},error: function(){
-			alert("Error occured");
-		}
 	});
-}
-function emptyHeader(){
-	$("#logOutBtn").text("Login")
-	$("#cartCount").hide()
-	$("#cartBtn").attr('href',"login.cfm?redirect=cart")
-	$("#profileBtn").attr('href', "login.cfm?redirect=profilePage")
-	$("#logOutBtn").attr('onclick','location.href = "login.cfm"')
-}
+	
+	$(".sortProductsBtn").click(function(){
+		$("#sortOrder").val(this.value)
+	});
+});
 
 function logOut(){
 	Swal.fire({
@@ -318,43 +301,27 @@ function logOut(){
 		}
 	});
 }
-
 function setFilter(range){
 	$('#filterMin').val(range.min)
 	$('#filterMax').val(range.max)
 }
 
 function clearFilter(){
-	setFilter({min:'',max:''});
+	$('#filterMin').attr("value",'')
+	$('#filterMax').attr("value",'')
 	$('[name=filterRadio]').prop('checked',false);
 }
 
-function filterProducts(currentData){
+function filterProducts(){
 	let minValue = $("#filterMin").val();
 	let maxValue = $("#filterMax").val();
-	const filterData = new Object();
 	if(minValue < 0 || maxValue < 0){
 		$("#filterError").text("Please enter a positive number");
+		event.preventDefault();
 	}else{
 		$("#filterError").text("");
 		$("#filterMin").attr("value",minValue);
 		$("#filterMax").attr("value",maxValue);
-		if(minValue.trim().length == 0){
-			minValue = -1
-		}
-		if(maxValue.trim().length == 0){
-			maxValue = -1
-		}
-		filterData.minPrice = minValue;
-		filterData.maxPrice = maxValue;
-		if(currentData.subcategoryId){
-			filterData.subcategoryId = currentData.subcategoryId;
-		}else if(currentData.searchValue != ''){
-			filterData.searchValue = currentData.searchValue;
-		}
-		filterData.sortOrder = currentData.sortOrder;
-		filterData.clearProducts=true;
-		listProducts(filterData);
 	}
 }
 
@@ -364,37 +331,20 @@ if(myDropdown = document.getElementById('filterDropdown')){
 	})
 }
 
-function listProducts(currentData)
+function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 {
 	let excludedList = $("#showMoreBtn");
 	const productData = new Object();
-	let minValue = $("#filterMin").val();
-	let maxValue = $("#filterMax").val();
-	if(minValue.trim().length == 0){
-		minValue = -1
+	if(subcategoryId){
+		productData.subcategoryId = subcategoryId;
+	}else if(searchValue != ''){
+		productData.searchValue = searchValue;
 	}
-	if(maxValue.trim().length == 0){
-		maxValue = -1
-	}
-	if(currentData.subcategoryId){
-		productData.subcategoryId = currentData.subcategoryId;
-	}else if(currentData.searchValue != ''){
-		productData.searchValue = currentData.searchValue;
-	}
-	if(minValue){
-		productData.minPrice = minValue;
-	}
-	if(maxValue){
-		productData.maxPrice = maxValue;
-	}
-	productData.sortOrder = currentData.sortOrder;
-	if(currentData.clearProducts){
-		productData.limit = 10;
-		productData.count = true;
-	}else{
-		productData.limit = 5;
-		productData.excludedIdList = excludedList.val();
-	}
+	productData.minPrice = minPrice;
+	productData.maxPrice = maxPrice;
+	productData.sortOrder = sortOrder;
+	productData.limit = 5;
+	productData.excludedIdList = excludedList.val();
 	
 	$.ajax({
 		type:"POST",
@@ -402,20 +352,10 @@ function listProducts(currentData)
 		data:productData,
 		success: function(result) {
 			resultJson=JSON.parse(result);
-			if(currentData.clearProducts){
-				// Removing current products
-				$('#productListingParent').empty();
-				excludedList.val('');
-				$(".dropdown-toggle").dropdown('toggle');
-			}
-			if(resultJson.productCount){
-				$("#totalProductCount").val(resultJson.productCount);	
-			}
 			let totalProductCount=parseInt($("#totalProductCount").val());
 			if(resultJson.success){
 				if(resultJson.resultArray.length){
 					$('#listingMessage').text("");
-					productIdList=[];
 					resultJson.resultArray.forEach(productData => {
 						let productBody = `
 							<a 
@@ -434,38 +374,32 @@ function listProducts(currentData)
 								</div>
 							</a>
 						`;
-						if(excludedList.val().length==0){
-							excludedList.val(productData.productId);
-						}else{
-							excludedList.val(excludedList.val() + ',' +productData.productId);
-						}
+						excludedList.val(excludedList.val() + ',' +productData.productId);
 						$("#productListingParent").append(productBody);
 					});
 					if(totalProductCount == excludedList.val().split(",").length){
 						excludedList.hide();
-					}else{
-						excludedList.show();
 					}
 				}else{
 					excludedList.hide();
-					if(!currentData.clearProducts){
-						Swal.fire({
+					Swal.fire({
 							position: "top",
 							toast: true,
 							icon: "error",
-							title: "No products found",
+							title: "No more products found",
 							showConfirmButton: false,
 							timer: 1500
 						});
 					}
-				}
 			}else{
-				alert("Error occured while loading products");
-			}
-			if(currentData.clearProducts){
-				if(resultJson.resultArray.length==0){
-					$('#listingMessage').text("No products found");
-				}
+				Swal.fire({
+					position: "top",
+					toast: true,
+					icon: "error",
+					title: "Error occured while loading products",
+					showConfirmButton: false,
+					timer: 1500
+				});
 			}
 		},error: function(){
 			alert("Error occured");
@@ -495,8 +429,8 @@ function addToCart(productId,redirect){
 					showConfirmButton: false,
 					timer: 1500
 				  });
-				if(addToCartResult.increasedItemCount){
-					setCartCount();
+				if(addToCartResult.cartCount){
+					$("#cartCount").text(addToCartResult.cartCount);
 				}
 			}
 		},error: function(){
