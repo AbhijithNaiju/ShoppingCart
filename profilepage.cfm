@@ -66,7 +66,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group my-2">
@@ -189,7 +189,7 @@
                             value="#variables.profileDetails.firstName#"
                             required
                             >
-                            <div class = "errorMessage text-center" id="firstNameError"></div>
+                            <div class = "errorMessage" id="firstNameError"></div>
                         </div>
                         <div class="form-group my-2">
                             <label for="lastName">Last Name *</label>
@@ -201,7 +201,7 @@
                                 value="#variables.profileDetails.lastName#"
                                 required
                             >
-                            <div class = "errorMessage text-center" id="lastNameError"></div>
+                            <div class = "errorMessage" id="lastNameError"></div>
                         </div>
                         <div class="form-group my-2">
                             <label for="emailId">Email Address *</label>
@@ -212,7 +212,7 @@
                                 name="emailId"
                                 value="#variables.profileDetails.email#"
                             >
-                            <div class = "errorMessage text-center" id="emailError"></div>
+                            <div class = "errorMessage" id="emailError"></div>
                         </div>
                         <div class="form-group my-2">
                             <label for="phoneNumber">Phone Number *</label>
@@ -223,7 +223,7 @@
                                 name="phoneNumber"
                                 value="#variables.profileDetails.phone#"
                             >
-                            <div class = "errorMessage text-center" id="phoneNumberError"></div>
+                            <div class = "errorMessage" id="phoneNumberError"></div>
                         </div>
                     </div>
                 </div>

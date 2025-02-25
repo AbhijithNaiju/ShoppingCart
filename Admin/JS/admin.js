@@ -20,52 +20,123 @@ $(document).ready(function(){
 
     });
     $("#productModalForm").submit(function(){
+        event.preventDefault()
         let productName= $("#productName").val();
+        let productTax= $("#productTax").val();
+        if(parseFloat(productTax)>100){
+            setError("Please enter a valid taxt amount","productTaxError")
+            isProductTaxValid =false;
+        }else{
+            setSuccess("productTaxError")
+            isProductTaxValid =true;
+        }
 		let isproductNameValid = checkSpecialCharacter(productName,"productNameError");
-		if(isproductNameValid){
-            $("#modalError").text("");
-            let isWrongExtention = false;
-            var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
-            let imageList = document.getElementById("productImages");
-            for (var i = 0; i < imageList.files.length; ++i) {
-                var inputFileName = imageList.files.item(i).name;
-                fileExtension = String(/[^.]+$/.exec(inputFileName));
-                if(!allowedExtentions.includes(fileExtension.toLowerCase())){
-                    isWrongExtention = true;
-                    break;
-                }
+        $("#modalError").text("");
+        let isWrongExtention = false;
+        var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
+        let imageList = document.getElementById("productImages");
+        for (var i = 0; i < imageList.files.length; ++i) {
+            var inputFileName = imageList.files.item(i).name;
+            fileExtension = String(/[^.]+$/.exec(inputFileName));
+            if(!allowedExtentions.includes(fileExtension.toLowerCase())){
+                isWrongExtention = true;
+                break;
             }
-            if(isWrongExtention){
-                $("#modalError").text("Only jpg, jpeg, bmp, gif, png and svg files are allowed");
-            }
-            else{
-                productData = new FormData(document.getElementById("productModalForm"))
-                $.ajax({
-                    type: "POST",
-                    url: "components/admin.cfc?method=addOrEditProduct",
-                    data: productData,
-                    processData: false,
-                    contentType: false,
-                    success: function(result) {
-                        resultJson=JSON.parse(result);
-                        if(resultJson.error){
-                            $("#modalError").text(resultJson.error);
+        }
+        if(isWrongExtention){
+            setError("Only jpg, jpeg, bmp, gif, png and svg files are allowed","productImageError")
+        }else if(isproductNameValid && isProductTaxValid){
+            productData = new FormData(document.getElementById("productModalForm"))
+            $.ajax({
+                type: "POST",
+                url: "components/admin.cfc?method=addOrEditProduct",
+                data: productData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    resultJson=JSON.parse(result);
+                    if(resultJson.error){
+                        $("#productNameError").text(resultJson.error);
+                    }
+                    else if(resultJson.success){
+                        if(resultJson.isSameCategoryID){
+                            if(resultJson.edit){
+                                $("#product"+resultJson.productDetails.productId).find(".productName").text(resultJson.productDetails.ProductName)
+                                $("#product"+resultJson.productDetails.productId).find(".brandName").text(resultJson.productDetails.ProductBrand)
+                                $("#product"+resultJson.productDetails.productId).find(".productPrice").text(resultJson.productDetails.totalPrice)
+                            }else if(resultJson.insert){
+                                let productDiv=`
+                                    <div 
+                                        class="productItem my-2 rounded border shadow-sm p-3 justify-content-between align-items-center"
+                                        id="product${resultJson.productDetails.productId}"
+                                    >
+                                        <div class="row">
+                                            <button 
+                                                type="button" 
+                                                class="thumbnailImage col-4" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#imageModal"
+                                                onclick="openImageModal({productId:'${resultJson.productDetails.productId}'})"
+                                            >
+                                                <img
+                                                    src="../assets/productimages/${resultJson.productDetails.defaultImage}" 
+                                                    alt="Image not found" 
+                                                    class="">
+                                            </button>
+                                            <div class="col-6 d-flex flex-column">
+                                                <div class="productName">${resultJson.productDetails.ProductName}</div>
+                                                <div class="brandName">${resultJson.productDetails.ProductBrand}</div>
+                                                <div class = "mt-auto">
+                                                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                                                    ${resultJson.productDetails.totalPrice}
+                                                </div>
+                                            </div>
+                                            <div class="col-2 d-flex flex-column justify-content-around">
+                                                <button 
+                                                    type="button" 
+                                                    class="productButtons" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#addModal"
+                                                    onclick="openProductModal({categoryId:${resultJson.productDetails.categoryId},subCategoryId:${resultJson.productDetails.subcategoryId},productId:${resultJson.productDetails.productId}})"
+                                                    value="${resultJson.productDetails.productId}"
+                                                >
+                                                    <img src="../assets/images/edit-icon.png">
+                                                </button>
+                                                <button 
+                                                    class="productButtons" 
+                                                    onclick="deleteProduct(this)" 
+                                                    value="${resultJson.productDetails.productId}"
+                                                >
+                                                    <img src="../assets/images/delete-icon.png">
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                                $('#productList').append(productDiv);
+                            }
+                        }else{
+                            $("#product"+resultJson.productDetails.productId).remove();
                         }
-                        else
-                        {
-                            location.reload();
+                        $("#addModal").modal("hide");
+                        if($("#productList").children().length){
+                            $("#noProductError").text("");
+                        }else{
+                            $("#noProductError").text("No Products Found");
                         }
                     }
-                });
-            }
+                }
+            });
         }
         return false
     });
 
-    if(modalElement = document.getElementById('addModal')){
-        modalElement.addEventListener('hidden.bs.modal', event => {
-            $(".modalError").text('');
-        })
+    if(myModalElement = document.getElementById('addModal')){
+        myModalElement.addEventListener('hide.bs.modal', event => {
+            $(".form-control").removeClass("is-valid")
+            $(".form-control").removeClass("is-invalid")
+            $(".errorMessage").text("")
+        });
     }
 });
 function loginValidate()
@@ -325,6 +396,11 @@ function  deleteProduct(deleteButton)
                     if(result)
                     {
                         $("#product"+deleteButton.value).remove();
+                        if($("#productList").children().length){
+                            $("#noProductError").text("");
+                        }else{
+                            $("#noProductError").text("No Products Found");
+                        }
                     }
                     else
                     {

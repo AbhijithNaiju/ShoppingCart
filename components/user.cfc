@@ -326,7 +326,7 @@
         <cfargument  name = "productid" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>
-        <cfif structKeyExists(session.userSession, "userId")>
+        <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
             <!--- user is logged in --->
             <!--- checking whether product already in the cart --->
             <cfquery  name = "local.isProductExist">
@@ -561,6 +561,7 @@
                             flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
                     </cfquery>
                     <cfset local.structResult["success"] = true>
+                    <cfset session.userSession.name = arguments.firstName>
                 </cfif>
             </cfif>
         <cfelse>

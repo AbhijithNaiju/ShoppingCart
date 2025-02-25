@@ -48,6 +48,7 @@
     </cffunction>
 
     <cffunction  name="getCategories" returnType="query">
+        <cfargument name = "categoryId" type = "integer" required = "false">
         <cfquery name="local.categoryData">
             SELECT
                 fldCategoryName,
@@ -55,7 +56,10 @@
             FROM
                 tblCategory
             WHERE
-                fldActive = 1;
+                fldActive = 1
+                <cfif structKeyExists(arguments, "categoryId")>
+                    fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                </cfif>
         </cfquery>
         <cfreturn local.categoryData>
     </cffunction>
@@ -65,7 +69,7 @@
         <cfargument  name="categoryId" required = "true" type="integer">
 
         <cfset local.structResult = structNew()>
-        <cfif LEN(trim(arguments.categoryName))>
+        <cfif LEN(trim(arguments.categoryName)) EQ 0>
             <cfset local.structResult["error"] = "Please enter a name">
         <cfelseif isValid("regex", arguments.categoryName,"[^a-zA-Z0-9\s]")>
             <cfset local.structResult["error"] = "Category name should not contain any special charector or whitespace">
@@ -161,7 +165,7 @@
         <cfset local.structResult = structNew()>
         
         
-        <cfif LEN(trim(arguments.subcategoryName))>
+        <cfif LEN(trim(arguments.subcategoryName)) EQ 0>
             <cfset local.structResult["error"] = "Please enter a name">
         <cfelseif isValid("regex", arguments.subCategoryName,"[^a-zA-Z0-9\s]")>
             <cfset local.structResult["error"] = "Subcategory name should not contain any special charector or whitespace">
@@ -305,6 +309,7 @@
     </cffunction>
     
     <cffunction  name="getBrands" returntype="query">
+        <cfargument name = "brandId" type = "integer" required = "false">
         <cfquery name = "local.brandData">
             SELECT
                 fldBrandName,
@@ -312,7 +317,11 @@
             FROM
                 tblBrands   
             WHERE
-                fldActive = 1;
+                fldActive = 1
+                <cfif structKeyExists(arguments, "brandId")>
+                    AND
+                    fldBrand_ID = <cfqueryparam value="#arguments.brandId#" CFSQLType="integer">
+                </cfif>
         </cfquery>
         <cfreturn local.brandData>
     </cffunction>
@@ -320,18 +329,21 @@
     <cffunction  name = "addOrEditProduct" access = "remote" returnformat = "JSON" returntype="struct">
         <cfargument  name = "formBrandId" required = "true" type = "integer">
         <cfargument  name = "formSubCategoryId" required = "true" type = "integer">
+        <cfargument  name = "currentSubcategoryID" required = "true" type = "integer">
+        <cfargument  name = "formCategoryId" required = "true" type = "integer">
         <cfargument  name = "productDescription" required = "true" type = "string">
         <cfargument  name = "productName" required = "true" type = "string">
         <cfargument  name = "productPrice" required = "true" type = "float">
         <cfargument  name = "productTax" required = "true" type = "float">
         <cfargument  name = "productId" required = "false" type = "integer">
-
         <cfset local.structResult = structNew()>
 
-        <cfif LEN(trim(arguments.productName))>
+        <cfif LEN(trim(arguments.productName)) EQ 0>
             <cfset local.structResult["error"] = "Please enter a name">
         <cfelseif isValid("regex", arguments.productName,"[^a-zA-Z0-9\s]")>
             <cfset local.structResult["error"] = "Product name should not contain any special charector or whitespace">
+        <cfelseif arguments.productTax GT 100>
+            <cfset local.structResult["error"] = "Please enter valid tax percentage">
         <cfelse>
             <cfset local.uploadLocation = "../../assets/productImages">
             <cfif NOT directoryExists(expandPath(local.uploadLocation))>
@@ -375,6 +387,7 @@
                     </cfquery>
                     <cfset local.defaultImage = 0>
                     <cfset local.productid = arguments.productId>
+                    <cfset local.structResult["edit"] = true>
                 <cfelse>
                     <cfquery result="local.productResult">
                         INSERT INTO
@@ -401,7 +414,7 @@
                     </cfquery>
                     <cfset local.defaultImage = 1>
                     <cfset local.productid = local.productResult.generatedkey>
-
+                    <cfset local.structResult["insert"] = true>
                 </cfif>
                 <cfloop array="#local.fileNames#" item="local.fileArrayItem" >
                     <cfquery>
@@ -421,9 +434,22 @@
                             <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
                         )
                     </cfquery>
+                    <cfif local.defaultImage EQ 1>
+                        <cfset local.structResult["productDetails"]["defaultImage"]= local.fileArrayItem.serverfile>
+                    </cfif>
                     <cfset local.defaultImage = 0>
                 </cfloop>
+                <cfset local.structResult["productDetails"]["productId"] = local.productid>
+                <cfif arguments.currentSubcategoryID EQ arguments.formSubCategoryId>
+                    <cfset local.structResult["isSameCategoryID"] = true>
+                    <cfset local.structResult["productDetails"]["categoryId"] = arguments.formCategoryId>
+                    <cfset local.structResult["productDetails"]["subcategoryId"] = arguments.formSubCategoryId>
+                    <cfset local.structResult["productDetails"]["ProductName"] = trim(arguments.productName)>
+                    <cfset local.structResult["productDetails"]["ProductBrand"] = getBrands(arguments.formBrandId).fldbrandName>
+                    <cfset local.structResult["productDetails"]["totalPrice"] = arguments.productPrice+(arguments.productPrice*arguments.productTax/100)>
+                </cfif>
             </cfif>
+                <cfset local.structResult["success"] = true>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>

@@ -16,17 +16,22 @@
             </cfif>
         </cfif>
         <cfset variables.subCategoryData = application.adminObject.getSubCategories(categoryId = url.categoryId)>
+        <cfset variables.categoryQuery = application.adminObject.getCategories()>
+        <cfset variables.categoryData = {}>
+        <cfloop query="variables.categoryQuery">
+            <cfset variables.categoryData[variables.categoryQuery.fldCategory_ID] = variables.categoryQuery.fldCategoryName>
+        </cfloop>
         <div class="categoryBody m-auto border rounded p-3 shadow">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
-                    <cfif arrayLen(variables.subCategoryData)>
+                    <cfif structKeyExists(variables.categoryData, url.categoryId)>
                         <h3 class="">
                             <a 
                                 href="./index.cfm" 
                                 class = "text-dark text-decoration-none">
                                     <i class="fa-solid fa-arrow-left me-3"></i>
                             </a>
-                            #variables.subCategoryData[1].categoryName#
+                            #variables.categoryData[url.categoryId]#
                         </h3>
                     </cfif>
                     <button 
@@ -77,7 +82,6 @@
                 </cfif>
             </cfoutput>
         </div>
-        <cfset categoryData = application.adminObject.getCategories()>
         <div class="modal fade" tabindex="-1" id="addModal" data-bs-backdrop="static">
             <div class="modal-dialog">
                 <form method="post" id="addSubcategoryForm" class="modal-content">
@@ -90,9 +94,9 @@
                                 <label for="categorySelect">Category Name</label>
                             <cfoutput>
                                 <select name="formCategoryId" id = "categorySelect" class = "form-control" required>
-                                    <cfloop query="categoryData">
-                                        <option value="#categoryData.fldCategory_ID#">
-                                            #categoryData.fldcategoryName#
+                                    <cfloop collection="#variables.categoryData#" item="categoryKey">
+                                        <option value="#categoryKey#">
+                                            #variables.categoryData[categoryKey]#
                                         </option>
                                     </cfloop>
                                 </select>
@@ -101,8 +105,8 @@
                         <div class = "form-group my-2">
                             <label for="subCategoryName">Subcategory Name</label>
                             <input type="text" id="subCategoryName" name="subCategoryName" class="form-control" required>
+                            <div class = "errorMessage modalError" id="modalError"></div>
                         </div>
-                        <div class = "text-center text-danger modalError" id="modalError"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

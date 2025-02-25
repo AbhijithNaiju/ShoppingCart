@@ -28,7 +28,7 @@
                         Add +
                     </button>
                 </div>
-                <div class="d-flex flex-column categoryList">
+                <div class="d-flex flex-column categoryList" id="productList">
                     <cfif productData.recordCount>
                         <cfloop query="productData">
                             <div 
@@ -53,7 +53,9 @@
                                         <div class="brandName">#productData.fldBrandName#</div>
                                         <div class = "mt-auto">
                                             <i class="fa-solid fa-indian-rupee-sign"></i>
-                                            #productData.fldprice+(productData.fldprice*productData.fldtax)/100#
+                                            <span class="productPrice">
+                                                #productData.fldprice+(productData.fldprice*productData.fldtax)/100#
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-2 d-flex flex-column justify-content-around">
@@ -78,10 +80,11 @@
                                 </div>
                             </div>
                         </cfloop>
-                    <cfelse>
-                        <div class="categoryItem d-flex justify-content-between align-items-center">
-                            No Products Found
-                        </div>
+                    </cfif>
+                </div>
+                <div class="categoryItem d-flex justify-content-between align-items-center" id="noProductError">
+                    <cfif productData.recordCount EQ 0>
+                        No Products Found
                     </cfif>
                 </div>
             </cfoutput>
@@ -94,7 +97,6 @@
                     method="post" 
                     id="productModalForm" 
                     class="modal-content"
-                    onsubmit="return productSubmit()"
                     enctype="multipart/form-data"
                 >
                     <div class="modal-header">
@@ -134,8 +136,8 @@
                         <div class = "form-group my-3" >
                             <label class="mb-2" for="productName">Product Name</label>
                             <input type="text" id="productName" name="productName" class="form-control" required>
+                            <div class = "errorMessage modalError" id="productNameError"></div>
                         </div>
-                        <div class = "text-center text-danger modalError" id="productNameError"></div>
                         <div class = "form-group my-3" >
                             <label class="mb-2" for="productDescription">Product Description</label>
                             <textarea id="productDescription" name="productDescription" class="form-control" required></textarea>
@@ -151,17 +153,22 @@
                                 step="0.01" 
                                 id="productTax" 
                                 name="productTax" 
-                                class="form-control" 
-                                max="100.00"
+                                class="form-control"
                                 required
                             >
+                            <div class = "errorMessage modalError" id="productTaxError"></div>
                         </div>
                         <div class = "form-group my-3" >
                             <label class="mb-2" for="productImages">Product Images</label>
                             <input type="file" multiple id="productImages" name="productImages" class="form-control" required>
+                            <div class = "errorMessage modalError" id="productImageError"></div>
                         </div>
                         <input type="hidden" id="productId" value="" name="productId" class="form-control">
+                        <cfoutput>
+                            <input type="hidden" id="currentSubcategoryID" value="#url.subCategoryId#" name="currentSubcategoryID" class="form-control">
+                        </cfoutput>
                     </div>
+                        <div class = "errorMessage modalError" id="modalError"></div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button 

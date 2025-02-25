@@ -180,9 +180,10 @@ $(document).ready(function(){
 						$("#lastName").attr("value",lastName);
 						$("#emailId").attr("value",emailId);
 						$("#phoneNumber").attr("value",phoneNumber);
+						$("#profileBtn").text(firstName);
 						$("#profileEditModal").modal("hide");
 						Swal.fire({
-							position: "top-end",
+							position: "top",
 							toast: true,
 							icon: "success",
 							title: "Profile edited successfully",
@@ -330,7 +331,20 @@ if(myDropdown = document.getElementById('filterDropdown')){
 		document.getElementById("dropdownForm").reset();
 	})
 }
-
+if(myModalElement = document.getElementById('profileEditModal')){
+	myModalElement.addEventListener('hide.bs.modal', event => {
+		$(".form-control").removeClass("is-valid")
+		$(".form-control").removeClass("is-invalid")
+		$(".errorMessage").text("")
+	});
+}
+if(myModalElement = document.getElementById('addAddressModal')){
+	myModalElement.addEventListener('hide.bs.modal', event => {
+		$(".form-control").removeClass("is-valid")
+		$(".form-control").removeClass("is-invalid")
+		$(".errorMessage").text("")
+	});
+}
 function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 {
 	let excludedList = $("#showMoreBtn");

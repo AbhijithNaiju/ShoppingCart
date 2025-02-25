@@ -50,7 +50,7 @@
                             <div class="cartButton">
                                 <a id="cartBtn" href="./login.cfm?redirect=cart" > Cart </a>
                             </div>
-                            <a id="logOutBtn" href="login.cfm" > Login </button>
+                            <a id="logOutBtn" href="login.cfm" > Login </a>
                         </div>
                     </cfif>
                 </cfif> 

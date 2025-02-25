@@ -28,41 +28,41 @@
             </button>
         </div>
         <div class="d-flex flex-column">
-            <cfset categoryData = application.adminObject.getCategories()>
+            <cfset variables.categoryData = application.adminObject.getCategories()>
             <cfoutput>
-            <cfif categoryData.recordCount>
-                <cfloop query="categoryData">
-                    <div class="categoryItem d-flex justify-content-between align-items-center my-1">
-                        <div>#categoryData.fldCategoryName#</div>
-                        <div class="d-flex justify-content-between categoryButtons">
-                            <button 
-                                type="button" 
-                                class="btn btn-sm" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="##addModal"
-                                onclick="openCategoryModal({categoryId:#categoryData.fldCategory_ID#,categoryName:'#categoryData.fldCategoryName#'})"
-                            >
-                                <img src="../assets/images/edit-icon.png">
-                            </button>
-                            <button 
-                                class="btn btn-sm" 
-                                onclick="deleteCategory(this)" 
-                                value="#categoryData.fldCategory_ID#">
-                                <img src="../assets/images/delete-icon.png">
-                            </button>
-                            <a 
-                            href="subcategory.cfm?categoryId=#categoryData.fldCategory_ID#" 
-                            class="btn btn-sm">
-                            <img src="../assets/images/open-icon.png">
-                            </a>
+                <cfif variables.categoryData.recordCount>
+                    <cfloop query="variables.categoryData">
+                        <div class="categoryItem d-flex justify-content-between align-items-center my-1">
+                            <div>#variables.categoryData.fldCategoryName#</div>
+                            <div class="d-flex justify-content-between categoryButtons">
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="##addModal"
+                                    onclick="openCategoryModal({categoryId:#variables.categoryData.fldCategory_ID#,categoryName:'#variables.categoryData.fldCategoryName#'})"
+                                >
+                                    <img src="../assets/images/edit-icon.png">
+                                </button>
+                                <button 
+                                    class="btn btn-sm" 
+                                    onclick="deleteCategory(this)" 
+                                    value="#variables.categoryData.fldCategory_ID#">
+                                    <img src="../assets/images/delete-icon.png">
+                                </button>
+                                <a 
+                                href="subcategory.cfm?categoryId=#variables.categoryData.fldCategory_ID#" 
+                                class="btn btn-sm">
+                                <img src="../assets/images/open-icon.png">
+                                </a>
+                            </div>
                         </div>
+                    </cfloop>
+                <cfelse>
+                    <div class="categoryItem d-flex justify-content-between align-items-center">
+                        No Category Found
                     </div>
-                </cfloop>
-            <cfelse>
-                <div class="categoryItem d-flex justify-content-between align-items-center">
-                    No Category Found
-                </div>
-            </cfif>
+                </cfif>
             </cfoutput>
         </div>
     </div>
@@ -80,10 +80,10 @@
                             <label for="categoryName">
                                 CategoryName
                             </label>
-                            <input type="text" id="categoryName" name="categoryName" class="form-control my-3" required>
+                            <input type="text" id="categoryName" name="categoryName" class="form-control mt-3" required>
+                            <div class = "errorMessage modalError" id="modalError"></div>
                         </div>
                     </div>
-                    <div class = "text-center text-danger modalError" id="modalError"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
