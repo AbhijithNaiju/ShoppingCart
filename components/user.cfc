@@ -537,17 +537,25 @@
             <cfelse>
                 <cfquery name="local.isEmailExist">
                     SELECT
-                        fldUser_ID
+                        fldEmail,fldPhone
                     FROM
                         tbluser
-                    WHERE 
+                    WHERE(
                         fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
+                        OR
+                        fldPhone = <cfqueryparam value = "#arguments.phoneNumber#" cfSqlType= "varchar">
+                    )
                         AND
                         NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
                 </cfquery>
 
                 <cfif local.isEmailExist.recordCount>
-                    <cfset local.structResult["error"] = "Email already exists">
+                    <cfif local.isEmailExist.fldEmail EQ arguments.emailId>
+                        <cfset local.structResult["emailError"] = "Email already exists">
+                    </cfif>
+                    <cfif local.isEmailExist.fldPhone EQ arguments.phoneNumber>
+                        <cfset local.structResult["phoneError"] = "Phone number already exists">
+                    </cfif>
                 <cfelse>
                     <cfquery result="local.signUpresult">
                         UPDATE

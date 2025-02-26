@@ -1,11 +1,82 @@
 $(document).ready(function(){
-    $("#addCategoryForm").submit(function(){
+    $("#modalCategorySubmit").click(function(){
         let categoryName= $("#categoryName").val();
-		let isCategoryNameValid = checkSpecialCharacter(categoryName,"modalError");
+        let categoryId= $("#modalCategorySubmit").val();
+		let isCategoryNameValid = checkSpecialCharacter(categoryName,"categoryNameError");
 		if(isCategoryNameValid){
-            return true;
-        }else{
-            return false;
+            $.ajax({
+                type:"post",
+                url:"components/admin.cfc",
+                data:{
+                    categoryName:categoryName,
+                    categoryId:categoryId,
+                    method:"editCategory"
+                },
+                success:function(result){
+                    resultJson=JSON.parse(result);
+                    if(resultJson.success){
+                        if(resultJson.edit){
+                            $("#categoryItem"+categoryId).find(".categoryName").text(categoryName);
+                            Swal.fire({
+                                position: "top",
+                                toast: true,
+                                icon: "success",
+                                title: "Category edited successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }else if(resultJson.create){
+                            let categoryItem=`
+                                <div 
+                                    class="categoryItem d-flex justify-content-between align-items-center my-1"
+                                    id="categoryItem${resultJson.categoryId}"
+                                >
+                                    <div class = "categoryName">${categoryName}</div>
+                                    <div class="d-flex justify-content-between categoryButtons">
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#addModal"
+                                            onclick="openCategoryModal(${resultJson.categoryId})"
+                                        >
+                                            <img src="../assets/images/edit-icon.png">
+                                        </button>
+                                        <button 
+                                            class="btn btn-sm" 
+                                            onclick="deleteCategory(this)" 
+                                            value="${resultJson.categoryId}">
+                                            <img src="../assets/images/delete-icon.png">
+                                        </button>
+                                        <a 
+                                        href="subcategory.cfm?categoryId=${resultJson.categoryId}" 
+                                        class="btn btn-sm">
+                                        <img src="../assets/images/open-icon.png">
+                                        </a>
+                                    </div>
+                                </div>
+                            `
+                            $("#categoryList").append(categoryItem);
+                            Swal.fire({
+                                position: "top",
+                                toast: true,
+                                icon: "success",
+                                title: "Category created successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    $("#addModal").modal("hide");
+                    $("#categoryName").val("");
+                    }else if(resultJson.error){
+                        setError(resultJson.error,"categoryNameError")
+                    }else{
+                        alert("Unexpected error occured")
+                    }
+                },error:function(){
+                    alert("Error occured");
+                }
+            });
         }
 
     });
@@ -20,7 +91,7 @@ $(document).ready(function(){
 
     });
     $("#productModalForm").submit(function(){
-        event.preventDefault()
+        event.preventDefault();
         let productName= $("#productName").val();
         let productTax= $("#productTax").val();
         if(parseFloat(productTax)>100){
@@ -73,7 +144,7 @@ $(document).ready(function(){
                                         <div class="row">
                                             <button 
                                                 type="button" 
-                                                class="thumbnailImage col-4" 
+                                                class="thumbnailImageButton col-4" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#imageModal"
                                                 onclick="openImageModal({productId:'${resultJson.productDetails.productId}'})"
@@ -81,7 +152,7 @@ $(document).ready(function(){
                                                 <img
                                                     src="../assets/productimages/${resultJson.productDetails.defaultImage}" 
                                                     alt="Image not found" 
-                                                    class="">
+                                                    class="thumbnailImage">
                                             </button>
                                             <div class="col-6 d-flex flex-column">
                                                 <div class="productName">${resultJson.productDetails.ProductName}</div>
@@ -124,6 +195,8 @@ $(document).ready(function(){
                         }else{
                             $("#noProductError").text("No Products Found");
                         }
+                    }else if(resultJson.productNameError){
+                        setError(resultJson.productNameError,"productNameError");
                     }
                 }
             });
@@ -139,20 +212,17 @@ $(document).ready(function(){
         });
     }
 });
-function loginValidate()
-{
+function loginValidate(){
     
     let userName = $("#userName").val();
     let password = $("#password").val();
     $(".errorMessage").text("");
     error = false;
-    if(!userName.trim().length)
-    {
+    if(!userName.trim().length){
         $("#userNameError").text("Please enter email or phone number");
         error = true
     }
-    if(!password.trim().length)
-    {
+    if(!password.trim().length){
         $("#passwordError").text("Please enter the password");
         error = true
     }
@@ -177,8 +247,7 @@ function logOut(){
 					logOutResult=JSON.parse(result)
 					if(logOutResult.success){
 						location.reload();
-					}
-					else{
+					}else{
 						Swal.fire({
 							title: "Error!",
 							text: "Please try again.",
@@ -193,49 +262,54 @@ function logOut(){
 	});
 }
 
-function openCategoryModal(categoryData)
-{
-    $("#addModal").removeClass("displayNone")
-    if(categoryData.categoryId)
-    {
+function openCategoryModal(categoryId){
+    if(categoryId){
+        $.ajax({
+            type:"post",
+            url:"components/admin.cfc",
+            data:{
+                categoryId:categoryId,
+                method:"getCategoryname"
+            },
+            success:function(result){
+                resultJson=JSON.parse(result);
+                if(resultJson.success){
+                    $("#categoryName").val(resultJson.categoryName);
+                }else if(resultJson.error){
+                    alert(resultJson.error);
+                }else{
+                    alert("Unexpected error occured")
+                }
+            },error:function(){
+                alert("Error occured");
+            }
+        });
         $("#modalHeading").text("Edit category");
-        $("#modalCategorySubmit").val(categoryData.categoryId);
-        $("#categoryName").val(categoryData.categoryName);
+        $("#modalCategorySubmit").val(categoryId);
         $("#modalCategorySubmit").text("EDIT");
-
-    }
-    else
-    {
+    }else{
         $("#modalHeading").text("Add category");
         $("#modalCategorySubmit").val(0);
         $("#modalCategorySubmit").text("ADD");
     }
 }
-function openSubCategoryModal(subCategoryData)
-{
-    $("#addModal").removeClass("displayNone")
+function openSubCategoryModal(subCategoryData){
     $("#categorySelect").val(subCategoryData.CategoryId);
-    if(subCategoryData.subCategoryId)
-    {
+    if(subCategoryData.subCategoryId){
         $("#modalHeading").text("Edit Sub Category");
         $("#modalSubCatSubmit").val(subCategoryData.subCategoryId);
         $("#subCategoryName").val(subCategoryData.subCategoryName);
         $("#modalSubCatSubmit").text("EDIT");
-    }
-    else
-    {
+    }else{
         $("#modalHeading").text("Add Sub Category");
         $("#modalSubCatSubmit").val(0);
         $("#modalSubCatSubmit").text("ADD");
     }
 }
-function openProductModal(productData)
-{
-    $("#addModal").removeClass("displayNone")
+function openProductModal(productData){
     $("#categorySelect").val(productData.categoryId);
     listSubcategories(productData.categoryId,productData.subCategoryId);
-    if(productData.productId)
-    {
+    if(productData.productId){
         $("#modalHeading").text("Edit Product");
         $("#productId").val(productData.productId);
         $("#modalProductSubmit").text("EDIT");
@@ -245,28 +319,22 @@ function openProductModal(productData)
             url:"components/admin.cfc?method=getProductDetails",
             data:{productId:productData.productId},
             success: function(result) {
-                if(result)
-                {
+                if(result){
                     productDetails=JSON.parse(result);
                     $("#brandSelect").val(productDetails.brandId);
                     $("#productName").val(productDetails.productName);
                     $("#productDescription").val(productDetails.productDescription);
                     $("#productPrice").val(productDetails.price);
                     $("#productTax").val(productDetails.tax);
-                }
-                else
-                {
+                }else{
                     alert("Error occured");
                 }
             },
-            error:function()
-            {
+            error:function(){
                 alert("An error occured")
             }
         });
-    }
-    else
-    {
+    }else{
         $("#modalHeading").text("Add Product");
         $("#productId").val(0);
         $("#modalProductSubmit").text("ADD");
@@ -281,8 +349,7 @@ function listSubcategories(categoryId,currentSubCategoryId)
         url:"components/admin.cfc?method=getSubcategories",
         data:{categoryId:categoryId},
         success: function(result) {
-            if(result)
-            {
+            if(result){
                 subCategoryDetails=JSON.parse(result);
                 subCategoryDetails.forEach(element => {
                     var optionObj = document.createElement('option');
@@ -295,21 +362,17 @@ function listSubcategories(categoryId,currentSubCategoryId)
                     else
                         $("#subCategorySelect").val(0);
                 });
-            }
-            else
-            {
+            }else{
                 alert("Error occured while getting subcategory");
             }
         },
-        error:function()
-        {
+        error:function(){
             alert("An error occured")
         }
     });
 }
 
-function  deleteCategory(categoryId)
-{
+function  deleteCategory(categoryId){
     Swal.fire({
         title: "Are you sure?",
         text: "This will delete the category and its contents.",
@@ -319,18 +382,15 @@ function  deleteCategory(categoryId)
         cancelButtonColor: "#d33",
         confirmButtonText: "Delete"
     }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed){
             $.ajax({
                 type:"POST",
                 url:"components/admin.cfc?method=deleteCategory",
                 data:{categoryId:categoryId.value},
                 success: function(result) {
-                    if(result)
-                    {
+                    if(result){
                         categoryId.parentElement.parentElement.remove();
-                    }
-                    else
-                    {
+                    }else{
                         alert("Error occured while deleteing");
                     }
                 },
@@ -342,8 +402,7 @@ function  deleteCategory(categoryId)
         }
     });
 }
-function  deleteSubCategory(deleteButton)
-{
+function  deleteSubCategory(deleteButton){
     Swal.fire({
         title: "Are you sure?",
         text: "This will delete the sub category and its contents",
@@ -353,31 +412,26 @@ function  deleteSubCategory(deleteButton)
         cancelButtonColor: "#d33",
         confirmButtonText: "Delete"
     }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed){
             $.ajax({
                 type:"POST",
                 url:"components/admin.cfc?method=deleteSubCategory",
                 data:{subCategoryId:deleteButton.value},
                 success: function(result) {
-                    if(result)
-                    {
+                    if(result){
                         deleteButton.parentElement.parentElement.remove();
-                    }
-                    else
-                    {
+                    }else{
                         alert("Error occured while deleteing");
                     }
                 },
-                error:function()
-                {
+                error:function(){
                     alert("An error occured");
                 }
             });
         }
     });
 }
-function  deleteProduct(deleteButton)
-{
+function  deleteProduct(deleteButton){
     Swal.fire({
         title: "Are you sure?",
         text: "This will delete the product and its contents",
@@ -387,23 +441,20 @@ function  deleteProduct(deleteButton)
         cancelButtonColor: "#d33",
         confirmButtonText: "Delete"
     }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed){
             $.ajax({
                 type:"POST",
                 url:"components/admin.cfc?method=deleteProduct",
                 data:{productId:deleteButton.value},
                 success: function(result) {
-                    if(result)
-                    {
+                    if(result){
                         $("#product"+deleteButton.value).remove();
                         if($("#productList").children().length){
                             $("#noProductError").text("");
                         }else{
                             $("#noProductError").text("No Products Found");
                         }
-                    }
-                    else
-                    {
+                    }else{
                         alert("Error occured while deleteing");
                     }
                 },
@@ -415,13 +466,10 @@ function  deleteProduct(deleteButton)
         }
     });
 }
-function openImageModal(productData)
-{
-    $("#imageModal").removeClass("displayNone");
+function openImageModal(productData){
     listProductImages(productData.productId)
 }
-function listProductImages(productId)
-{
+function listProductImages(productId){
     var carouselInner = document.getElementById("carouselInner");
     carouselInner.innerHTML="";
     $.ajax({
@@ -429,8 +477,7 @@ function listProductImages(productId)
         url:"components/admin.cfc?method=getProductImages",
         data:{productId:productId},
         success: function(result) {
-            if(result)
-            {
+            if(result){
                 productImages=JSON.parse(result);
 
                 defaultImageKey=Object.keys(productImages.defaultImage);
@@ -439,13 +486,10 @@ function listProductImages(productId)
                     <img src="../assets/productImages/${productImages.defaultImage[defaultImageKey]}" class="d-block w-100">
                 </div>`;
                 $("#carouselInner").append(slideBody)
-                
-                if(productImages.remainingImages)
-                {
-
+                $("#product"+productId).find(".thumbnailImage").attr("src","../assets/productImages/"+productImages.defaultImage[defaultImageKey])
+                if(productImages.remainingImages){
                     const jsonKeys=Object.keys(productImages.remainingImages);
-                    for(i=0;i<jsonKeys.length;i++)
-                    {
+                    for(i=0;i<jsonKeys.length;i++){
                         remainingImageId=jsonKeys[i];
                         let slideBody = `
                         <div class="carousel-item">
@@ -461,59 +505,47 @@ function listProductImages(productId)
                         console.log()
                     }
                 }
-            }
-            else
-            {
+            }else{
                 alert("Error occured while getting subcategory");
             }
         },
-        error:function()
-        {
+        error:function(){
             alert("An error occured");
         }
     });
 }
-function deleteImage(imageDetails)
-{
+function deleteImage(imageDetails){
     $.ajax({
         type:"POST",
         url:"components/admin.cfc?method=deleteImage",
         data:{imageId:imageDetails.imageId},
         success: function(result) {
-            if(result)
-            {
+            if(result){
                 listProductImages(imageDetails.productId)
                 
-            }
-            else
-            {
+            }else{
                 alert("Error occured while deleteing");
             }
         },
-        error:function()
-        {
+        error:function(){
             alert("An error occured");
         }
     });
 }
-function setDefaultImage(imageDetails)
-{
+function setDefaultImage(imageDetails){
     $.ajax({
         type:"POST",
         url:"components/admin.cfc?method=setDefaultImage",
         data:{imageId:imageDetails.imageId,productId:imageDetails.productId},
         success: function(result) {
-            if(result)
-            {
-                listProductImages(imageDetails.productId)
-            }
-            else
-            {
+            if(result){
+                listProductImages(imageDetails.productId);
+                $("#product"+imageDetails.productId).find(".thumbnailImage").attr("src","")
+            }else{
                 alert("Error occured while Setting default");
             }
         },
-        error:function()
-        {
+        error:function(){
             alert("An error occured");
         }
     });

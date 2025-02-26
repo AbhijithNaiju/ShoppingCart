@@ -87,10 +87,6 @@ $(document).ready(function(){
 		}
 	});
 
-	$(".closeProfileEdit").click(function(){
-		$("#updateProfileError").text('');
-	});
-
 	$(".deleteAddress").click(function(){
 		const addressId=this.value;
 		Swal.fire({
@@ -143,7 +139,6 @@ $(document).ready(function(){
 	})
 
 	$("#editProfileForm").submit(function(){
-		event.preventDefault()
 		let firstName= $("#firstName").val();
 		let lastName= $("#lastName").val();
 		let emailId= $("#emailId").val();
@@ -191,15 +186,23 @@ $(document).ready(function(){
 							timer: 1500
 						});
 						$("#updateProfileError").text("");
-					}else if(editProfileResult.error){
+					}else{
+						if(editProfileResult.emailError){
+							setError(editProfileResult.emailError,"emailError")
+						}
+						if(editProfileResult.phoneError){
+							setError(editProfileResult.phoneError,"phoneNumberError")
+						}
+					}
+					if(editProfileResult.error){
 						$("#updateProfileError").text(editProfileResult.error);
 					}
 				},error: function(){
 					alert("Error occured");
 				}
 			});
-			return false;
 		}
+		return false;
 	});
 	$("#addAddressForm").submit(function(){
 		let addressFirstName= $("#addressFirstName").val();

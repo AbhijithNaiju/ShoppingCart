@@ -1,19 +1,6 @@
 <cfinclude  template="./header.cfm">
 
 <div class="mainBody">
-    <cfif structKeyExists(form, "modalCategorySubmit")>
-        <cfset resultStruct = application.adminObject.editCategory(
-                                                        categoryName=form.categoryName,
-                                                        categoryId=form.modalCategorySubmit
-                                                    )>
-        <cfif structKeyExists(resultStruct, "error")>
-            <div class="errorMessage text-center">
-                <cfoutput>
-                #resultStruct.error#
-                </cfoutput>
-            </div>
-        </cfif>
-    </cfif>
     <div class="categoryBody m-auto border p-4 shadow rounded">
         <div class="categoryHeading d-flex justify-content-between my-2">
             <h3 class="">CATEGORIES</h3>
@@ -27,20 +14,23 @@
                 Add +
             </button>
         </div>
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" id="categoryList">
             <cfset variables.categoryData = application.adminObject.getCategories()>
             <cfoutput>
                 <cfif variables.categoryData.recordCount>
                     <cfloop query="variables.categoryData">
-                        <div class="categoryItem d-flex justify-content-between align-items-center my-1">
-                            <div>#variables.categoryData.fldCategoryName#</div>
+                        <div 
+                            class="categoryItem d-flex justify-content-between align-items-center my-1"
+                            id="categoryItem#variables.categoryData.fldCategory_ID#"
+                        >
+                            <div class = "categoryName">#variables.categoryData.fldCategoryName#</div>
                             <div class="d-flex justify-content-between categoryButtons">
                                 <button 
                                     type="button" 
                                     class="btn btn-sm" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="##addModal"
-                                    onclick="openCategoryModal({categoryId:#variables.categoryData.fldCategory_ID#,categoryName:'#variables.categoryData.fldCategoryName#'})"
+                                    onclick="openCategoryModal(#variables.categoryData.fldCategory_ID#)"
                                 >
                                     <img src="../assets/images/edit-icon.png">
                                 </button>
@@ -81,13 +71,14 @@
                                 CategoryName
                             </label>
                             <input type="text" id="categoryName" name="categoryName" class="form-control mt-3" required>
-                            <div class = "errorMessage modalError" id="modalError"></div>
+                            <div class = "errorMessage modalError" id="categoryNameError"></div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button 
+                        type = "button"
                         class="btn btn-success mx-1" 
                         id="modalCategorySubmit" 
                         name = "modalCategorySubmit">

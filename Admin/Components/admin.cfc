@@ -58,13 +58,27 @@
             WHERE
                 fldActive = 1
                 <cfif structKeyExists(arguments, "categoryId")>
+                    AND
                     fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
                 </cfif>
         </cfquery>
         <cfreturn local.categoryData>
     </cffunction>
 
-    <cffunction  name="editCategory" returntype="struct">
+    <cffunction  name="getCategoryname" access = "remote" returnformat = "json" returnType="struct">
+        <cfargument name = "categoryId" type = "integer" required = "true">
+        <cfset local.resultStruct = {}>
+        <cfset local.categoryData = getCategories(arguments.categoryId)>
+        <cfif local.categoryData.recordCount EQ 1>
+            <cfset local.resultStruct["categoryName"] = local.categoryData.fldCategoryName>
+            <cfset local.resultStruct["success"] = true>
+        <cfelse>
+            <cfset local.resultStruct["error"] = "Category not found please try again">
+        </cfif>
+        <cfreturn local.resultStruct>
+    </cffunction>
+
+    <cffunction  name="editCategory" access="remote" returntype="struct" returnformat = "JSON">
         <cfargument  name="categoryName" required = "true" type="string">
         <cfargument  name="categoryId" required = "true" type="integer">
 
@@ -93,7 +107,7 @@
                 </cfif>
             <cfelse>
                 <cfif val(arguments.categoryId) GT 0>
-                    <cfquery name="local.categoryAdd">
+                    <cfquery name="local.categoryUpdate">
                         UPDATE
                             tblCategory
                         SET
@@ -102,8 +116,9 @@
                         WHERE
                             fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType="integer">
                     </cfquery>
+                    <cfset local.structResult["edit"] = true>
                 <cfelse>
-                    <cfquery name="local.categoryUpdate">
+                    <cfquery result="local.categoryAdd">
                         INSERT INTO
                             tblCategory
                         (
@@ -115,7 +130,10 @@
                             <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                         )
                     </cfquery>
+                    <cfset local.structResult["create"] = true>
+                    <cfset local.structResult["categoryId"] = local.categoryAdd.generatedKey>
                 </cfif>
+                <cfset local.structResult["success"] = true>
             </cfif>
         </cfif>
         <cfreturn local.structResult>
@@ -368,7 +386,7 @@
                     fldActive = 1;
             </cfquery>
             <cfif local.isProductExist.recordCount AND structKeyExists(arguments, "productId") AND local.isProductExist.fldProduct_ID NEQ arguments.productId>
-                <cfset local.structResult["error"] = "Product name already exists">
+                <cfset local.structResult["productNameError"] = "Product name already exists">
             <cfelse>
                 <cfif structKeyExists(arguments, "productId") AND val(arguments.productId) GT 0>
                     <cfquery name="local.productUpdate">
@@ -448,8 +466,8 @@
                     <cfset local.structResult["productDetails"]["ProductBrand"] = getBrands(arguments.formBrandId).fldbrandName>
                     <cfset local.structResult["productDetails"]["totalPrice"] = arguments.productPrice+(arguments.productPrice*arguments.productTax/100)>
                 </cfif>
-            </cfif>
                 <cfset local.structResult["success"] = true>
+            </cfif>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>

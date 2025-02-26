@@ -34,9 +34,9 @@
     <cfoutput>
         <div class="m-3">
             <h3>
-                <cfif structKeyExists(url, "searchvalue")>
+                <cfif url.searchValue NEQ "">
                     Search result for #url.searchValue#
-                <cfelseif structKeyExists(url, "subcatId") AND arrayLen(variables.productList.resultArray)>
+                <cfelseif url.subcatId NEQ 0 AND arrayLen(variables.productList.resultArray)>
                     #variables.productList.resultArray[1].subcategoryName#
                 </cfif>
             </h3>

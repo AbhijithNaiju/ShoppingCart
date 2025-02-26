@@ -23,7 +23,7 @@
                                 type="text" 
                                 class="form-control me-2" 
                                 name="searchValue" 
-                                placeholder="" 
+                                placeholder="Search" 
                                 aria-label="Search" 
                                 aria-describedby="basic-addon2"
                                 required
@@ -36,21 +36,25 @@
                     <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
                         <cfoutput>
                             <div class="menuButtons">
-                                <a id="profileBtn" href="./profilePage.cfm" >#session.userSession.name#</a>
+                                <a id="profileBtn" class="btn btn-outline-light" href="./profilePage.cfm" >
+                                    #session.userSession.name#
+                                </a>
                                 <div class="cartButton">
-                                    <a id="cartBtn" href="./cartPage.cfm">Cart</a>
+                                    <a id="cartBtn" class="btn btn-outline-light" href="./cartPage.cfm">Cart</a>
                                     <span class="badge" id="cartCount">#session.userSession.cartCount#</span>
                                 </div>
-                                <button id="logOutBtn" onclick="logOut()" > Logout </button>
+                                <button id="logOutBtn" class="btn btn-outline-light" onclick="logOut()" > 
+                                    Logout 
+                                </button>
                             </div>
                         </cfoutput>
                     <cfelse>
                         <div class="menuButtons">
-                            <a id="profileBtn" href="./login.cfm?redirect=profilePage" > Profile </a>
+                            <a id="profileBtn" class = "btn btn-outline-light" href="./login.cfm?redirect=profilePage" > Profile </a>
                             <div class="cartButton">
-                                <a id="cartBtn" href="./login.cfm?redirect=cart" > Cart </a>
+                                <a id="cartBtn" class = "btn btn-outline-light" href="./login.cfm?redirect=cart" > Cart </a>
                             </div>
-                            <a id="logOutBtn" href="login.cfm" > Login </a>
+                            <a id="logOutBtn" class="btn btn-outline-light" href="login.cfm" > Login </a>
                         </div>
                     </cfif>
                 </cfif> 

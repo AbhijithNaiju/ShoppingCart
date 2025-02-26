@@ -38,15 +38,15 @@
                                 <div class="row">
                                     <button 
                                         type="button" 
-                                        class="thumbnailImage col-4" 
+                                        class="thumbnailImageButton col-4" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="##imageModal"
                                         onclick="openImageModal({productId:'#productData.fldProduct_ID#'})"
                                     >
                                         <img
-                                            src="../assets/productimages/#productData.fldImageFileName#" 
+                                            src="../assets/productimages/#productData.fldImageFileName#"
                                             alt="Image not found" 
-                                            class="">
+                                            class="thumbnailImage">
                                     </button>
                                     <div class="col-6 d-flex flex-column">
                                         <div class="productName">#productData.fldProductName#</div>
