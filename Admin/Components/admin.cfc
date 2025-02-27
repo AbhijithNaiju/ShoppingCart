@@ -155,8 +155,9 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="getSubCategories" returnType="array" access= "remote" returnFormat = "JSON">
-        <cfargument  name="categoryId" required="true" type="integer">
+    <cffunction  name="getSubcategories" returnType="array" access= "remote" returnFormat = "JSON">
+        <cfargument  name="categoryId" type="integer" required="false">
+        <cfargument name = "subcategoryId" type = "integer" required = "true">
 
         <cfset local.subcategoryStruct = structNew()>
         <cfquery name="local.subCategoryData" returntype="struct">
@@ -168,21 +169,26 @@
                 tblSubCategory SC
             INNER JOIN tblCategory C ON C.fldCategory_ID = SC.fldCategoryId AND C.fldActive = 1
             WHERE
-                SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                SC.fldActive = 1
+                <cfif structKeyExists(arguments, "categoryId")>
                 AND
-                SC.fldActive = 1;
+                    SC.fldCategoryId = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                </cfif>
+                <cfif structKeyExists(arguments, "subcategoryID")>
+                AND
+                    SC.fldSubCategory_ID = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
+                </cfif>
         </cfquery>
         <cfreturn local.subCategoryData.resultSet>
     </cffunction>
 
-    <cffunction  name="editSubCategory" returntype="struct">
+    <cffunction  name="editSubCategory" returntype="struct" access = "remote" returnformat = "JSON">
         <cfargument  name="categoryId" required = "true" type = "integer">
         <cfargument  name="subCategoryName" required ="true" type = "string">
         <cfargument  name="subCategoryId" requred = "true" type = "integer">
 
         <cfset local.structResult = structNew()>
-        
-        
+
         <cfif LEN(trim(arguments.subcategoryName)) EQ 0>
             <cfset local.structResult["error"] = "Please enter a name">
         <cfelseif isValid("regex", arguments.subCategoryName,"[^a-zA-Z0-9\s]")>
@@ -219,8 +225,10 @@
                         WHERE
                             fldSubCategory_ID = <cfqueryparam value = "#arguments.subCategoryId#" cfSqlType="integer">;
                     </cfquery>
+                    <cfset local.structResult["edit"] = true>
+                    <cfset local.structResult["subcategoryId"] = arguments.subCategoryId>
                 <cfelse>
-                    <cfquery name="local.categoryUpdate">
+                    <cfquery result="local.categoryUpdate">
                         INSERT INTO
                             tblSubCategory
                         (
@@ -235,8 +243,11 @@
                             <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                         )
                     </cfquery>
+                    <cfset local.structResult["subcategoryId"] = local.categoryUpdate.generatedKey>
+                    <cfset local.structResult["create"] = true>
                 </cfif>
             </cfif>
+            <cfset local.structResult["success"] = true>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>

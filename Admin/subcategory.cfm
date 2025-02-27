@@ -1,20 +1,6 @@
 <cfinclude  template="./header.cfm">
 <cfif structKeyExists(url, "categoryId") AND len(url.categoryId) AND isNumeric(url.categoryId)>
     <div class="mainBody">
-        <cfif structKeyExists(form, "modalSubCatSubmit")>
-            <cfset resultStruct = application.adminObject.editSubCategory(
-                                                                categoryId=form.formCategoryId,
-                                                                subCategoryName=form.subCategoryName,
-                                                                subCategoryId=form.modalSubCatSubmit
-                                                            )>
-            <cfif structKeyExists(resultStruct, "error")>
-                <div class="errorMessage text-center">
-                    <cfoutput>
-                    #resultStruct.error#
-                    </cfoutput>
-                </div>
-            </cfif>
-        </cfif>
         <cfset variables.subCategoryData = application.adminObject.getSubCategories(categoryId = url.categoryId)>
         <cfset variables.categoryQuery = application.adminObject.getCategories()>
         <cfset variables.categoryData = {}>
@@ -39,24 +25,26 @@
                         class="btn btn-success btn-sm" 
                         data-bs-toggle="modal" 
                         data-bs-target="##addModal"
-                        onclick="openSubCategoryModal({CategoryId:#url.categoryId#})"
+                        onclick="openSubCategoryModal(#url.categoryId#,0)"
                     >
                         Add +
                     </button>
                 </div>
                 <cfif arrayLen(variables.subCategoryData)>
-                    <div class="d-flex flex-column categoryList">
+                    <div class="d-flex flex-column categoryList" id="subcategoryList">
                         <cfloop array="#variables.subCategoryData#" item="subcategoryItem">
-                            <div class="categoryItem d-flex justify-content-between align-items-center my-1">
-                                <div>#subcategoryItem.subCategoryName#</div>
+                            <div 
+                                class="categoryItem d-flex justify-content-between align-items-center my-1"
+                                id="subCategory#subcategoryItem.subCategoryId#"
+                            >
+                                <div class = "subcategoryName">#subcategoryItem.subCategoryName#</div>
                                 <div class="d-flex justify-content-between categoryButtons">
                                     <button 
                                         type="button" 
                                         class="btn btn-sm" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="##addModal"
-                                        onclick="openSubCategoryModal({CategoryId:#url.categoryId#,subCategoryId:#subcategoryItem.subCategoryId#,subCategoryName:'#subcategoryItem.subCategoryName#'})"
-                                        value="#subcategoryItem.subCategoryId#"
+                                        onclick="openSubCategoryModal(#url.categoryId#,#subcategoryItem.subCategoryId#)"
                                     >
                                         <img src="../assets/images/edit-icon.png">
                                     </button>
@@ -91,7 +79,7 @@
                     </div>
                     <div class="modal-body">
                         <div class = "form-group my-2">
-                                <label for="categorySelect">Category Name</label>
+                            <label for="categorySelect">Category Name</label>
                             <cfoutput>
                                 <select name="formCategoryId" id = "categorySelect" class = "form-control" required>
                                     <cfloop collection="#variables.categoryData#" item="categoryKey">
@@ -102,20 +90,23 @@
                                 </select>
                             </cfoutput>
                             </div>
-                        <div class = "form-group my-2">
-                            <label for="subCategoryName">Subcategory Name</label>
-                            <input type="text" id="subCategoryName" name="subCategoryName" class="form-control" required>
-                            <div class = "errorMessage modalError" id="modalError"></div>
-                        </div>
+                            <div class = "form-group my-2">
+                                <label for="subCategoryName">Subcategory Name</label>
+                                <input type="text" id="subCategoryName" name="subCategoryName" class="form-control" required>
+                                <div class = "errorMessage modalError" id="modalError"></div>
+                                <cfoutput>
+                                    <input type="hidden" id="currentCategoryId" value="#url.categoryId#" class="form-control">
+                                </cfoutput>
+                            </div>
                     </div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button 
+                            type = "button"
                             class="btn btn-success mx-1" 
                             id="modalSubCatSubmit" 
                             name = "modalSubCatSubmit">
                         </button>
-                    </div>
                     </div>
                 </form>
             </div>

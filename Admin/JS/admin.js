@@ -66,8 +66,8 @@ $(document).ready(function(){
                                 timer: 1500
                             });
                         }
-                    $("#addModal").modal("hide");
-                    $("#categoryName").val("");
+                        $("#addModal").modal("hide");
+                        $("#categoryName").val("");
                     }else if(resultJson.error){
                         setError(resultJson.error,"categoryNameError")
                     }else{
@@ -80,15 +80,91 @@ $(document).ready(function(){
         }
 
     });
-    $("#addSubcategoryForm").submit(function(){
+    $("#modalSubCatSubmit").click(function(){
+        let categoryId= $("#categorySelect").val();
         let subcategoryName= $("#subCategoryName").val();
+        let currentCategoryId= $("#currentCategoryId").val();
+        let subcategoryId= $("#modalSubCatSubmit").val();
 		let isSubcategoryNameValid = checkSpecialCharacter(subcategoryName,"modalError");
 		if(isSubcategoryNameValid){
-            return true;
+            $.ajax({
+                type:"post",
+                url:"components/admin.cfc",
+                data:{
+                    categoryId:categoryId,
+                    subcategoryName:subcategoryName,
+                    currentCategoryId:currentCategoryId,
+                    subCategoryId:subcategoryId,
+                    method:"editSubCategory"
+                },
+                success:function(result){
+                    resultJson=JSON.parse(result);
+                    if(resultJson.success){
+                        if(resultJson.edit){
+                            $("#subCategory"+subcategoryId).find(".subcategoryName").text(subcategoryName);
+                            Swal.fire({
+                                position: "top",
+                                toast: true,
+                                icon: "success",
+                                title: "Category edited successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }else if(resultJson.create){
+                            let subcategoryItem=`
+                                <div 
+                                    class="categoryItem d-flex justify-content-between align-items-center my-1"
+                                    id="subCategory${resultJson.subcategoryId}"
+                                >
+                                    <div class = "categoryName">${subcategoryName}</div>
+                                    <div class="d-flex justify-content-between categoryButtons">
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#addModal"
+                                            onclick="openSubCategoryModal(${categoryId},${resultJson.subcategoryId})"
+                                        >
+                                            <img src="../assets/images/edit-icon.png">
+                                        </button>
+                                        <button 
+                                            class="btn btn-sm" 
+                                            onclick="deleteSubCategory(this)" 
+                                            value="${resultJson.subcategoryId}">
+                                            <img src="../assets/images/delete-icon.png">
+                                        </button>
+                                    <a 
+                                        href="product.cfm?subCategoryId=${resultJson.subcategoryId}"
+                                        class="btn btn-sm">
+                                        <img src="../assets/images/open-icon.png">
+                                    </a>
+                                    </div>
+                                </div>
+                            `
+                            $("#subcategoryList").append(subcategoryItem);
+                            Swal.fire({
+                                position: "top",
+                                toast: true,
+                                icon: "success",
+                                title: "Category created successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                        $("#addModal").modal("hide");
+                        $("#subCategoryName").val("");
+                    }else if(resultJson.error){
+                        setError(resultJson.error,"categoryNameError")
+                    }else{
+                        alert("Unexpected error occured")
+                    }
+                },error:function(){
+                    alert("Error occured");
+                }
+            });
         }else{
             return false;
         }
-
     });
     $("#productModalForm").submit(function(){
         event.preventDefault();
@@ -219,12 +295,16 @@ function loginValidate(){
     $(".errorMessage").text("");
     error = false;
     if(!userName.trim().length){
-        $("#userNameError").text("Please enter email or phone number");
+        setError("Please enter email or phone number","userNameError");
         error = true
+    }else{
+        setSuccess("userNameError");
     }
     if(!password.trim().length){
-        $("#passwordError").text("Please enter the password");
+        setError("Please enter the password","passwordError")
         error = true
+    }else{
+        setSuccess("passwordError");
     }
     if(error)
         return false
@@ -293,12 +373,29 @@ function openCategoryModal(categoryId){
         $("#modalCategorySubmit").text("ADD");
     }
 }
-function openSubCategoryModal(subCategoryData){
-    $("#categorySelect").val(subCategoryData.CategoryId);
-    if(subCategoryData.subCategoryId){
-        $("#modalHeading").text("Edit Sub Category");
-        $("#modalSubCatSubmit").val(subCategoryData.subCategoryId);
-        $("#subCategoryName").val(subCategoryData.subCategoryName);
+function openSubCategoryModal(categoryId,subcategoryId){
+    $("#categorySelect").val(categoryId);
+    if(subcategoryId){
+        $.ajax({
+            type:"post",
+            url:"components/admin.cfc",
+            data:{
+                subcategoryId:subcategoryId,
+                method:"getSubcategories"
+            },
+            success:function(result){
+                resultJson=JSON.parse(result);
+                if(resultJson.length == 1){
+                    $("#subCategoryName").val(resultJson[0].subcategoryName);
+                    $("#modalSubCatSubmit").val(subcategoryId);
+                }else{
+                    alert("Unexpected error occured")
+                }
+            },error:function(){
+                alert("Error occured");
+            }
+        });
+        $("#modalHeading").text("Edit sub category");
         $("#modalSubCatSubmit").text("EDIT");
     }else{
         $("#modalHeading").text("Add Sub Category");
