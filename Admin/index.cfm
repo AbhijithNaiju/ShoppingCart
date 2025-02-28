@@ -1,9 +1,9 @@
 <cfinclude  template="./header.cfm">
 
 <div class="mainBody">
-    <div class="categoryBody m-auto border p-4 shadow rounded">
+    <div class="categoryBody my-5 mx-auto border p-4 shadow rounded">
         <div class="categoryHeading d-flex justify-content-between my-2">
-            <h3 class="">CATEGORIES</h3>
+            <h3>CATEGORIES</h3>
             <button 
                 type="button" 
                 class="btn btn-success btn-sm" 
@@ -48,12 +48,13 @@
                             </div>
                         </div>
                     </cfloop>
-                <cfelse>
-                    <div class="categoryItem d-flex justify-content-between align-items-center">
-                        No Category Found
-                    </div>
                 </cfif>
             </cfoutput>
+        </div>
+        <div class="categoryItem" id="noCategoryError">
+            <cfif variables.categoryData.recordCount EQ 0>
+                No Category Found
+            </cfif>
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="addModal" data-bs-backdrop="static">

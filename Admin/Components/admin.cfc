@@ -157,7 +157,7 @@
 
     <cffunction  name="getSubcategories" returnType="array" access= "remote" returnFormat = "JSON">
         <cfargument  name="categoryId" type="integer" required="false">
-        <cfargument name = "subcategoryId" type = "integer" required = "true">
+        <cfargument name = "subcategoryId" type = "integer" required = "false">
 
         <cfset local.subcategoryStruct = structNew()>
         <cfquery name="local.subCategoryData" returntype="struct">
@@ -211,7 +211,7 @@
                 <cfif local.checkExistResult.fldSubCategory_ID EQ arguments.subCategoryId>
                     <cfset local.structResult["success"] = true>
                 <cfelse>
-                    <cfset local.structResult["error"] = "Category name #arguments.subCategoryName# already exists">
+                    <cfset local.structResult["error"] = "Category name already exists">
                 </cfif>
             <cfelse>
                 <cfif  val(arguments.subCategoryId) GT 0>
@@ -246,8 +246,8 @@
                     <cfset local.structResult["subcategoryId"] = local.categoryUpdate.generatedKey>
                     <cfset local.structResult["create"] = true>
                 </cfif>
+                <cfset local.structResult["success"] = true>
             </cfif>
-            <cfset local.structResult["success"] = true>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>

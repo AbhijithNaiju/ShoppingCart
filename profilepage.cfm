@@ -70,7 +70,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group my-2">
-                        <label for="">First Name *</label>
+                        <label for="addressFirstName">First Name *</label>
                     <input 
                         type="text" 
                         class="form-control" 
@@ -81,7 +81,7 @@
                         <div class = "errorMessage text-center" id="FirstNameError"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Last Name *</label>
+                        <label for="addressLastName">Last Name *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -92,7 +92,7 @@
                         <div class = "errorMessage text-center" id="LastNameError"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Address Line 1 *</label>
+                        <label for="addressLine1">Address Line 1 *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -103,7 +103,7 @@
                         <div class = "errorMessage text-center" id="addressLine1Error"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Address Line 2</label>
+                        <label for="addressLine2">Address Line 2</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -113,7 +113,7 @@
                         <div class = "errorMessage text-center" id="addressLine2Error"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">City *</label>
+                        <label for="city">City *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -124,7 +124,7 @@
                         <div class = "errorMessage text-center" id="cityError"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">State *</label>
+                        <label for="state">State *</label>
                         <input 
                             type="text" 
                             class="form-control" 
@@ -135,7 +135,7 @@
                         <div class = "errorMessage text-center" id="stateError"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Phone Number *</label>
+                        <label for="addressPhoneNumber">Phone Number *</label>
                         <input 
                             type="tel" 
                             class="form-control"  
@@ -148,7 +148,7 @@
                         <div class = "errorMessage text-center" id="addressPhoneNumberError"></div>
                     </div>
                     <div class="form-group my-2">
-                        <label for="">Pincode *</label>
+                        <label for="pincode">Pincode *</label>
                         <input 
                             type="tel" 
                             class="form-control" 

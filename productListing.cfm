@@ -182,7 +182,8 @@
                                 <h6 class="card-title p-2">#variables.productDetails.productName#</h6>
                                 <span class = "productBrand text-secondary px-2">#variables.productDetails.brandName#</span>
                                 <span class="mt-auto px-2 randomProductPrice">
-                                    Rs : #variables.productDetails.productPrice + variables.productDetails.productTax#
+                                    Rs :
+                                    #numberFormat(variables.productDetails.productPrice + variables.productDetails.productTax,'__.00')#
                                 </span>
                             </div>
                         </a>

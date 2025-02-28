@@ -47,11 +47,11 @@ $(document).ready(function(){
 							// Changing cart count
 							$("#cartCount").text(cartDeleteResult.cartCount);
 							if(cartDeleteResult.cartCount == 0){
-								$("#placeOrder").remove();
+								$(".totalPriceBody").remove();
 								// Showing message to goto home
 								Swal.fire({
 									title: "Message !",
-									text: "No products remaining in cart, add products to continue.",
+									text: "No products remaining in cart, add products.",
 									icon: "info"
 								  }).then((result)=>{
 									  location.href="./index.cfm"	
@@ -216,8 +216,8 @@ $(document).ready(function(){
 
 		let isaddressFirstNameValid = hasSpecialCharsOrWhitespace(addressFirstName,"FirstNameError");
 		let isaddressLastNameValid = hasSpecialCharsOrWhitespace(addressLastName,"LastNameError");
-		let isaddressLine1Valid = hasSpecialCharsOrWhitespace(addressLine1,"addressLine1Error");
-		let isaddressLine2Valid = hasSpecialCharsOrWhitespace(addressLine2,"addressLine2Error");
+		let isaddressLine1Valid = checkSpecialCharacter(addressLine1,"addressLine1Error");
+		let isaddressLine2Valid = checkSpecialCharacter(addressLine2,"addressLine2Error");
 		let iscityValid = hasSpecialCharsOrWhitespace(city,"cityError");
 		let isstateValid = hasSpecialCharsOrWhitespace(state,"stateError");
 		let isaddressPhoneNumberValid = validatePhoneNumber(addressPhoneNumber,"addressPhoneNumberError");
@@ -266,7 +266,38 @@ $(document).ready(function(){
 				return false;
 			}
 	});
-	
+	$("#placeOrderForm").submit(function(){
+		const orderAddressId=$("#orderAddressId").val();
+		const cardNumber=$("#cardNumber").val();
+		const cardCVV=$("#cardCVV").val();
+		let isError=false;
+		if(!orderAddressId || orderAddressId.length==0){
+			Swal.fire({
+				position: "top",
+				toast: true,
+				icon: "error",
+				title: "Please enter address to continue",
+				showConfirmButton: false,
+				timer: 1500
+			});
+			isError=true;
+		}
+		if(cardNumber.length==0){
+			setError("Please enter the 16 digit card number","cardNumberError");
+			isError=true;
+		}else{
+			setSuccess("cardNumberError")
+		}
+		if(cardCVV.length==0){
+			setError("Please enter 3 digit card cvv","cardCVVError");
+			isError=true;
+		}else{
+			setSuccess("cardCVVError")
+		}
+		if(isError){
+			return false;
+		}
+	});
 	$(".sortProductsBtn").click(function(){
 		$("#sortOrder").val(this.value)
 	});

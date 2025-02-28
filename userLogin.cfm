@@ -14,7 +14,7 @@
             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
             <span class="errorMessage" id ="passwordError"></span>
         </div>
-        <input type="submit" id="" class="btn btn-success" name="submitBtn">
+        <input type="submit" class="btn btn-success" name="submitBtn">
 
         <cfif structKeyExists(form,"submitBtn")>
             <cfset local.loginResult = application.adminObject.adminLogin(

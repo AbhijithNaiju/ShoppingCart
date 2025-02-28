@@ -66,6 +66,11 @@ $(document).ready(function(){
                                 timer: 1500
                             });
                         }
+                        if($("#categoryList").children().length){
+                            $("#noCategoryError").text("");
+                        }else{
+                            $("#noCategoryError").text("No Subcategory Found");
+                        }
                         $("#addModal").modal("hide");
                         $("#categoryName").val("");
                     }else if(resultJson.error){
@@ -93,7 +98,6 @@ $(document).ready(function(){
                 data:{
                     categoryId:categoryId,
                     subcategoryName:subcategoryName,
-                    currentCategoryId:currentCategoryId,
                     subCategoryId:subcategoryId,
                     method:"editSubCategory"
                 },
@@ -101,12 +105,16 @@ $(document).ready(function(){
                     resultJson=JSON.parse(result);
                     if(resultJson.success){
                         if(resultJson.edit){
-                            $("#subCategory"+subcategoryId).find(".subcategoryName").text(subcategoryName);
+                            if(currentCategoryId == categoryId){
+                                $("#subCategory"+subcategoryId).find(".subcategoryName").text(subcategoryName);
+                            }else{
+                                $("#subCategory"+subcategoryId).remove();
+                            }
                             Swal.fire({
                                 position: "top",
                                 toast: true,
                                 icon: "success",
-                                title: "Category edited successfully",
+                                title: "Subcategory edited successfully",
                                 showConfirmButton: false,
                                 timer: 1500
                             });
@@ -140,23 +148,28 @@ $(document).ready(function(){
                                     </a>
                                     </div>
                                 </div>
-                            `
+                            `;
                             $("#subcategoryList").append(subcategoryItem);
                             Swal.fire({
                                 position: "top",
                                 toast: true,
                                 icon: "success",
-                                title: "Category created successfully",
+                                title: "Subcategory created successfully",
                                 showConfirmButton: false,
                                 timer: 1500
                             });
                         }
-                        $("#addModal").modal("hide");
+                        if($("#subcategoryList").children().length){
+                            $("#noSubcategoryError").text("");
+                        }else{
+                            $("#noSubcategoryError").text("No Subcategory Found");
+                        }
                         $("#subCategoryName").val("");
+                        $("#addModal").modal("hide");
                     }else if(resultJson.error){
-                        setError(resultJson.error,"categoryNameError")
+                        setError(resultJson.error,"modalError");
                     }else{
-                        alert("Unexpected error occured")
+                        alert("Unexpected error occured");
                     }
                 },error:function(){
                     alert("Error occured");
@@ -167,11 +180,10 @@ $(document).ready(function(){
         }
     });
     $("#productModalForm").submit(function(){
-        event.preventDefault();
         let productName= $("#productName").val();
         let productTax= $("#productTax").val();
         if(parseFloat(productTax)>100){
-            setError("Please enter a valid taxt amount","productTaxError")
+            setError("Please enter a valid tax amount","productTaxError")
             isProductTaxValid =false;
         }else{
             setSuccess("productTaxError")
@@ -487,6 +499,11 @@ function  deleteCategory(categoryId){
                 success: function(result) {
                     if(result){
                         categoryId.parentElement.parentElement.remove();
+                        if($("#categoryList").children().length){
+                            $("#noCategoryError").text("");
+                        }else{
+                            $("#noCategoryError").text("No Subcategory Found");
+                        }
                     }else{
                         alert("Error occured while deleteing");
                     }
@@ -517,6 +534,11 @@ function  deleteSubCategory(deleteButton){
                 success: function(result) {
                     if(result){
                         deleteButton.parentElement.parentElement.remove();
+                        if($("#subcategoryList").children().length){
+                            $("#noSubcategoryError").text("");
+                        }else{
+                            $("#noSubcategoryError").text("No Subcategory Found");
+                        }
                     }else{
                         alert("Error occured while deleteing");
                     }

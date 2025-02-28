@@ -32,7 +32,7 @@
                     class="form-control form-control-sm me-2" 
                     name="orderSearchId"
                     id="orderSearchField"
-                    placeholder="" 
+                    placeholder="Search order" 
                     aria-label="Search" 
                     aria-describedby="basic-addon2"
                     id="orderSearchId"
@@ -76,7 +76,7 @@
                         class="btn downloadInvoice" 
                         title="Download pdf"
                     >
-                        <img src="./assets/images/pdf.png" alt="">
+                        <img src="./assets/images/pdf.png" alt="Image not found">
                     </a>
                 </div>
                 <div class = "p-1">

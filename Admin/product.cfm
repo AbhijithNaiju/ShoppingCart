@@ -7,7 +7,7 @@
         <cfelse>
             <cfset variables.subcategoryData = productData>
         </cfif>
-        <div class="categoryBody m-auto border rounded shadow px-4 py-3">
+        <div class="categoryBody mx-auto my-5 border rounded shadow px-4 py-3">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
                     <h3 class="text-dark d-flex align-items-center"> 
@@ -82,7 +82,7 @@
                         </cfloop>
                     </cfif>
                 </div>
-                <div class="categoryItem d-flex justify-content-between align-items-center" id="noProductError">
+                <div class="categoryItem" id="noProductError">
                     <cfif productData.recordCount EQ 0>
                         No Products Found
                     </cfif>
@@ -92,7 +92,7 @@
         <cfset categoryList = application.adminObject.getCategories()>
         <cfset brandData = application.adminObject.getBrands()>
         <div class="modal fade" tabindex="-1" id="addModal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <form 
                     method="post" 
                     id="productModalForm" 
@@ -163,7 +163,7 @@
                             <input type="file" multiple id="productImages" name="productImages" class="form-control" required>
                             <div class = "errorMessage modalError" id="productImageError"></div>
                         </div>
-                        <input type="hidden" id="productId" value="" name="productId" class="form-control">
+                        <input type="hidden" id="productId" name="productId" class="form-control">
                         <cfoutput>
                             <input type="hidden" id="currentSubcategoryID" value="#url.subCategoryId#" name="currentSubcategoryID" class="form-control">
                         </cfoutput>

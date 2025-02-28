@@ -7,11 +7,11 @@
         <cfloop query="variables.categoryQuery">
             <cfset variables.categoryData[variables.categoryQuery.fldCategory_ID] = variables.categoryQuery.fldCategoryName>
         </cfloop>
-        <div class="categoryBody m-auto border rounded p-3 shadow">
+        <div class="categoryBody mx-auto my-5 border rounded p-3 shadow">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
                     <cfif structKeyExists(variables.categoryData, url.categoryId)>
-                        <h3 class="">
+                        <h3>
                             <a 
                                 href="./index.cfm" 
                                 class = "text-dark text-decoration-none">
@@ -30,8 +30,8 @@
                         Add +
                     </button>
                 </div>
-                <cfif arrayLen(variables.subCategoryData)>
-                    <div class="d-flex flex-column categoryList" id="subcategoryList">
+                <div class="d-flex flex-column categoryList" id="subcategoryList">
+                    <cfif arrayLen(variables.subCategoryData)>
                         <cfloop array="#variables.subCategoryData#" item="subcategoryItem">
                             <div 
                                 class="categoryItem d-flex justify-content-between align-items-center my-1"
@@ -62,12 +62,16 @@
                                 </div>
                             </div>
                         </cfloop>
-                    </div>
-                <cfelse>
-                    <div class="categoryItem d-flex justify-content-between align-items-center">
+                    </cfif>
+                </div>
+                <div 
+                    class="categoryItem"
+                    id="noSubcategoryError"
+                >
+                    <cfif arrayLen(variables.subCategoryData) EQ 0>
                         No Subcategory Found
-                    </div>
-                </cfif>
+                    </cfif>
+                </div>
             </cfoutput>
         </div>
         <div class="modal fade" tabindex="-1" id="addModal" data-bs-backdrop="static">

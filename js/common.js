@@ -67,8 +67,10 @@ function checkSpecialCharacter(input,messageLocationId){
     if(regexMatchSpecial.test(input)){
         setError("This field should not contain any special character",messageLocationId)
         return false;
-    }else if(input.trim().length){
+    }else{
+        if(input.trim().length){
         setSuccess(messageLocationId)
+        }
         return true;
     }
 }

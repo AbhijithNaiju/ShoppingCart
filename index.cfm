@@ -1,7 +1,7 @@
 <cfinclude  template="./userHeader.cfm">
 <cfset variables.productList = application.userObject.getProductList(limit=10)>
 <cfoutput>
-    <div class="">
+    <div>
         <div class="productListingParent my-3 mx-5">
             <cfloop array = "#variables.productList.resultArray#" item="variables.productItem">
                 <a 
@@ -15,7 +15,8 @@
                         <h6 class="card-title p-2">#variables.productItem.productName#</h6>
                         <span class = "productBrand text-secondary px-2">#variables.productItem.brandName#</span>
                         <span class="mt-auto px-2 randomProductPrice">
-                            Rs : #variables.productItem.productPrice + variables.productItem.productTax#
+                            Rs : 
+                            #numberFormat(variables.productItem.productPrice + variables.productItem.productTax,'__.00')#
                         </span>
                     </div>
                 </a>

@@ -23,38 +23,73 @@
                                 type="text" 
                                 class="form-control me-2" 
                                 name="searchValue" 
-                                placeholder="Search" 
+                                placeholder="Search products" 
                                 aria-label="Search" 
                                 aria-describedby="basic-addon2"
                                 required
                             >
-                            <div class="">
+                            <div>
                                 <button class="btn  btn-outline-light" type="submit">Search</button>
                             </div>
                         </form>
                     </div>
                     <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
                         <cfoutput>
-                            <div class="menuButtons">
-                                <a id="profileBtn" class="btn btn-outline-light" href="./profilePage.cfm" >
-                                    #session.userSession.name#
-                                </a>
-                                <div class="cartButton">
-                                    <a id="cartBtn" class="btn btn-outline-light" href="./cartPage.cfm">Cart</a>
-                                    <span class="badge" id="cartCount">#session.userSession.cartCount#</span>
+                            <div class="menuButtonContainer">
+                                <div>
+                                    <a id="profileBtn"
+                                        <cfif CGI.script_name EQ "/profilePage.cfm">
+                                            class="menuButton active"
+                                        <cfelse>
+                                            class="menuButton" 
+                                            href="./profilePage.cfm" 
+                                        </cfif>
+                                    >
+                                        #session.userSession.name#
+                                    </a>
                                 </div>
-                                <button id="logOutBtn" class="btn btn-outline-light" onclick="logOut()" > 
-                                    Logout 
-                                </button>
+                                <div>
+                                    <a 
+                                        id="cartBtn" 
+                                        <cfif CGI.script_name EQ "/cartPage.cfm">
+                                            class="menuButton active"
+                                        <cfelse>
+                                            class="menuButton" 
+                                            href="./cartPage.cfm" 
+                                        </cfif>
+                                    >
+                                        Cart
+                                    </a>
+                                    <span 
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark"
+                                        id="cartCount"
+                                    >
+                                        #session.userSession.cartCount#
+                                    </span>
+                                </div>
+                                <div class="btn btn-outline-dark">
+                                    <button id="logOutBtn" class="me-1" onclick="logOut()" > 
+                                        Logout 
+                                    </button>
+                                    <img 
+                                        src="assets/images/icons8-logOut-24.png" 
+                                        alt="image not found"
+                                        class = "logoutImage"
+                                    >
+                                </div>
                             </div>
                         </cfoutput>
                     <cfelse>
-                        <div class="menuButtons">
-                            <a id="profileBtn" class = "btn btn-outline-light" href="./login.cfm?redirect=profilePage" > Profile </a>
-                            <div class="cartButton">
-                                <a id="cartBtn" class = "btn btn-outline-light" href="./login.cfm?redirect=cart" > Cart </a>
+                        <div class="menuButtonContainer">
+                            <div>
+                                <a id="profileBtn" class = "menuButton" href="./login.cfm?redirect=profilePage" > Profile </a>
                             </div>
-                            <a id="logOutBtn" class="btn btn-outline-light" href="login.cfm" > Login </a>
+                            <div>
+                                <a id="cartBtn" class = "menuButton" href="./login.cfm?redirect=cart" > Cart </a>
+                            </div>
+                            <div>
+                                <a id="logOutBtn" class="menuButton" href="login.cfm" > Login </a>
+                            </div>
                         </div>
                     </cfif>
                 </cfif> 

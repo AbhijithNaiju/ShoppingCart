@@ -56,8 +56,8 @@
                                         </span>
                                     </small>
                                     <b>
-                                        Total price : Rs 
-                                        #variables.cartItems.price+variables.cartItems.tax#
+                                        Total price : Rs
+                                        #numberFormat(variables.cartItems.price+variables.cartItems.tax,'__.00')#
                                     </b>
                                 </div>
                                 <button 
@@ -71,39 +71,46 @@
                         <cfset variables.actualPrice +=variables.cartItems.price*variables.cartItems.quantity>
                         <cfset variables.totalTax += variables.cartItems.tax*variables.cartItems.quantity>
                     </cfloop>
-                <cfelse>
-                    <div class = "text-center m-3">
-                        <h2>No items present in cart</h2>
-                        <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
-                    </div>
                 </cfif>
             </div>
-            <div class="col-4 totalPriceBody border p-3 mt-5 d-flex flex-column justify-content-around">
-                <div class="">
-                    <div class="row">
-                        <span class="col-6">Actual Price</span>
-                        <div  class="col-6 text-end">
-                            <i class="fa-solid fa-indian-rupee-sign"></i>
-                            <span id="actualPrice">#variables.actualPrice#</span>
+            <cfif variables.cartItems.recordCount>
+                <div class="col-4 totalPriceBody border p-3 mt-5 d-flex flex-column justify-content-around">
+                    <div>
+                        <div class="row">
+                            <span class="col-6">Actual Price</span>
+                            <div  class="col-6 text-end">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                <span id="actualPrice">
+                                    #numberFormat(variables.actualPrice,'__.00')#
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span  class="col-6">Total Tax</span>
+                            <div  class="col-6 text-end">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                <span id="totalTax">
+                                    #numberFormat(variables.totalTax,'__.00')#
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <span  class="col-6">Total Tax</span>
+                    <span class="row my-2 grandTotalContainer">
+                        <span  class="col-6">Total Price</span>
                         <div  class="col-6 text-end">
                             <i class="fa-solid fa-indian-rupee-sign"></i>
-                            <span id="totalTax">#variables.totalTax#</span>
+                            <span id="totalPrice">
+                                #numberFormat(variables.actualPrice + variables.totalTax,'__.00')#
+                            </span>
                         </div>
-                    </div>
-                </div>
-                <span class="row my-2 grandTotalContainer">
-                    <span  class="col-6">Total Price</span>
-                    <div  class="col-6 text-end">
-                        <i class="fa-solid fa-indian-rupee-sign"></i>
-                        <span id="totalPrice">#variables.actualPrice + variables.totalTax#</span>
-                    </div>
-                </span>
-                <cfif variables.cartItems.recordCount>
+                    </span>
                     <a href="./orderPage.cfm" id="placeOrder" class="btn btn-primary w-100">Place Order</a>
+                </div>
+            </cfif>
+            <div class = "text-center m-3">
+                <cfif variables.cartItems.recordCount EQ 0>
+                        <h2>No items present in cart</h2>
+                        <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
                 </cfif>
             </div>
         </div>

@@ -600,22 +600,22 @@
             len(trim(arguments.formStruct.pincode))
         >
             <!--- check whether the field are valid --->
-            <cfif isValid("regex", arguments.firstName,"[^a-zA-Z0-9]")>
+            <cfif isValid("regex", arguments.formStruct.firstName,"[^a-zA-Z0-9]")>
                 <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.lastName,"[^a-zA-Z0-9]")>
+            <cfelseif isValid("regex", arguments.formStruct.lastName,"[^a-zA-Z0-9]")>
                 <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.addressLine1,"[^a-zA-Z0-9]")>
+            <cfelseif isValid("regex", arguments.formStruct.addressLine1,"[^a-zA-Z0-9]")>
                 <cfset local.structResult["error"] = "Address line 1 should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.addressLine2,"[^a-zA-Z0-9]")>
+            <cfelseif isValid("regex", arguments.formStruct.addressLine2,"[^a-zA-Z0-9]")>
                 <cfset local.structResult["error"] = "Address line 2 should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.city,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "City not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.state,"[^a-zA-Z0-9]")>
+            <cfelseif isValid("regex", arguments.formStruct.city,"[^a-zA-Z0-9]")>
+                <cfset local.structResult["error"] = "City should not contain any special charector or whitespace">
+            <cfelseif isValid("regex", arguments.formStruct.state,"[^a-zA-Z0-9]")>
                 <cfset local.structResult["error"] = "State should not contain any special charector or whitespace">
-            <cfelseif NOT isValid("regex", arguments.phoneNumber,"^(\+?[0-9-]{8,15})$")>
+            <cfelseif NOT isValid("regex", arguments.formStruct.phoneNumber,"^(\+?[0-9-]{8,15})$")>
                 <cfset local.structResult["error"] = "Please enter a valid phone number">
             <cfelse>
-                <cfquery name = "">
+                <cfquery>
                     INSERT INTO 
                         tbladdress( 
                             fldUserId, 
@@ -652,7 +652,7 @@
         <cfargument name = "addressId" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>
-        <cfquery name = "">
+        <cfquery>
             UPDATE
                 tblAddress
             SET
@@ -724,6 +724,7 @@
                     variable = "local.firstName"
                 >
             </cfstoredproc>
+            <cfset session.userSession.cartCount = 0>
             <cfset local.orderDetails = getOrderHistory(userId=arguments.userId,orderId=local.UUID)>
             <!--- Sending mail if order placed --->
             <cfmail  
