@@ -74,6 +74,18 @@ function checkSpecialCharacter(input,messageLocationId){
         return true;
     }
 }
+function checkProductName(input,messageLocationId){
+    const regexMatchSpecial=/[^a-zA-Z0-9.\s&/()"%-+,\[\]\*\$]/;
+    if(regexMatchSpecial.test(input)){
+        setError("This field should not contain any special character",messageLocationId)
+        return false;
+    }else{
+        if(input.trim().length){
+        setSuccess(messageLocationId)
+        }
+        return true;
+    }
+}
 function setError(message,messageLocationId){
     $("#"+messageLocationId).text(message);
     $("#"+messageLocationId).prev().addClass("is-invalid").removeClass("is-valid");

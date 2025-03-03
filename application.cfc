@@ -2,7 +2,7 @@
     <cfset this.name = "shoppingCart">
     <cfset this.dataSource = "shoppingSiteDS">
     <cfset this.sessionManagement = true>
-    <cfset this.sessiontimeout = CreateTimeSpan(0,0,30,0)>
+    <cfset this.sessiontimeout = CreateTimeSpan(0,1,0,0)>
 
     <cffunction  name="onApplicationStart" returnType="boolean">
         <cfset application.adminObject = createObject("component","admin.components.admin")>

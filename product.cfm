@@ -60,7 +60,7 @@
                                 title="#variables.productDetails[1].productPrice# + #variables.productDetails[1].productTax#"
                             >
                                 <i class="fa-solid fa-indian-rupee-sign"></i> 
-                                #variables.productDetails[1].productPrice + variables.productDetails[1].productTax#
+                                #numberFormat(variables.productDetails[1].productPrice + variables.productDetails[1].productTax,'__.00')#
                             </span>
                         </div>
                     </div>

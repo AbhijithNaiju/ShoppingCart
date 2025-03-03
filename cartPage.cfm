@@ -10,7 +10,7 @@
             <div class="col-8 h-100 pe-4">
                 <cfif variables.cartItems.recordCount>
                     <cfloop query="#variables.cartItems#">
-                        <div class="cartItem row bg-white my-3" id="cartItem#variables.cartItems.cartId#">
+                        <div class="cartItem row my-2 p-3" id="cartItem#variables.cartItems.cartId#">
                             <div class="col-3 d-flex">
                                 <img 
                                     src="./assets/productimages/#variables.cartItems.imageFileName#"
@@ -74,7 +74,7 @@
                 </cfif>
             </div>
             <cfif variables.cartItems.recordCount>
-                <div class="col-4 totalPriceBody border p-3 mt-5 d-flex flex-column justify-content-around">
+                <div class="col-4 totalPriceBody px-3 mt-2 d-flex flex-column justify-content-around">
                     <div>
                         <div class="row">
                             <span class="col-6">Actual Price</span>

@@ -85,8 +85,8 @@
         <cfset local.structResult = structNew()>
         <cfif LEN(trim(arguments.categoryName)) EQ 0>
             <cfset local.structResult["error"] = "Please enter a name">
-        <cfelseif isValid("regex", arguments.categoryName,"[^a-zA-Z0-9\s]")>
-            <cfset local.structResult["error"] = "Category name should not contain any special charector or whitespace">
+        <cfelseif REFindNoCase("[^a-zA-Z0-9\s]",arguments.categoryName)>
+            <cfset local.structResult["error"] = "Category name should not contain any special character">
         <cfelse>
             <cfquery name = "local.checkExistResult">
                 SELECT
@@ -191,8 +191,8 @@
 
         <cfif LEN(trim(arguments.subcategoryName)) EQ 0>
             <cfset local.structResult["error"] = "Please enter a name">
-        <cfelseif isValid("regex", arguments.subCategoryName,"[^a-zA-Z0-9\s]")>
-            <cfset local.structResult["error"] = "Subcategory name should not contain any special charector or whitespace">
+        <cfelseif REFindNoCase("[^a-zA-Z0-9\s]",arguments.subCategoryName)>
+            <cfset local.structResult["error"] = "Subcategory name should not contain any special character">
         <cfelse>
             <cfquery name = "local.checkExistResult">
                 SELECT
@@ -368,11 +368,11 @@
         <cfset local.structResult = structNew()>
 
         <cfif LEN(trim(arguments.productName)) EQ 0>
-            <cfset local.structResult["error"] = "Please enter a name">
-        <cfelseif isValid("regex", arguments.productName,"[^a-zA-Z0-9\s]")>
-            <cfset local.structResult["error"] = "Product name should not contain any special charector or whitespace">
+            <cfset local.structResult["productNameError"] = "Please enter a name">
+        <cfelseif REFindNoCase("[^a-zA-Z0-9.\s&/()%-+,\[\]\*\$]",arguments.productName)>
+            <cfset local.structResult["productNameError"] = "Product name should not contain any special character">
         <cfelseif arguments.productTax GT 100>
-            <cfset local.structResult["error"] = "Please enter valid tax percentage">
+            <cfset local.structResult["productTaxError"] = "Please enter valid tax percentage">
         <cfelse>
             <cfset local.uploadLocation = "../../assets/productImages">
             <cfif NOT directoryExists(expandPath(local.uploadLocation))>

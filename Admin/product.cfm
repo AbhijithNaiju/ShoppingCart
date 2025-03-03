@@ -54,7 +54,7 @@
                                         <div class = "mt-auto">
                                             <i class="fa-solid fa-indian-rupee-sign"></i>
                                             <span class="productPrice">
-                                                #productData.fldprice+(productData.fldprice*productData.fldtax)/100#
+                                                #numberFormat(productData.fldprice+(productData.fldprice*productData.fldtax)/100,'__.00')#
                                             </span>
                                         </div>
                                     </div>

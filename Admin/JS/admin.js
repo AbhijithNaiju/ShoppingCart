@@ -182,19 +182,20 @@ $(document).ready(function(){
     $("#productModalForm").submit(function(){
         let productName= $("#productName").val();
         let productTax= $("#productTax").val();
+        let isProductTaxValid = false;
         if(parseFloat(productTax)>100){
-            setError("Please enter a valid tax amount","productTaxError")
+            setError("Please enter a valid tax percentage","productTaxError")
             isProductTaxValid =false;
         }else{
             setSuccess("productTaxError")
             isProductTaxValid =true;
         }
-		let isproductNameValid = checkSpecialCharacter(productName,"productNameError");
+		let isproductNameValid = checkProductName(productName,"productNameError");
         $("#modalError").text("");
         let isWrongExtention = false;
         var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
         let imageList = document.getElementById("productImages");
-        for (var i = 0; i < imageList.files.length; ++i) {
+        for (var i = 0; i < imageList.files.length; ++i){
             var inputFileName = imageList.files.item(i).name;
             fileExtension = String(/[^.]+$/.exec(inputFileName));
             if(!allowedExtentions.includes(fileExtension.toLowerCase())){
@@ -220,9 +221,9 @@ $(document).ready(function(){
                     else if(resultJson.success){
                         if(resultJson.isSameCategoryID){
                             if(resultJson.edit){
-                                $("#product"+resultJson.productDetails.productId).find(".productName").text(resultJson.productDetails.ProductName)
-                                $("#product"+resultJson.productDetails.productId).find(".brandName").text(resultJson.productDetails.ProductBrand)
-                                $("#product"+resultJson.productDetails.productId).find(".productPrice").text(resultJson.productDetails.totalPrice)
+                                $("#product"+resultJson.productDetails.productId).find(".productName").text(resultJson.productDetails.ProductName);
+                                $("#product"+resultJson.productDetails.productId).find(".brandName").text(resultJson.productDetails.ProductBrand);
+                                $("#product"+resultJson.productDetails.productId).find(".productPrice").text(resultJson.productDetails.totalPrice);
                             }else if(resultJson.insert){
                                 let productDiv=`
                                     <div 
@@ -271,7 +272,7 @@ $(document).ready(function(){
                                             </div>
                                         </div>
                                     </div>
-                                `
+                                `;
                                 $('#productList').append(productDiv);
                             }
                         }else{
@@ -285,6 +286,10 @@ $(document).ready(function(){
                         }
                     }else if(resultJson.productNameError){
                         setError(resultJson.productNameError,"productNameError");
+                    }else if(resultJson.productTaxError){
+                        setError(resultJson.productTaxError,"productTaxError");
+                    }else{
+                        alert("Unexpected error occured please try again");
                     }
                 }
             });
