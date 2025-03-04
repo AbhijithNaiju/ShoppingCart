@@ -1,3 +1,5 @@
+let defaultImage;
+let deletedProducts=[];
 $(document).ready(function(){
     $("#modalCategorySubmit").click(function(){
         let categoryName= $("#categoryName").val();
@@ -207,6 +209,12 @@ $(document).ready(function(){
             setError("Only jpg, jpeg, bmp, gif, png and svg files are allowed","productImageError")
         }else if(isproductNameValid && isProductTaxValid){
             productData = new FormData(document.getElementById("productModalForm"))
+            if(defaultImage != null){
+                productData.append("defaultImage",defaultImage);
+            }
+            if(deletedProducts != []){
+                productData.append("deletedProducts",deletedProducts.toString());
+            }
             $.ajax({
                 type: "POST",
                 url: "components/admin.cfc?method=addOrEditProduct",
@@ -231,18 +239,14 @@ $(document).ready(function(){
                                         id="product${resultJson.productDetails.productId}"
                                     >
                                         <div class="row">
-                                            <button 
-                                                type="button" 
-                                                class="thumbnailImageButton col-4" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#imageModal"
-                                                onclick="openImageModal({productId:'${resultJson.productDetails.productId}'})"
+                                            <div 
+                                                class="d-flex col-4" 
                                             >
                                                 <img
                                                     src="../assets/productimages/${resultJson.productDetails.defaultImage}" 
                                                     alt="Image not found" 
                                                     class="thumbnailImage">
-                                            </button>
+                                            </div>
                                             <div class="col-6 d-flex flex-column">
                                                 <div class="productName">${resultJson.productDetails.ProductName}</div>
                                                 <div class="brandName">${resultJson.productDetails.ProductBrand}</div>
@@ -279,6 +283,8 @@ $(document).ready(function(){
                             $("#product"+resultJson.productDetails.productId).remove();
                         }
                         $("#addModal").modal("hide");
+                        imageList.value=null;
+
                         if($("#productList").children().length){
                             $("#noProductError").text("");
                         }else{
@@ -299,12 +305,58 @@ $(document).ready(function(){
 
     if(myModalElement = document.getElementById('addModal')){
         myModalElement.addEventListener('hide.bs.modal', event => {
-            $(".form-control").removeClass("is-valid")
-            $(".form-control").removeClass("is-invalid")
-            $(".errorMessage").text("")
+            $(".form-control").removeClass("is-valid is-invalid");
+            $(".errorMessage").text("");
+            $("#editImageBody").empty();
         });
     }
+    $("#productImages").change(function(){
+        editImageBody=$("#editImageBody");
+        $(".addedImages").remove();
+        for (var i = 0; i < this.files.length; ++i){
+            var reader = new FileReader();
+            let inputFile = this.files.item(i);
+            let inputFileName = inputFile.name;
+
+            reader.onload = function(event) {
+                imageItem = `
+                    <div class="col-2 d-flex flex-column addedImages">
+                        <div class="editImage my-1 d-flex">
+                            <img 
+                                src="${event.target.result}" 
+                                class="d-block p-1 m-auto"
+                            >
+                            <button 
+                                type="button"
+                                class="deleteImage"
+                                title="Delete"
+                                onclick="removeImage(this,'${inputFileName}')"
+                            >
+                                <i class="fa-solid fa-trash"></i>   
+                            </button>
+                        </div>
+                    </div>
+                `;
+                editImageBody.append(imageItem);
+            };
+            reader.readAsDataURL(inputFile);
+        }
+    });
 });
+function removeImage(item,inputFileName){
+    item.parentElement.parentElement.remove();
+    const fileInput = document.getElementById('productImages');
+    const files = Array.from(fileInput.files);
+    const updatedFiles = [];
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].name !== inputFileName) {
+            updatedFiles.push(files[i]);
+        }
+    }
+    const dataTransfer = new DataTransfer();
+    updatedFiles.forEach(file => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+}
 function loginValidate(){
     
     let userName = $("#userName").val();
@@ -421,6 +473,8 @@ function openSubCategoryModal(categoryId,subcategoryId){
     }
 }
 function openProductModal(productData){
+    defaultImage=null;
+    deletedProducts=[];
     $("#categorySelect").val(productData.categoryId);
     listSubcategories(productData.categoryId,productData.subCategoryId);
     if(productData.productId){
@@ -433,15 +487,83 @@ function openProductModal(productData){
             url:"components/admin.cfc?method=getProductDetails",
             data:{productId:productData.productId},
             success: function(result) {
-                if(result){
-                    productDetails=JSON.parse(result);
-                    $("#brandSelect").val(productDetails.brandId);
-                    $("#productName").val(productDetails.productName);
-                    $("#productDescription").val(productDetails.productDescription);
-                    $("#productPrice").val(productDetails.price);
-                    $("#productTax").val(productDetails.tax);
+                resultJson=JSON.parse(result);
+                if(resultJson.success){
+                    $("#brandSelect").val(resultJson.productDetails.brandId);
+                    $("#productName").val(resultJson.productDetails.productName);
+                    $("#productDescription").val(resultJson.productDetails.productDescription);
+                    $("#productPrice").val(resultJson.productDetails.price);
+                    $("#productTax").val(resultJson.productDetails.tax);
+
+                    // setting product images
+                    if(resultJson.imageList){
+                        resultJson.imageList.forEach(imageDetails => {
+                            if(imageDetails.isDefaultImage == 1){
+                                imageItem = `
+                                    <div 
+                                        class="col-2 d-flex flex-column imageItem currentDefaultImage" 
+                                        id="imageItem${imageDetails.imageId}"
+                                    >
+                                        <div class="editImage my-1 d-flex">
+                                            <img 
+                                                src="../assets/productImages/${imageDetails.imageFileName}" 
+                                                class="m-auto p-1 editModalImage"
+                                            >
+                                            <button 
+                                                type="button"
+                                                onclick="deleteImage(this,{productId:${productData.productId},imageId:${imageDetails.imageId}})" 
+                                                class="deleteImage"
+                                                title="Delete"
+                                            >
+                                                <i class="fa-solid fa-trash"></i>   
+                                            </button>
+                                        </div>
+                                        <div class="d-flex mt-auto">
+                                            <button 
+                                                type="button" 
+                                                name="setDefault" 
+                                                class="m-auto btn btn-sm setDefaultBtn disabled"
+                                                onclick="setDefaultImage(${productData.productId},${imageDetails.imageId})"
+                                            >
+                                                Default
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }else{
+                                imageItem = `
+                                    <div class="col-2 d-flex flex-column imageItem" id="imageItem${imageDetails.imageId}">
+                                        <div class="editImage my-1 d-flex">
+                                            <img 
+                                                src="../assets/productImages/${imageDetails.imageFileName}" 
+                                                class="m-auto p-1 editModalImage"
+                                            >
+                                            <button 
+                                                type="button"
+                                                onclick="deleteImage(this,{productId:${productData.productId},imageId:${imageDetails.imageId}})" 
+                                                class="deleteImage"
+                                                title="Delete"
+                                            >
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="d-flex mt-auto">
+                                            <button 
+                                                type="button" 
+                                                name="setDefault" 
+                                                class="m-auto btn btn-sm setDefaultBtn"
+                                                onclick="setDefaultImage(${productData.productId},${imageDetails.imageId})"
+                                            >
+                                                Set default
+                                            </button>
+                                        </div>
+                                    </div>`;
+                            }
+                            $("#editImageBody").append(imageItem);
+                        });
+                    }
                 }else{
-                    alert("Error occured");
+                    alert("Error occured please try again");
                 }
             },
             error:function(){
@@ -590,87 +712,49 @@ function  deleteProduct(deleteButton){
         }
     });
 }
-function openImageModal(productData){
-    listProductImages(productData.productId)
-}
-function listProductImages(productId){
-    var carouselInner = document.getElementById("carouselInner");
-    carouselInner.innerHTML="";
-    $.ajax({
-        type:"POST",
-        url:"components/admin.cfc?method=getProductImages",
-        data:{productId:productId},
-        success: function(result) {
-            if(result){
-                productImages=JSON.parse(result);
-
-                defaultImageKey=Object.keys(productImages.defaultImage);
-                let slideBody = `
-                <div class="carousel-item active">
-                    <img src="../assets/productImages/${productImages.defaultImage[defaultImageKey]}" class="d-block w-100">
-                </div>`;
-                $("#carouselInner").append(slideBody)
-                $("#product"+productId).find(".thumbnailImage").attr("src","../assets/productImages/"+productImages.defaultImage[defaultImageKey])
-                if(productImages.remainingImages){
-                    const jsonKeys=Object.keys(productImages.remainingImages);
-                    for(i=0;i<jsonKeys.length;i++){
-                        remainingImageId=jsonKeys[i];
-                        let slideBody = `
-                        <div class="carousel-item">
-                        <img src="../assets/productImages/${productImages.remainingImages[remainingImageId]}" class="d-block w-100">
-                            <div class="carouselButtons">
-                                <button onclick="deleteImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-danger">DELETE</button>
-                                <button onclick="setDefaultImage({productId:${productId},imageId:${remainingImageId}})" class="btn btn-secondary text-nowrap">
-                                    Make Default
-                                </button>
-                            </div>
-                        </div>`;
-                        $("#carouselInner").append(slideBody)
-                        console.log()
-                    }
-                }
-            }else{
-                alert("Error occured while getting subcategory");
-            }
-        },
-        error:function(){
-            alert("An error occured");
-        }
-    });
-}
-function deleteImage(imageDetails){
-    $.ajax({
-        type:"POST",
-        url:"components/admin.cfc?method=deleteImage",
-        data:{imageId:imageDetails.imageId},
-        success: function(result) {
-            if(result){
-                listProductImages(imageDetails.productId)
+function deleteImage(item,imageDetails){
+    deletedProducts.push(imageDetails.imageId);
+    // $.ajax({
+    //     type:"POST",
+    //     url:"components/admin.cfc?method=deleteImage",
+    //     data:{imageId:imageDetails.imageId},
+    //     success: function(result) {
+    //         resultJson=JSON.parse(result);
+    //         if(resultJson.success){
+                item.parentElement.parentElement.remove();
                 
-            }else{
-                alert("Error occured while deleteing");
-            }
-        },
-        error:function(){
-            alert("An error occured");
-        }
-    });
+    //         }else{
+    //             alert("Error occured while deleteing");
+    //         }
+    //     },
+    //     error:function(){
+    //         alert("An error occured");
+    //     }
+    // });
 }
-function setDefaultImage(imageDetails){
-    $.ajax({
-        type:"POST",
-        url:"components/admin.cfc?method=setDefaultImage",
-        data:{imageId:imageDetails.imageId,productId:imageDetails.productId},
-        success: function(result) {
-            if(result){
-                listProductImages(imageDetails.productId);
-                $("#product"+imageDetails.productId).find(".thumbnailImage").attr("src","")
-            }else{
-                alert("Error occured while Setting default");
-            }
-        },
-        error:function(){
-            alert("An error occured");
-        }
-    });
+function setDefaultImage(productId,imageId){
+    defaultImage = imageId;
+    // $.ajax({
+    //     type:"POST",
+    //     url:"components/admin.cfc?method=setDefaultImage",
+    //     data:{imageId:imageId,productId:productId},
+    //     success: function(result) {
+    //         resultJson=JSON.parse(result);
+    //         if(resultJson.success){
+                newSrc=$("#imageItem"+imageId).find(".editModalImage").attr("src");
+                $("#product"+productId).find(".thumbnailImage").attr("src",newSrc);
+                $(".currentDefaultImage").find(".setDefaultBtn").removeClass("disabled");
+                $(".currentDefaultImage").find(".setDefaultBtn").text("Set default");
+                $(".currentDefaultImage").removeClass("currentDefaultImage");
+                $("#imageItem"+imageId).addClass("currentDefaultImage");
+                $(".currentDefaultImage").find(".setDefaultBtn").addClass("disabled");
+                $("#imageItem"+imageId).find(".setDefaultBtn").text("Default");
+    //         }else if(!resultJson.error){
+    //             alert("Unexpected error occured");
+    //         }
+    //     },
+    //     error:function(){
+    //         alert("An error occured");
+    //     }
+    // });
 }

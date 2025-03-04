@@ -36,18 +36,14 @@
                                 id="product#productData.fldProduct_ID#"
                             >
                                 <div class="row">
-                                    <button 
-                                        type="button" 
-                                        class="thumbnailImageButton col-4" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="##imageModal"
-                                        onclick="openImageModal({productId:'#productData.fldProduct_ID#'})"
+                                    <div 
+                                        class="d-flex col-4"
                                     >
                                         <img
                                             src="../assets/productimages/#productData.fldImageFileName#"
                                             alt="Image not found" 
                                             class="thumbnailImage">
-                                    </button>
+                                    </div>
                                     <div class="col-6 d-flex flex-column">
                                         <div class="productName">#productData.fldProductName#</div>
                                         <div class="brandName">#productData.fldBrandName#</div>
@@ -163,6 +159,9 @@
                             <input type="file" multiple id="productImages" name="productImages" class="form-control" required>
                             <div class = "errorMessage modalError" id="productImageError"></div>
                         </div>
+                        <div id="editImageBody" class="editImageBody row">
+
+                        </div>
                         <input type="hidden" id="productId" name="productId" class="form-control">
                         <cfoutput>
                             <input type="hidden" id="currentSubcategoryID" value="#url.subCategoryId#" name="currentSubcategoryID" class="form-control">
@@ -179,34 +178,6 @@
                     </div>
                     </div>
                 </form>
-            </div>
-        </div>
-        <div class="modal fade" tabindex="-1" id="imageModal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered imageModalDialog">
-                <div class="modal-content imageModalContent">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Edit image</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="carouselExampleControls" class="carousel" data-ride="carousel">
-                            <div class="carousel-inner" id="carouselInner">
-                            </div>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

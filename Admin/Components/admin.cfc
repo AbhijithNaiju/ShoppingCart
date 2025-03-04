@@ -298,26 +298,38 @@
     <cffunction  name="getProductDetails" returnType="struct" returnFormat="JSON" access="remote">
         <cfargument  name="productId" required="true" type = "integer">
 
-        <cfquery name="local.productData">
+        <cfquery name="local.productData" returntype = "struct">
             SELECT
-                P.fldProductName,
-                P.fldDescription,
-                P.fldBrandId,
-                P.fldTax,
-                P.fldPrice
+                P.fldProductName AS productName,
+                P.fldDescription AS productDescription,
+                P.fldBrandId AS brandId,
+                P.fldTax AS tax,
+                P.fldPrice AS price,
+                PI.fldProductImage_ID AS imageId,
+                PI.fldImageFileName AS imageFileName,
+                PI.fldDefaultImage AS isDefaultImage
             FROM
                 tblProduct P
+            INNER JOIN tblProductImages PI ON PI.fldProductId = P.fldProduct_ID AND PI.fldActive=1
             WHERE
                 P.fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
                 AND
-                P.fldActive = 1;
+                P.fldActive = 1
+            ORDER BY PI.fldDefaultImage DESC;
         </cfquery>
         <cfset local.resultStruct = structNew()>
-        <cfset local.resultStruct["productName"] = local.productData.fldProductName>
-        <cfset local.resultStruct["productDescription"] = local.productData.fldDescription>
-        <cfset local.resultStruct["brandId"] = local.productData.fldBrandId>
-        <cfset local.resultStruct["tax"] = local.productData.fldTax>
-        <cfset local.resultStruct["price"] = local.productData.fldPrice>
+        <cfif local.productData.recordCount>
+            <cfset local.resultStruct["productDetails"]["productName"] = local.productData.resultSet[1].productName>
+            <cfset local.resultStruct["productDetails"]["productDescription"] = local.productData.resultSet[1].productDescription>
+            <cfset local.resultStruct["productDetails"]["brandId"] = local.productData.resultSet[1].brandId>
+            <cfset local.resultStruct["productDetails"]["tax"] = local.productData.resultSet[1].tax>
+            <cfset local.resultStruct["productDetails"]["price"] = local.productData.resultSet[1].price>
+
+            <cfset local.resultStruct["imageList"] = local.productData.resultSet>
+            <cfset local.resultStruct["success"] = true>
+        <cfelse>
+            <cfset local.resultStruct["error"] = true>
+        </cfif>
         <cfreturn local.resultStruct>
     </cffunction>
 
@@ -365,6 +377,8 @@
         <cfargument  name = "productPrice" required = "true" type = "float">
         <cfargument  name = "productTax" required = "true" type = "float">
         <cfargument  name = "productId" required = "false" type = "integer">
+        <cfargument  name = "defaultImage" required = "false" type = "integer">
+        <cfargument  name = "deletedProducts" required = "false" type = "string">
         <cfset local.structResult = structNew()>
 
         <cfif LEN(trim(arguments.productName)) EQ 0>
@@ -477,6 +491,12 @@
                     <cfset local.structResult["productDetails"]["ProductBrand"] = getBrands(arguments.formBrandId).fldbrandName>
                     <cfset local.structResult["productDetails"]["totalPrice"] = arguments.productPrice+(arguments.productPrice*arguments.productTax/100)>
                 </cfif>
+                <cfif structKeyExists(arguments, "defaultImage") AND isNumeric(arguments.defaultImage)>
+                    <cfset setDefaultImage(imageId=arguments.defaultImage,productId=local.productid)>
+                </cfif>
+                <cfif structKeyExists(arguments, "deletedProducts")>
+                    <cfset deleteImage(deletedIdList=arguments.deletedProducts)>
+                </cfif>
                 <cfset local.structResult["success"] = true>
             </cfif>
         </cfif>
@@ -497,47 +517,62 @@
 
         <cfreturn true>
     </cffunction>
-    <cffunction  name = "deleteImage" access="remote" returntype="boolean" returnformat = "plain">
-        <cfargument  name  ="imageId" required = "true" type = "integer">
+    <cffunction  name = "deleteImage" access="remote" returntype="struct" returnformat = "JSON">
+        <cfargument  name  ="deletedIdList" required = "true" type = "string">
 
-        <cfquery>
+        <cfset local.resultStruct = structNew()>
+        <cfquery result="local.deleteResult">
             UPDATE
                 tblProductImages
             SET
                 fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">,
                 fldactive = 0
             WHERE
-                fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="integer">;
+                fldProductImage_ID IN (<cfqueryparam value = "#arguments.deletedIdList#" list="true" cfSqlType="integer">)
+                AND fldDefaultImage=0;
         </cfquery>
-
-        <cfreturn true>
+        <cfif local.deleteResult.recordCount>
+            <cfset local.resultStruct["success"] = true>
+        </cfif>
+        <cfreturn local.resultStruct>
     </cffunction>
 
-    <cffunction  name="setDefaultImage" access="remote" returntype="boolean" returnformat = "plain">
+    <cffunction  name="setDefaultImage" access="remote" returntype="struct" returnformat = "JSON">
         <cfargument  name = "imageId" required = "true" type = "integer">
         <cfargument  name = "productId" required = "true" type = "integer">
-
-        <cfquery>
-            UPDATE
-                tblProductImages
-            SET
-                fldDefaultImage = 0,
-                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
-            WHERE
-                fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType="integer">
-                AND fldDefaultImage =1;
-        </cfquery>
-        <cfquery>
-            UPDATE
-                tblProductImages
-            SET
-                fldDefaultImage = 1,
-                fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
-            WHERE
-                fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="integer">;
-        </cfquery>
-
-        <cfreturn true>
+        <cfset local.resultStruct = structNew()>
+        <cftransaction>
+            <cfquery result="local.removeDefault">
+                UPDATE
+                    tblProductImages
+                SET
+                    fldDefaultImage = 0,
+                    fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
+                WHERE
+                    fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType="integer">
+                    AND fldDefaultImage =1;
+            </cfquery>
+            <cfif local.removeDefault.recordCount>
+                <cfquery result="local.setDefault">
+                    UPDATE
+                        tblProductImages
+                    SET
+                        fldDefaultImage = 1,
+                        fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
+                    WHERE
+                        fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="integer">;
+                </cfquery>
+                <cfif local.setDefault.recordCount>
+                    <cfset local.resultStruct["success"] =true>
+                <cfelse>
+                    <cfset local.resultStruct["error"] = true>
+                    <cftransaction action="rollback">
+                </cfif>
+            <cfelse>
+                <cfset local.resultStruct["error"] = true>
+            </cfif>
+        </cftransaction>
+        <cfreturn local.resultStruct>
     </cffunction>
 
     <cffunction  name = "getProductImages" returntype = "struct" access = "remote" returnformat="JSON">
