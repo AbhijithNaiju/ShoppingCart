@@ -20,13 +20,13 @@
             len(trim(arguments.password)) GTE 8
         >
             <!--- check whether the field are valid --->
-            <cfif isValid("regex", arguments.firstName,"[^a-zA-Z0-9]")>
+            <cfif REFindNoCase("[^a-zA-Z0-9]",arguments.firstName)>
                 <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.lastName,"[^a-zA-Z0-9]")>
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.lastName)>
                 <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
             <cfelseif NOT isValid("email", arguments.emailId)>
                 <cfset local.structResult["error"] = "Please enter a valid email">
-            <cfelseif NOT isValid("regex", arguments.phoneNumber,"^(\+?[0-9-]{8,15})$")>
+            <cfelseif REFindNoCase("^(\+?[0-9-]{8,15})$",arguments.phoneNumber)>
                 <cfset local.structResult["error"] = "Please enter a valid phone number">
             <cfelse>
                 <cfquery name="local.isEmailExist">
@@ -526,50 +526,52 @@
             len(trim(arguments.phoneNumber))
         >
             <!--- check whether the field are valid --->
-            <cfif isValid("regex", arguments.firstName,"[^a-zA-Z0-9]")>
+            <cfif REFindNoCase("[^a-zA-Z0-9]",arguments.firstName)>
                 <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.lastName,"[^a-zA-Z0-9]")>
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.lastName)>
                 <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
             <cfelseif NOT isValid("email", arguments.emailId)>
-                <cfset local.structResult["error"] = "Please enter a valid email">
-            <cfelseif NOT isValid("regex", arguments.phoneNumber,"^(\+?[0-9-]{8,15})$")>
-                <cfset local.structResult["error"] = "Please enter a valid phone number">
+                <cfset local.structResult["emailError"] = "Please enter a valid email">
             <cfelse>
-                <cfquery name="local.isEmailExist">
-                    SELECT
-                        fldEmail,fldPhone
-                    FROM
-                        tbluser
-                    WHERE(
-                        fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
-                        OR
-                        fldPhone = <cfqueryparam value = "#arguments.phoneNumber#" cfSqlType= "varchar">
-                    )
-                        AND
-                        NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
-                </cfquery>
+                <cfif REFindNoCase("^(\+?[0-9-]{8,15})$",arguments.phoneNumber)>
+                    <cfquery name="local.isEmailExist">
+                        SELECT
+                            fldEmail,fldPhone
+                        FROM
+                            tbluser
+                        WHERE(
+                            fldemail = <cfqueryparam value = "#arguments.emailId#" cfSqlType= "varchar">
+                            OR
+                            fldPhone = <cfqueryparam value = "#arguments.phoneNumber#" cfSqlType= "varchar">
+                        )
+                            AND
+                            NOT fldUser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
+                    </cfquery>
 
-                <cfif local.isEmailExist.recordCount>
-                    <cfif local.isEmailExist.fldEmail EQ arguments.emailId>
-                        <cfset local.structResult["emailError"] = "Email already exists">
-                    </cfif>
-                    <cfif local.isEmailExist.fldPhone EQ arguments.phoneNumber>
-                        <cfset local.structResult["phoneError"] = "Phone number already exists">
+                    <cfif local.isEmailExist.recordCount>
+                        <cfif local.isEmailExist.fldEmail EQ arguments.emailId>
+                            <cfset local.structResult["emailError"] = "Email already exists">
+                        </cfif>
+                        <cfif local.isEmailExist.fldPhone EQ arguments.phoneNumber>
+                            <cfset local.structResult["phoneError"] = "Phone number already exists">
+                        </cfif>
+                    <cfelse>
+                        <cfquery result="local.signUpresult">
+                            UPDATE
+                                tbluser
+                            SET
+                                fldFirstName = <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
+                                fldLastName = <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
+                                fldPhone = <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
+                                fldEmail = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">
+                            WHERE 
+                                flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
+                        </cfquery>
+                        <cfset local.structResult["success"] = true>
+                        <cfset session.userSession.name = arguments.firstName>
                     </cfif>
                 <cfelse>
-                    <cfquery result="local.signUpresult">
-                        UPDATE
-                            tbluser
-                        SET
-                            fldFirstName = <cfqueryparam value = '#arguments.firstName#' cfsqltype = "varchar">,
-                            fldLastName = <cfqueryparam value = '#arguments.lastName#' cfsqltype = "varchar">,
-                            fldPhone = <cfqueryparam value = '#arguments.phoneNumber#' cfsqltype = "varchar">,
-                            fldEmail = <cfqueryparam value = '#arguments.emailId#' cfsqltype = "varchar">
-                        WHERE 
-                            flduser_ID = <cfqueryparam value = "#arguments.userId#" cfSqlType= "varchar">;
-                    </cfquery>
-                    <cfset local.structResult["success"] = true>
-                    <cfset session.userSession.name = arguments.firstName>
+                    <cfset local.structResult["phoneError"] = "Please enter a valid phone number">
                 </cfif>
             </cfif>
         <cfelse>
@@ -600,20 +602,22 @@
             len(trim(arguments.formStruct.pincode))
         >
             <!--- check whether the field are valid --->
-            <cfif isValid("regex", arguments.formStruct.firstName,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "First name should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.formStruct.lastName,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "Last name should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.formStruct.addressLine1,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "Address line 1 should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.formStruct.addressLine2,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "Address line 2 should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.formStruct.city,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "City should not contain any special charector or whitespace">
-            <cfelseif isValid("regex", arguments.formStruct.state,"[^a-zA-Z0-9]")>
-                <cfset local.structResult["error"] = "State should not contain any special charector or whitespace">
-            <cfelseif NOT isValid("regex", arguments.formStruct.phoneNumber,"^(\+?[0-9-]{8,15})$")>
-                <cfset local.structResult["error"] = "Please enter a valid phone number">
+            <cfif REFindNoCase("[^a-zA-Z0-9]",arguments.formStruct.firstName)>
+                <cfset local.resultStruct["error"] = "First name should not contain any special charector or whitespace">
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.formStruct.lastName)>
+                <cfset local.resultStruct["error"] = "Last name should not contain any special charector or whitespace">
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.formStruct.addressLine1)>
+                <cfset local.resultStruct["error"] = "Address line 1 should not contain any special charector or whitespace">
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.formStruct.addressLine2)>
+                <cfset local.resultStruct["error"] = "Address line 2 should not contain any special charector or whitespace">
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.formStruct.city)>
+                <cfset local.resultStruct["error"] = "City should not contain any special charector or whitespace">
+            <cfelseif REFindNoCase("[^a-zA-Z0-9]",arguments.formStruct.state)>
+                <cfset local.resultStruct["error"] = "State should not contain any special charector or whitespace">
+            <cfelseif NOT REFindNoCase("^(\+?[0-9-]{8,15})$",arguments.formStruct.phoneNumber)>
+                <cfset local.resultStruct["error"] = "Please enter a valid phone number">
+            <cfelseif NOT REFindNoCase("^[0-9]{6}$",arguments.formStruct.pincode)>
+                <cfset local.resultStruct["error"] = "Please enter a valid pincode">
             <cfelse>
                 <cfquery>
                     INSERT INTO 

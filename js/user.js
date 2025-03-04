@@ -214,22 +214,22 @@ $(document).ready(function(){
 		let addressPhoneNumber= $("#addressPhoneNumber").val();
 		let pincode= $("#pincode").val();
 
-		let isaddressFirstNameValid = hasSpecialCharsOrWhitespace(addressFirstName,"FirstNameError");
-		let isaddressLastNameValid = hasSpecialCharsOrWhitespace(addressLastName,"LastNameError");
-		let isaddressLine1Valid = checkSpecialCharacter(addressLine1,"addressLine1Error");
-		let isaddressLine2Valid = checkSpecialCharacter(addressLine2,"addressLine2Error");
-		let iscityValid = hasSpecialCharsOrWhitespace(city,"cityError");
-		let isstateValid = hasSpecialCharsOrWhitespace(state,"stateError");
-		let isaddressPhoneNumberValid = validatePhoneNumber(addressPhoneNumber,"addressPhoneNumberError");
-		let ispincodeValid = validatePincode(pincode,"pincodeError");
-		if(isaddressFirstNameValid &&
-			isaddressLastNameValid &&
-			isaddressLine1Valid &&
-			isaddressLine2Valid &&
-			iscityValid &&
-			isstateValid &&
-			isaddressPhoneNumberValid &&
-			ispincodeValid
+		let isAddressFirstNameValid = hasSpecialCharsOrWhitespace(addressFirstName,"FirstNameError");
+		let isAddressLastNameValid = hasSpecialCharsOrWhitespace(addressLastName,"LastNameError");
+		let isAddressLine1Valid = checkSpecialCharacter(addressLine1,"addressLine1Error");
+		let isAddressLine2Valid = checkSpecialCharacter(addressLine2,"addressLine2Error");
+		let isCityValid = hasSpecialCharsOrWhitespace(city,"cityError");
+		let isStateValid = hasSpecialCharsOrWhitespace(state,"stateError");
+		let isAddressPhoneNumberValid = validatePhoneNumber(addressPhoneNumber,"addressPhoneNumberError");
+		let isPincodeValid = validatePincode(pincode,"pincodeError");
+		if(isAddressFirstNameValid &&
+			isAddressLastNameValid &&
+			isAddressLine1Valid &&
+			isAddressLine2Valid &&
+			isCityValid &&
+			isStateValid &&
+			isAddressPhoneNumberValid &&
+			isPincodeValid
 		){
 			return true;
 		}else{

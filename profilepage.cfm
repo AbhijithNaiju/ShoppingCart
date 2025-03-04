@@ -175,7 +175,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Profile</h5>
-                    <button type="button" class="btn-close closeProfileEdit" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="reset" class="btn-close closeProfileEdit" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div>
                     <div class="m-4">
