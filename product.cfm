@@ -3,13 +3,15 @@
     <cfset variables.productDetails = application.userObject.getProductDetails(productId=url.productId)>
     <cfif arrayLen(variables.productDetails)>
         <cfoutput>
-            <div class="productBody d-flex m-3 align-items-center">
+            <div class="productBody d-flex m-3">
                 <div class="productImage">
                     <div id="carouselExampleIndicators" class="carousel slide"> 
                         <div class="carousel-inner">
                             <cfloop array="#variables.productDetails#" item="local.productImage">
                                 <div class="carousel-item #(local.productImage.defaultImage)?'active':''#">
-                                    <img src="./assets/productimages/#local.productImage.imageFileName#" class="d-block" alt="...">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <img src="./assets/productimages/#local.productImage.imageFileName#" class="d-block" alt="...">
+                                    </div>
                                 </div>
                             </cfloop>
                         </div>

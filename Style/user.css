@@ -209,7 +209,7 @@ body{
     color: #000000;
 }
 .randomProducts img{
-    height: 90%;
+    max-height: 90%;
     max-width: 100%;
 }
 .randomProductImage{
@@ -229,11 +229,13 @@ body{
 }
 .productImage{
     width: 40%;
-    height: 100%;
+    height: 75vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
+    position: sticky;
+    top: 20%;
 }
 .carousel-inner{
     height: 100%;
@@ -244,10 +246,14 @@ body{
     height: 100%;
     width: 100%;
 }
-.carousel-item>img{
-    height: 90%;
-    max-width: 80%;
+.carousel-item>div{
+    height: 100%;
+    width: 100%;
     margin: auto;
+}
+.carousel-item img{
+    max-height: 90%;
+    max-width: 80%;
 }
 #carouselExampleIndicators{
     height: 70%;
@@ -274,7 +280,6 @@ body{
 }
 .description{
     font-size: 12px;
-    max-height: 20vh;
     text-overflow: ellipsis;
 }
 .price{

@@ -1,4 +1,3 @@
-let defaultImage;
 let deletedProducts=[];
 $(document).ready(function(){
     $("#modalCategorySubmit").click(function(){
@@ -184,15 +183,17 @@ $(document).ready(function(){
     $("#productModalForm").submit(function(){
         let productName= $("#productName").val();
         let productTax= $("#productTax").val();
-        let isProductTaxValid = false;
+        let isError = false;
         if(parseFloat(productTax)>100){
-            setError("Please enter a valid tax percentage","productTaxError")
-            isProductTaxValid =false;
+            setError("Please enter a valid tax percentage","productTaxError");
+            isError=true;
         }else{
-            setSuccess("productTaxError")
-            isProductTaxValid =true;
+            setSuccess("productTaxError");
         }
 		let isproductNameValid = checkProductName(productName,"productNameError");
+        if(isproductNameValid == false){
+            isError = true;
+        }
         $("#modalError").text("");
         let isWrongExtention = false;
         var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
@@ -202,16 +203,20 @@ $(document).ready(function(){
             fileExtension = String(/[^.]+$/.exec(inputFileName));
             if(!allowedExtentions.includes(fileExtension.toLowerCase())){
                 isWrongExtention = true;
+                isError=true;
                 break;
             }
         }
         if(isWrongExtention){
-            setError("Only jpg, jpeg, bmp, gif, png and svg files are allowed","productImageError")
-        }else if(isproductNameValid && isProductTaxValid){
-            productData = new FormData(document.getElementById("productModalForm"))
-            if(defaultImage != null){
-                productData.append("defaultImage",defaultImage);
-            }
+            setError("Only jpg, jpeg, bmp, gif, png and svg files are allowed","productImageError");
+        }
+            
+        if($('input[name="defaultImage"]:checked').length==0){
+            $("#modalError").text("Please select a default Image");
+            iserror=true;
+        }
+        if(isError == false){
+            let productData = new FormData(document.getElementById("productModalForm"));
             if(deletedProducts != []){
                 productData.append("deletedProducts",deletedProducts.toString());
             }
@@ -224,26 +229,32 @@ $(document).ready(function(){
                 success: function(result) {
                     resultJson=JSON.parse(result);
                     if(resultJson.error){
-                        $("#productNameError").text(resultJson.error);
+                        $("#modalError").text(resultJson.error);
                     }
                     else if(resultJson.success){
                         if(resultJson.isSameCategoryID){
+                            const newProductId = resultJson.productDetails.productId;
+                            if(resultJson.productDetails.defaultImage){
+                                const editedDefaultId = resultJson.productDetails.defaultImage;
+                                newSrc=$("#imageItem"+editedDefaultId).find(".editModalImage").attr("src");
+                                console.log(newSrc);
+                                console.log(newSrc);
+                            }
                             if(resultJson.edit){
-                                $("#product"+resultJson.productDetails.productId).find(".productName").text(resultJson.productDetails.ProductName);
-                                $("#product"+resultJson.productDetails.productId).find(".brandName").text(resultJson.productDetails.ProductBrand);
-                                $("#product"+resultJson.productDetails.productId).find(".productPrice").text(resultJson.productDetails.totalPrice);
+                                $("#product"+newProductId).find(".productName").text(resultJson.productDetails.ProductName);
+                                $("#product"+newProductId).find(".brandName").text(resultJson.productDetails.ProductBrand);
+                                $("#product"+newProductId).find(".productPrice").text(resultJson.productDetails.totalPrice);
+                                $("#product"+newProductId).find(".thumbnailImage").attr("src",newSrc);
                             }else if(resultJson.insert){
                                 let productDiv=`
                                     <div 
                                         class="productItem my-2 rounded border shadow-sm p-3 justify-content-between align-items-center"
-                                        id="product${resultJson.productDetails.productId}"
+                                        id="product${newProductId}"
                                     >
                                         <div class="row">
-                                            <div 
-                                                class="d-flex col-4" 
-                                            >
+                                            <div class="d-flex col-4">
                                                 <img
-                                                    src="../assets/productimages/${resultJson.productDetails.defaultImage}" 
+                                                    src="${newSrc}" 
                                                     alt="Image not found" 
                                                     class="thumbnailImage">
                                             </div>
@@ -261,15 +272,15 @@ $(document).ready(function(){
                                                     class="productButtons" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#addModal"
-                                                    onclick="openProductModal({categoryId:${resultJson.productDetails.categoryId},subCategoryId:${resultJson.productDetails.subcategoryId},productId:${resultJson.productDetails.productId}})"
-                                                    value="${resultJson.productDetails.productId}"
+                                                    onclick="openProductModal({categoryId:${resultJson.productDetails.categoryId},subCategoryId:${resultJson.productDetails.subcategoryId},productId:${newProductId}})"
+                                                    value="${newProductId}"
                                                 >
                                                     <img src="../assets/images/edit-icon.png">
                                                 </button>
                                                 <button 
                                                     class="productButtons" 
                                                     onclick="deleteProduct(this)" 
-                                                    value="${resultJson.productDetails.productId}"
+                                                    value="${newProductId}"
                                                 >
                                                     <img src="../assets/images/delete-icon.png">
                                                 </button>
@@ -280,7 +291,7 @@ $(document).ready(function(){
                                 $('#productList').append(productDiv);
                             }
                         }else{
-                            $("#product"+resultJson.productDetails.productId).remove();
+                            $("#product"+newProductId).remove();
                         }
                         $("#addModal").modal("hide");
                         imageList.value=null;
@@ -294,6 +305,8 @@ $(document).ready(function(){
                         setError(resultJson.productNameError,"productNameError");
                     }else if(resultJson.productTaxError){
                         setError(resultJson.productTaxError,"productTaxError");
+                    }else if(resultJson.imageError){
+                        setError(resultJson.imageError,"productImageError");
                     }else{
                         alert("Unexpected error occured please try again");
                     }
@@ -313,50 +326,84 @@ $(document).ready(function(){
     $("#productImages").change(function(){
         editImageBody=$("#editImageBody");
         $(".addedImages").remove();
+        if($('input[name="defaultImage"]:checked').length==0){
+            $('input[name="defaultImage"]:first').prop('checked', true);
+        }
         for (var i = 0; i < this.files.length; ++i){
             var reader = new FileReader();
             let inputFile = this.files.item(i);
             let inputFileName = inputFile.name;
-
+            j=1;
             reader.onload = function(event) {
+                if($('input[name="defaultImage"]:checked').length==0){
+                    setButtonText="Thumbnail"
+                    isChecked="checked"
+                    parentClass="currentDefaultImage"
+                }else{
+                    setButtonText="Set Thumbnail"
+                    isChecked=""
+                    parentClass=""
+                }
                 imageItem = `
-                    <div class="col-2 d-flex flex-column addedImages">
+                    <div class="col-2 d-flex flex-column addedImages ${parentClass}" id="imageItem${"newImage_"+j}">
                         <div class="editImage my-1 d-flex">
-                            <img 
-                                src="${event.target.result}" 
-                                class="d-block p-1 m-auto"
-                            >
-                            <button 
-                                type="button"
-                                class="deleteImage"
-                                title="Delete"
-                                onclick="removeImage(this,'${inputFileName}')"
-                            >
-                                <i class="fa-solid fa-trash"></i>   
+                            <img src="${event.target.result}" class="d-block p-1 m-auto editModalImage">
+                            <button type="button" class="deleteNewImage" title="Delete" value="${inputFileName}">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
+                        </div>
+                        <div class="d-flex mt-auto justify-content-center">
+                            <input 
+                                type="radio" 
+                                class="btn-check setAsThumbnail" 
+                                name="defaultImage" 
+                                id="newImage_${j}" 
+                                value="newImage_${j}"
+                                autocomplete="off" 
+                                ${isChecked}
+                            >
+                            <label class="btn btn-sm btn-outline-primary setAsThumbnailLabel" for="newImage_${j}">
+                                ${setButtonText}
+                            </label>
                         </div>
                     </div>
                 `;
                 editImageBody.append(imageItem);
+                j++;
             };
             reader.readAsDataURL(inputFile);
         }
     });
-});
-function removeImage(item,inputFileName){
-    item.parentElement.parentElement.remove();
-    const fileInput = document.getElementById('productImages');
-    const files = Array.from(fileInput.files);
-    const updatedFiles = [];
-    for (let i = 0; i < files.length; i++) {
-        if (files[i].name !== inputFileName) {
-            updatedFiles.push(files[i]);
+    
+    $(document).on("click",'.deleteImage',function(){
+        deletedProducts.push(this.value);
+        this.parentElement.parentElement.remove();
+    });
+    $(document).on("click",'.deleteNewImage',function(){
+        inputFileName = this.value;
+        this.parentElement.parentElement.remove();
+        const fileInput = document.getElementById('productImages');
+        const files = Array.from(fileInput.files);
+        const updatedFiles = [];
+        for (let i = 0; i < files.length; i++){
+            if (files[i].name !== inputFileName){
+                updatedFiles.push(files[i]);
+            }
         }
-    }
-    const dataTransfer = new DataTransfer();
-    updatedFiles.forEach(file => dataTransfer.items.add(file));
-    fileInput.files = dataTransfer.files;
-}
+        const dataTransfer = new DataTransfer();
+        updatedFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+        $("#productImages").change();
+    });
+    
+    $(document).on("change",'.setAsThumbnail',function(){
+        let defaultImage=this.value;
+        $(".currentDefaultImage").find(".setAsThumbnailLabel").text("Set Thumbnail");
+        $("#imageItem"+defaultImage).find(".setAsThumbnailLabel").text("Thumbnail");
+        $(".currentDefaultImage").removeClass("currentDefaultImage");
+        $("#imageItem"+defaultImage).addClass("currentDefaultImage");
+    })
+});
 function loginValidate(){
     
     let userName = $("#userName").val();
@@ -473,7 +520,6 @@ function openSubCategoryModal(categoryId,subcategoryId){
     }
 }
 function openProductModal(productData){
-    defaultImage=null;
     deletedProducts=[];
     $("#categorySelect").val(productData.categoryId);
     listSubcategories(productData.categoryId,productData.subCategoryId);
@@ -510,23 +556,30 @@ function openProductModal(productData){
                                                 class="m-auto p-1 editModalImage"
                                             >
                                             <button 
-                                                type="button"
-                                                onclick="deleteImage(this,{productId:${productData.productId},imageId:${imageDetails.imageId}})" 
+                                                type="button" 
+                                                value="${imageDetails.imageId}"
                                                 class="deleteImage"
                                                 title="Delete"
                                             >
                                                 <i class="fa-solid fa-trash"></i>   
                                             </button>
                                         </div>
-                                        <div class="d-flex mt-auto">
-                                            <button 
-                                                type="button" 
-                                                name="setDefault" 
-                                                class="m-auto btn btn-sm setDefaultBtn disabled"
-                                                onclick="setDefaultImage(${productData.productId},${imageDetails.imageId})"
+                                        <div class="d-flex mt-auto justify-content-center">
+                                            <input 
+                                                type="radio" 
+                                                class="btn-check setAsThumbnail" 
+                                                name="defaultImage" 
+                                                id="option${imageDetails.imageId}" 
+                                                value="${imageDetails.imageId}"
+                                                autocomplete="off" 
+                                                checked
                                             >
-                                                Default
-                                            </button>
+                                            <label 
+                                                class="btn btn-sm btn-outline-primary setAsThumbnailLabel" 
+                                                for="option${imageDetails.imageId}"
+                                            >
+                                                Thumbnail
+                                            </label>
                                         </div>
                                     </div>
                                 `;
@@ -540,24 +593,31 @@ function openProductModal(productData){
                                             >
                                             <button 
                                                 type="button"
-                                                onclick="deleteImage(this,{productId:${productData.productId},imageId:${imageDetails.imageId}})" 
+                                                value="${imageDetails.imageId}" 
                                                 class="deleteImage"
                                                 title="Delete"
                                             >
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </div>
-                                        <div class="d-flex mt-auto">
-                                            <button 
-                                                type="button" 
-                                                name="setDefault" 
-                                                class="m-auto btn btn-sm setDefaultBtn"
-                                                onclick="setDefaultImage(${productData.productId},${imageDetails.imageId})"
+                                        <div class="d-flex mt-auto justify-content-center">
+                                            <input 
+                                                type="radio" 
+                                                class="btn-check setAsThumbnail" 
+                                                name="defaultImage" 
+                                                id="option${imageDetails.imageId}" 
+                                                value="${imageDetails.imageId}"
+                                                autocomplete="off"
                                             >
-                                                Set default
-                                            </button>
+                                            <label 
+                                                class="btn btn-sm btn-outline-primary setAsThumbnailLabel" 
+                                                for="option${imageDetails.imageId}"
+                                            >
+                                                Set Thumbnail
+                                            </label>
                                         </div>
-                                    </div>`;
+                                    </div>
+                                `;
                             }
                             $("#editImageBody").append(imageItem);
                         });
@@ -711,50 +771,4 @@ function  deleteProduct(deleteButton){
             });
         }
     });
-}
-function deleteImage(item,imageDetails){
-    deletedProducts.push(imageDetails.imageId);
-    // $.ajax({
-    //     type:"POST",
-    //     url:"components/admin.cfc?method=deleteImage",
-    //     data:{imageId:imageDetails.imageId},
-    //     success: function(result) {
-    //         resultJson=JSON.parse(result);
-    //         if(resultJson.success){
-                item.parentElement.parentElement.remove();
-                
-    //         }else{
-    //             alert("Error occured while deleteing");
-    //         }
-    //     },
-    //     error:function(){
-    //         alert("An error occured");
-    //     }
-    // });
-}
-function setDefaultImage(productId,imageId){
-    defaultImage = imageId;
-    // $.ajax({
-    //     type:"POST",
-    //     url:"components/admin.cfc?method=setDefaultImage",
-    //     data:{imageId:imageId,productId:productId},
-    //     success: function(result) {
-    //         resultJson=JSON.parse(result);
-    //         if(resultJson.success){
-                newSrc=$("#imageItem"+imageId).find(".editModalImage").attr("src");
-                $("#product"+productId).find(".thumbnailImage").attr("src",newSrc);
-                $(".currentDefaultImage").find(".setDefaultBtn").removeClass("disabled");
-                $(".currentDefaultImage").find(".setDefaultBtn").text("Set default");
-                $(".currentDefaultImage").removeClass("currentDefaultImage");
-                $("#imageItem"+imageId).addClass("currentDefaultImage");
-                $(".currentDefaultImage").find(".setDefaultBtn").addClass("disabled");
-                $("#imageItem"+imageId).find(".setDefaultBtn").text("Default");
-    //         }else if(!resultJson.error){
-    //             alert("Unexpected error occured");
-    //         }
-    //     },
-    //     error:function(){
-    //         alert("An error occured");
-    //     }
-    // });
 }

@@ -52,7 +52,6 @@
                             <div class = "border p-3 d-flex justify-content-between align-items-center">
                                 <div class="d-flex flex-column" id = "selectedAddress">
                                     <cfif arrayLen(variables.addressList)>
-                                        <input type="hidden" id="orderAddressId" name="orderAddressId" value="#variables.addressList[1].addressId#">
                                         <span class="addressName">#variables.addressList[1].firstName & ' ' & variables.addressList[1].lastName#</span>
                                         <span>
                                             #variables.addressList[1].addressLine1 & ', '#
@@ -84,6 +83,12 @@
                                         >
                                             Change
                                         </button>
+                                        <input 
+                                            type="hidden" 
+                                            id="orderAddressId" 
+                                            name="orderAddressId" 
+                                            value="#variables.addressList[1].addressId#"
+                                        >
                                     </cfif>
                                     <button 
                                         type = "button"

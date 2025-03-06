@@ -167,7 +167,7 @@
                             <input type="hidden" id="currentSubcategoryID" value="#url.subCategoryId#" name="currentSubcategoryID" class="form-control">
                         </cfoutput>
                     </div>
-                        <div class = "errorMessage modalError" id="modalError"></div>
+                        <div class = "errorMessage modalError text-center" id="modalError"></div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button 

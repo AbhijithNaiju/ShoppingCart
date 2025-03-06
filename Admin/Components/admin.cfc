@@ -376,18 +376,33 @@
         <cfargument  name = "productName" required = "true" type = "string">
         <cfargument  name = "productPrice" required = "true" type = "float">
         <cfargument  name = "productTax" required = "true" type = "float">
+        <cfargument  name = "productImages" required = "false" type = "string">
         <cfargument  name = "productId" required = "false" type = "integer">
-        <cfargument  name = "defaultImage" required = "false" type = "integer">
+        <cfargument  name = "defaultImage" required = "true" type = "string">
         <cfargument  name = "deletedProducts" required = "false" type = "string">
+
         <cfset local.structResult = structNew()>
+
+        <!--- <cfdump  var="#arguments#" abort> --->
 
         <cfif LEN(trim(arguments.productName)) EQ 0>
             <cfset local.structResult["productNameError"] = "Please enter a name">
-        <cfelseif REFindNoCase("[^a-zA-Z0-9.\s&/()%-+,\[\]\*\$]",arguments.productName)>
+            <cfset local.structResult["error"] = true>
+        </cfif>
+
+        <cfif REFindNoCase("[^a-zA-Z0-9.\s&/()%-+,\[\]\*\$]",arguments.productName)>
             <cfset local.structResult["productNameError"] = "Product name should not contain any special character">
-        <cfelseif arguments.productTax GT 100>
+            <cfset local.structResult["error"] = true>
+        </cfif>
+
+        <cfif arguments.productTax GT 100>
             <cfset local.structResult["productTaxError"] = "Please enter valid tax percentage">
-        <cfelse>
+            <cfset local.structResult["error"] = true>
+        </cfif>
+
+        <cfif NOT structKeyExists(local.structResult,"error")>
+
+            <!--- Uploading the file to directory --->
             <cfset local.uploadLocation = "../../assets/productImages">
             <cfif NOT directoryExists(expandPath(local.uploadLocation))>
                 <cfset directoryCreate(expandPath(local.uploadLocation))>
@@ -398,113 +413,119 @@
                 nameConflict="MakeUnique"
                 result = "local.fileNames"
             >
-            <cfquery name="local.isProductExist">
-                SELECT
-                    fldProduct_ID
-                FROM
-                    tblProduct
-                WHERE
-                    fldProductName = <cfqueryparam value = "#trim(arguments.productName)#" cfSqlType = "varchar">
-                    AND
-                    fldSubCategoryId = <cfqueryparam value = "#arguments.formSubCategoryId#" cfSqlType = "integer">
-                    AND
-                    fldActive = 1;
-            </cfquery>
-            <cfif local.isProductExist.recordCount AND structKeyExists(arguments, "productId") AND local.isProductExist.fldProduct_ID NEQ arguments.productId>
-                <cfset local.structResult["productNameError"] = "Product name already exists">
+
+            <cfif structKeyExists(arguments, "productId") 
+                AND val(arguments.productId) EQ 0 
+                AND listLen(arguments.productImages,',') EQ 0
+            >
+                <!--- Added product does not conatin any images --->
+                <cfset local.structResult["imageError"] = "Please enter images for the product">
             <cfelse>
-                <cfif structKeyExists(arguments, "productId") AND val(arguments.productId) GT 0>
-                    <cfquery name="local.productUpdate">
-                        UPDATE
-                            tblProduct
-                        SET
-                            fldSubCategoryId = <cfqueryparam value='#arguments.formSubCategoryId#' cfsqltype="integer">,
-                            fldProductName = <cfqueryparam value='#trim(arguments.productName)#' cfsqltype="varchar">,
-                            fldBrandId = <cfqueryparam value='#arguments.formBrandId#' cfsqltype="integer">,
-                            fldDescription = <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
-                            fldPrice = <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
-                            fldTax = <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
-                            fldUpdatedBy = <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
-                        WHERE 
-                            fldProduct_ID = <cfqueryparam value='#arguments.productId#' cfsqltype="integer">
-                    </cfquery>
-                    <cfset local.defaultImage = 0>
-                    <cfset local.productid = arguments.productId>
-                    <cfset local.structResult["edit"] = true>
+                <!--- Getting products with same name --->
+                <cfquery name="local.isProductExist">
+                    SELECT
+                        fldProduct_ID
+                    FROM
+                        tblProduct
+                    WHERE
+                        fldProductName = <cfqueryparam value = "#trim(arguments.productName)#" cfSqlType = "varchar">
+                        AND
+                        fldSubCategoryId = <cfqueryparam value = "#arguments.formSubCategoryId#" cfSqlType = "integer">
+                        AND
+                        fldActive = 1;
+                </cfquery>
+                <cfif local.isProductExist.recordCount AND structKeyExists(arguments, "productId") AND local.isProductExist.fldProduct_ID NEQ arguments.productId>
+                    <!--- Same name exists for another product --->
+                    <cfset local.structResult["productNameError"] = "Product name already exists">
                 <cfelse>
-                    <cfquery result="local.productResult">
-                        INSERT INTO
-                            tblProduct
-                        (
-                            fldSubCategoryId,
-                            fldProductName,
-                            fldBrandId,
-                            fldDescription,
-                            fldPrice,
-                            fldTax,
-                            fldCreatedBy
-                        )
-                        VALUES
-                        (
-                            <cfqueryparam value='#arguments.formSubCategoryId#' cfsqltype="integer">,
-                            <cfqueryparam value='#trim(arguments.productName)#' cfsqltype="varchar">,
-                            <cfqueryparam value='#arguments.formBrandId#' cfsqltype="integer">,
-                            <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
-                            <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
-                            <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
-                            <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
-                        )
-                    </cfquery>
-                    <cfset local.defaultImage = 1>
-                    <cfset local.productid = local.productResult.generatedkey>
-                    <cfset local.structResult["insert"] = true>
+                    <cftransaction>
+                        <cfif structKeyExists(arguments, "productId") 
+                            AND val(arguments.productId)
+                        >
+                            <!--- Editing the product(product id is available) --->
+                            <cfquery name="local.productUpdate">
+                                UPDATE
+                                    tblProduct
+                                SET
+                                    fldSubCategoryId = <cfqueryparam value='#arguments.formSubCategoryId#' cfsqltype="integer">,
+                                    fldProductName = <cfqueryparam value='#trim(arguments.productName)#' cfsqltype="varchar">,
+                                    fldBrandId = <cfqueryparam value='#arguments.formBrandId#' cfsqltype="integer">,
+                                    fldDescription = <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
+                                    fldPrice = <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
+                                    fldTax = <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
+                                    fldUpdatedBy = <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
+                                WHERE 
+                                    fldProduct_ID = <cfqueryparam value='#arguments.productId#' cfsqltype="integer">
+                            </cfquery>
+                            <cfset local.productid = arguments.productId>
+                            <cfset local.structResult["edit"] = true>
+                        <cfelse>
+                            <!--- Creating new product(product id not available) --->
+                            <cfquery result="local.productResult">
+                                INSERT INTO
+                                    tblProduct
+                                (
+                                    fldSubCategoryId,
+                                    fldProductName,
+                                    fldBrandId,
+                                    fldDescription,
+                                    fldPrice,
+                                    fldTax,
+                                    fldCreatedBy
+                                )
+                                VALUES
+                                (
+                                    <cfqueryparam value='#arguments.formSubCategoryId#' cfsqltype="integer">,
+                                    <cfqueryparam value='#trim(arguments.productName)#' cfsqltype="varchar">,
+                                    <cfqueryparam value='#arguments.formBrandId#' cfsqltype="integer">,
+                                    <cfqueryparam value='#arguments.productDescription#' cfsqltype="varchar">,
+                                    <cfqueryparam value='#arguments.productPrice#' cfsqltype="decimal" scale="2">,
+                                    <cfqueryparam value='#arguments.productTax#' cfsqltype="decimal" scale="2">,
+                                    <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
+                                )
+                            </cfquery>
+                            <cfset local.productid = local.productResult.generatedkey>
+                            <cfset local.structResult["insert"] = true>
+                        </cfif>
+                        <!--- Adding new image to db if any and setting the default image --->
+                        <cfset local.setDefaultImageResult=setDefaultImage(
+                            fileNames=local.fileNames,
+                            defaultImageId=arguments.defaultImage,
+                            productId=local.productid
+                        )>
+                        <cfif structKeyExists(local.setDefaultImageResult, "success")>
+                            <!--- If setting default is successfull --->
+                            <cfif structKeyExists(arguments, "deletedProducts")>
+                                <!--- If there is any product to delete --->
+                                <cfset deleteImage(deletedIdList=arguments.deletedProducts)>
+                            </cfif>
+                            <!--- Passing new element details to js to create or edit element --->
+                            <cfset local.structResult["productDetails"]["productId"] = local.productid>
+                            <cfif arguments.currentSubcategoryID EQ arguments.formSubCategoryId>
+                                <!--- If element is created or edited to same subcategory --->
+                                <cfset local.structResult["isSameCategoryID"] = true>
+                                <cfset local.structResult["productDetails"]["categoryId"] = arguments.formCategoryId>
+                                <cfset local.structResult["productDetails"]["subcategoryId"] = arguments.formSubCategoryId>
+                                <cfset local.structResult["productDetails"]["ProductName"] = trim(arguments.productName)>
+                                <cfset local.structResult["productDetails"]["ProductBrand"] = getBrands(arguments.formBrandId).fldbrandName>
+                                <cfset local.structResult["productDetails"]["totalPrice"] = arguments.productPrice+(arguments.productPrice*arguments.productTax/100)>
+                                <cfset local.structResult["productDetails"]["defaultImage"]= arguments.defaultImage>
+                            </cfif>
+                            <cfset local.structResult["success"] = true>
+                        <cfelse>
+                            <cftransaction action="rollback">
+                            <cfset local.structResult["error"] = "Error setting image">
+                            <cfset local.structResult["edit"] = false>
+                            <cfset local.structResult["insert"] = false>
+                        </cfif>
+                    </cftransaction>
                 </cfif>
-                <cfloop array="#local.fileNames#" item="local.fileArrayItem" >
-                    <cfquery>
-                        INSERT INTO 
-                            tblProductImages
-                        (
-                            fldProductId,
-                            fldImageFileName,
-                            fldDefaultImage,
-                            fldCreatedBy
-                        )
-                        VALUES
-                        (
-                            <cfqueryparam value='#local.productid#' cfsqltype="integer">,
-                            <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,
-                            <cfqueryparam value='#local.defaultImage#' cfsqltype="varchar">,
-                            <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
-                        )
-                    </cfquery>
-                    <cfif local.defaultImage EQ 1>
-                        <cfset local.structResult["productDetails"]["defaultImage"]= local.fileArrayItem.serverfile>
-                    </cfif>
-                    <cfset local.defaultImage = 0>
-                </cfloop>
-                <cfset local.structResult["productDetails"]["productId"] = local.productid>
-                <cfif arguments.currentSubcategoryID EQ arguments.formSubCategoryId>
-                    <cfset local.structResult["isSameCategoryID"] = true>
-                    <cfset local.structResult["productDetails"]["categoryId"] = arguments.formCategoryId>
-                    <cfset local.structResult["productDetails"]["subcategoryId"] = arguments.formSubCategoryId>
-                    <cfset local.structResult["productDetails"]["ProductName"] = trim(arguments.productName)>
-                    <cfset local.structResult["productDetails"]["ProductBrand"] = getBrands(arguments.formBrandId).fldbrandName>
-                    <cfset local.structResult["productDetails"]["totalPrice"] = arguments.productPrice+(arguments.productPrice*arguments.productTax/100)>
-                </cfif>
-                <cfif structKeyExists(arguments, "defaultImage") AND isNumeric(arguments.defaultImage)>
-                    <cfset setDefaultImage(imageId=arguments.defaultImage,productId=local.productid)>
-                </cfif>
-                <cfif structKeyExists(arguments, "deletedProducts")>
-                    <cfset deleteImage(deletedIdList=arguments.deletedProducts)>
-                </cfif>
-                <cfset local.structResult["success"] = true>
             </cfif>
         </cfif>
         <cfreturn local.structResult>
     </cffunction>
     <cffunction  name = "deleteProduct" access = "remote" returntype = "boolean" returnformat = "plain">
         <cfargument  name = "productId" required = "true" type = "integer">
-
         <cfquery>
             UPDATE
                 tblProduct
@@ -538,21 +559,27 @@
     </cffunction>
 
     <cffunction  name="setDefaultImage" access="remote" returntype="struct" returnformat = "JSON">
-        <cfargument  name = "imageId" required = "true" type = "integer">
+        <cfargument  name = "defaultImageId" required = "true" type = "string">
+        <cfargument  name = "fileNames" required = "true" type = "array">
         <cfargument  name = "productId" required = "true" type = "integer">
+
         <cfset local.resultStruct = structNew()>
+
         <cftransaction>
-            <cfquery result="local.removeDefault">
-                UPDATE
-                    tblProductImages
-                SET
-                    fldDefaultImage = 0,
-                    fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
-                WHERE
-                    fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType="integer">
-                    AND fldDefaultImage =1;
-            </cfquery>
-            <cfif local.removeDefault.recordCount>
+            <cfif val(arguments.productId)>
+                <cfquery result="local.removeDefault">
+                    UPDATE
+                        tblProductImages
+                    SET
+                        fldDefaultImage = 0,
+                        fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
+                    WHERE
+                        fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType="integer">
+                        AND fldDefaultImage =1;
+                </cfquery>
+            </cfif>
+
+            <cfif isNumeric(arguments.defaultImageId)>
                 <cfquery result="local.setDefault">
                     UPDATE
                         tblProductImages
@@ -560,7 +587,7 @@
                         fldDefaultImage = 1,
                         fldUpdatedBy = <cfqueryparam value = "#session.adminSession.userId#" cfSqlType="integer">
                     WHERE
-                        fldProductImage_ID = <cfqueryparam value = "#arguments.imageId#" cfSqlType="integer">;
+                        fldProductImage_ID = <cfqueryparam value = "#arguments.defaultImageId#" cfSqlType="integer">;
                 </cfquery>
                 <cfif local.setDefault.recordCount>
                     <cfset local.resultStruct["success"] =true>
@@ -569,7 +596,44 @@
                     <cftransaction action="rollback">
                 </cfif>
             <cfelse>
-                <cfset local.resultStruct["error"] = true>
+                <cfset local.newDefaultImageIndex = listLast(arguments.defaultImageId,'_')>
+            </cfif>
+
+            <cfif arrayLen(arguments.fileNames)>
+                <cfloop array="#arguments.fileNames#" item="local.fileArrayItem" index="local.fileArrayIndex">
+                    <cfquery>
+                        INSERT INTO 
+                            tblProductImages
+                        (
+                            fldProductId,
+                            fldImageFileName,
+                            fldDefaultImage,
+                            fldCreatedBy
+                        )
+                        VALUES
+                        (
+                            <cfqueryparam value='#arguments.productid#' cfsqltype="integer">,
+                            <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,
+                            <cfif structKeyExists(local, "newDefaultImageIndex") AND local.newDefaultImageIndex EQ local.fileArrayIndex>
+                                1,
+                            <cfelse>
+                                0,
+                            </cfif>
+                            <cfqueryparam value='#session.adminSession.userId#' cfsqltype="integer">
+                        )
+                    </cfquery>
+
+                    <cfif structKeyExists(local, "newDefaultImageIndex") AND local.newDefaultImageIndex EQ local.fileArrayIndex>
+                        <cfset local.resultStruct["success"] =true>
+                    </cfif>
+
+                </cfloop>
+
+                <cfif NOT structKeyExists(local.resultStruct,"success")>
+                    <cfset local.resultStruct["error"] = true>
+                    <cftransaction action="rollback">
+                </cfif>
+                
             </cfif>
         </cftransaction>
         <cfreturn local.resultStruct>
@@ -579,6 +643,7 @@
         <cfargument  name="productId" required = "true" type = "integer">
 
         <cfset local.resultStruct = structNew("Ordered")>
+
         <cfquery name="local.ProductImages">
             SELECT
                 fldProductImage_ID,
@@ -590,6 +655,7 @@
                 fldProductId = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
                 AND fldActive = 1
         </cfquery>
+
         <cfloop query="local.ProductImages">
             <cfif local.ProductImages.fldDefaultImage EQ 1>    
                 <cfset local.resultStruct["defaultImage"][local.ProductImages.fldProductImage_ID]=local.ProductImages.fldImageFileName>
@@ -597,6 +663,7 @@
                 <cfset local.resultStruct["remainingImages"][local.ProductImages.fldProductImage_ID]=local.ProductImages.fldImageFileName>
             </cfif>
         </cfloop>
+
         <cfreturn local.resultStruct>
     </cffunction>
 </cfcomponent>
