@@ -232,13 +232,11 @@ $(document).ready(function(){
                         $("#modalError").text(resultJson.error);
                     }
                     else if(resultJson.success){
-                        if(resultJson.isSameCategoryID){
-                            const newProductId = resultJson.productDetails.productId;
+                        const newProductId = resultJson.productDetails.productId;
+                        if(resultJson.isSameSubcategoryID){
                             if(resultJson.productDetails.defaultImage){
                                 const editedDefaultId = resultJson.productDetails.defaultImage;
                                 newSrc=$("#imageItem"+editedDefaultId).find(".editModalImage").attr("src");
-                                console.log(newSrc);
-                                console.log(newSrc);
                             }
                             if(resultJson.edit){
                                 $("#product"+newProductId).find(".productName").text(resultJson.productDetails.ProductName);
@@ -278,8 +276,7 @@ $(document).ready(function(){
                                                     <img src="../assets/images/edit-icon.png">
                                                 </button>
                                                 <button 
-                                                    class="productButtons" 
-                                                    onclick="deleteProduct(this)" 
+                                                    class="productButtons deleteProductBtn"
                                                     value="${newProductId}"
                                                 >
                                                     <img src="../assets/images/delete-icon.png">
@@ -402,7 +399,44 @@ $(document).ready(function(){
         $("#imageItem"+defaultImage).find(".setAsThumbnailLabel").text("Thumbnail");
         $(".currentDefaultImage").removeClass("currentDefaultImage");
         $("#imageItem"+defaultImage).addClass("currentDefaultImage");
-    })
+    });
+    
+    $(".deleteProductBtn").click(function(){
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete the product and its contents",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Delete"
+        }).then((result) => {
+            if (result.isConfirmed){
+                $.ajax({
+                    type:"POST",
+                    url:"components/admin.cfc?method=deleteProduct",
+                    data:{productId:deleteButton.value},
+                    success: function(result) {
+                        resultJson=JSON.parse(result);
+                        if(resultJson.success){
+                            $("#product"+deleteButton.value).remove();
+                            if($("#productList").children().length){
+                                $("#noProductError").text("");
+                            }else{
+                                $("#noProductError").text("No Products Found");
+                            }
+                        }else{
+                            alert("Product not found please reload the page and try again");
+                        }
+                    },
+                    error:function()
+                    {
+                        alert("An error occured");
+                    }
+                });
+            }
+        });
+    });
 });
 function loginValidate(){
     
@@ -731,41 +765,6 @@ function  deleteSubCategory(deleteButton){
                     }
                 },
                 error:function(){
-                    alert("An error occured");
-                }
-            });
-        }
-    });
-}
-function  deleteProduct(deleteButton){
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This will delete the product and its contents",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Delete"
-    }).then((result) => {
-        if (result.isConfirmed){
-            $.ajax({
-                type:"POST",
-                url:"components/admin.cfc?method=deleteProduct",
-                data:{productId:deleteButton.value},
-                success: function(result) {
-                    if(result){
-                        $("#product"+deleteButton.value).remove();
-                        if($("#productList").children().length){
-                            $("#noProductError").text("");
-                        }else{
-                            $("#noProductError").text("No Products Found");
-                        }
-                    }else{
-                        alert("Error occured while deleteing");
-                    }
-                },
-                error:function()
-                {
                     alert("An error occured");
                 }
             });
