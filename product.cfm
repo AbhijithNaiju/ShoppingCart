@@ -5,7 +5,7 @@
         <cfoutput>
             <div class="productBody d-flex m-3">
                 <div class="productImage">
-                    <div id="carouselExampleIndicators" class="carousel slide"> 
+                    <div id="productCarousel" class="carousel slide"> 
                         <div class="carousel-inner">
                             <cfloop array="#variables.productDetails#" item="local.productImage">
                                 <div class="carousel-item #(local.productImage.defaultImage)?'active':''#">
@@ -16,11 +16,11 @@
                             </cfloop>
                         </div>
                         <cfif arrayLen(variables.productDetails) GT 1 >
-                            <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleIndicators" data-bs-slide="prev">
+                            <button class="carousel-control-prev" type="button" data-bs-target="##productCarousel" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Previous</span>
                             </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="##carouselExampleIndicators" data-bs-slide="next">
+                            <button class="carousel-control-next" type="button" data-bs-target="##productCarousel" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Next</span>
                             </button>

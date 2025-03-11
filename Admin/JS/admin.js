@@ -181,40 +181,36 @@ $(document).ready(function(){
         }
     });
     $("#productModalForm").submit(function(){
-        let productName= $("#productName").val();
-        let productTax= $("#productTax").val();
+        $("#editImageBody").removeClass("bg-danger-subtle");
+        $("#modalError").text("");
+        const productName = $("#productName").val();
+        const productTax = $("#productTax").val();
+        const productBrand = $("#brandSelect option:selected").text();
+        const productPrice = $("#productPrice").val();
+        const categoryId = $("#categorySelect").val();
+        const subcategoryId = $("#subCategorySelect").val();
+        const totalPrice =(parseFloat(productPrice)+parseFloat((productTax*productPrice)/100)).toFixed(2)
+        const editedDefaultId = $('input[name=defaultImage]:checked', '#productModalForm').val()
+        const defaultImageSrc=$("#imageItem"+editedDefaultId).find(".editModalImage").attr("src");
         let isError = false;
+        let isproductNameValid = checkProductName(productName,"productNameError");
+        
         if(parseFloat(productTax)>100){
             setError("Please enter a valid tax percentage","productTaxError");
             isError=true;
         }else{
             setSuccess("productTaxError");
         }
-		let isproductNameValid = checkProductName(productName,"productNameError");
         if(isproductNameValid == false){
             isError = true;
         }
-        $("#modalError").text("");
-        let isWrongExtention = false;
-        var allowedExtentions = ['jpg', 'jpeg', 'bmp', 'gif', 'png', 'svg'];
-        let imageList = document.getElementById("productImages");
-        for (var i = 0; i < imageList.files.length; ++i){
-            var inputFileName = imageList.files.item(i).name;
-            fileExtension = String(/[^.]+$/.exec(inputFileName));
-            if(!allowedExtentions.includes(fileExtension.toLowerCase())){
-                isWrongExtention = true;
-                isError=true;
-                break;
-            }
-        }
-        if(isWrongExtention){
-            setError("Only jpg, jpeg, bmp, gif, png and svg files are allowed","productImageError");
-        }
-            
+
         if($('input[name="defaultImage"]:checked').length==0){
             $("#modalError").text("Please select a default Image");
-            iserror=true;
+            $("#editImageBody").addClass("bg-danger-subtle");
+            isError=true;
         }
+
         if(isError == false){
             let productData = new FormData(document.getElementById("productModalForm"));
             if(deletedProducts != []){
@@ -228,21 +224,14 @@ $(document).ready(function(){
                 contentType: false,
                 success: function(result) {
                     resultJson=JSON.parse(result);
-                    if(resultJson.error){
-                        $("#modalError").text(resultJson.error);
-                    }
-                    else if(resultJson.success){
+                    if(resultJson.success){
                         const newProductId = resultJson.productDetails.productId;
                         if(resultJson.isSameSubcategoryID){
-                            if(resultJson.productDetails.defaultImage){
-                                const editedDefaultId = resultJson.productDetails.defaultImage;
-                                newSrc=$("#imageItem"+editedDefaultId).find(".editModalImage").attr("src");
-                            }
                             if(resultJson.edit){
-                                $("#product"+newProductId).find(".productName").text(resultJson.productDetails.ProductName);
-                                $("#product"+newProductId).find(".brandName").text(resultJson.productDetails.ProductBrand);
-                                $("#product"+newProductId).find(".productPrice").text(resultJson.productDetails.totalPrice);
-                                $("#product"+newProductId).find(".thumbnailImage").attr("src",newSrc);
+                                $("#product"+newProductId).find(".productName").text(productName);
+                                $("#product"+newProductId).find(".brandName").text(productBrand);
+                                $("#product"+newProductId).find(".productPrice").text(totalPrice);
+                                $("#product"+newProductId).find(".thumbnailImage").attr("src",defaultImageSrc);
                             }else if(resultJson.insert){
                                 let productDiv=`
                                     <div 
@@ -252,16 +241,16 @@ $(document).ready(function(){
                                         <div class="row">
                                             <div class="d-flex col-4">
                                                 <img
-                                                    src="${newSrc}" 
+                                                    src="${defaultImageSrc}" 
                                                     alt="Image not found" 
                                                     class="thumbnailImage">
                                             </div>
                                             <div class="col-6 d-flex flex-column">
-                                                <div class="productName">${resultJson.productDetails.ProductName}</div>
-                                                <div class="brandName">${resultJson.productDetails.ProductBrand}</div>
+                                                <div class="productName">${productName}</div>
+                                                <div class="brandName">${productBrand}</div>
                                                 <div class = "mt-auto">
                                                     <i class="fa-solid fa-indian-rupee-sign"></i>
-                                                    ${resultJson.productDetails.totalPrice}
+                                                    ${totalPrice}
                                                 </div>
                                             </div>
                                             <div class="col-2 d-flex flex-column justify-content-around">
@@ -270,14 +259,16 @@ $(document).ready(function(){
                                                     class="productButtons" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#addModal"
-                                                    onclick="openProductModal({categoryId:${resultJson.productDetails.categoryId},subCategoryId:${resultJson.productDetails.subcategoryId},productId:${newProductId}})"
+                                                    onclick="openProductModal({categoryId:${categoryId},subCategoryId:${subcategoryId},productId:${newProductId}})"
                                                     value="${newProductId}"
+                                                    title="Edit"
                                                 >
                                                     <img src="../assets/images/edit-icon.png">
                                                 </button>
                                                 <button 
                                                     class="productButtons deleteProductBtn"
                                                     value="${newProductId}"
+                                                    title="Delete"
                                                 >
                                                     <img src="../assets/images/delete-icon.png">
                                                 </button>
@@ -291,8 +282,8 @@ $(document).ready(function(){
                             $("#product"+newProductId).remove();
                         }
                         $("#addModal").modal("hide");
-                        imageList.value=null;
-
+                        $("#productImages").val('');
+                        
                         if($("#productList").children().length){
                             $("#noProductError").text("");
                         }else{
@@ -304,6 +295,9 @@ $(document).ready(function(){
                         setError(resultJson.productTaxError,"productTaxError");
                     }else if(resultJson.imageError){
                         setError(resultJson.imageError,"productImageError");
+                    }else if(resultJson.defaultImageError){
+                        $("#modalError").text(resultJson.defaultImageError);
+                        $("#editImageBody").addClass("bg-danger-subtle");
                     }else{
                         alert("Unexpected error occured please try again");
                     }
@@ -318,20 +312,23 @@ $(document).ready(function(){
             $(".form-control").removeClass("is-valid is-invalid");
             $(".errorMessage").text("");
             $("#editImageBody").empty();
+            $("#editImageBody").removeClass("bg-danger-subtle");
         });
     }
+
     $("#productImages").change(function(){
-        editImageBody=$("#editImageBody");
+        const editImageBody=$("#editImageBody");
+        let dataTransfer = new DataTransfer();
         $(".addedImages").remove();
         if($('input[name="defaultImage"]:checked').length==0){
             $('input[name="defaultImage"]:first').prop('checked', true);
+            inputElementValue=$('input[name="defaultImage"]:checked').val();
+            $("#imageItem"+inputElementValue).addClass("currentDefaultImage");
         }
         for (var i = 0; i < this.files.length; ++i){
-            var reader = new FileReader();
             let inputFile = this.files.item(i);
-            let inputFileName = inputFile.name;
-            j=1;
-            reader.onload = function(event) {
+            if(inputFile.type.startsWith("image")){
+                dataTransfer.items.add(inputFile)
                 if($('input[name="defaultImage"]:checked').length==0){
                     setButtonText="Thumbnail"
                     isChecked="checked"
@@ -342,10 +339,10 @@ $(document).ready(function(){
                     parentClass=""
                 }
                 imageItem = `
-                    <div class="col-2 d-flex flex-column addedImages ${parentClass}" id="imageItem${"newImage_"+j}">
+                    <div class="col-2 d-flex flex-column addedImages ${parentClass}" id="imageItem${"newImage_"+(i+1)}">
                         <div class="editImage my-1 d-flex">
-                            <img src="${event.target.result}" class="d-block p-1 m-auto editModalImage">
-                            <button type="button" class="deleteNewImage" title="Delete" value="${inputFileName}">
+                            <img src="${URL.createObjectURL(inputFile)}" class="d-block p-1 m-auto editModalImage">
+                            <button type="button" class="deleteNewImage" title="Delete" value="${inputFile.name}">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -354,28 +351,28 @@ $(document).ready(function(){
                                 type="radio" 
                                 class="btn-check setAsThumbnail" 
                                 name="defaultImage" 
-                                id="newImage_${j}" 
-                                value="newImage_${j}"
+                                id="newImage_${i+1}" 
+                                value="newImage_${i+1}"
                                 autocomplete="off" 
                                 ${isChecked}
                             >
-                            <label class="btn btn-sm btn-outline-primary setAsThumbnailLabel" for="newImage_${j}">
+                            <label class="btn btn-sm btn-outline-primary setAsThumbnailLabel" for="newImage_${i+1}">
                                 ${setButtonText}
                             </label>
                         </div>
                     </div>
                 `;
                 editImageBody.append(imageItem);
-                j++;
-            };
-            reader.readAsDataURL(inputFile);
+            }
         }
+        this.files = dataTransfer.files;
     });
     
     $(document).on("click",'.deleteImage',function(){
         deletedProducts.push(this.value);
         this.parentElement.parentElement.remove();
     });
+    
     $(document).on("click",'.deleteNewImage',function(){
         inputFileName = this.value;
         this.parentElement.parentElement.remove();
@@ -401,7 +398,8 @@ $(document).ready(function(){
         $("#imageItem"+defaultImage).addClass("currentDefaultImage");
     });
     
-    $(".deleteProductBtn").click(function(){
+    $(document).on("click",".deleteProductBtn",function(){
+        const deleteProductId=this.value;
         Swal.fire({
             title: "Are you sure?",
             text: "This will delete the product and its contents",
@@ -415,11 +413,11 @@ $(document).ready(function(){
                 $.ajax({
                     type:"POST",
                     url:"components/admin.cfc?method=deleteProduct",
-                    data:{productId:deleteButton.value},
+                    data:{productId:deleteProductId},
                     success: function(result) {
                         resultJson=JSON.parse(result);
                         if(resultJson.success){
-                            $("#product"+deleteButton.value).remove();
+                            $("#product"+deleteProductId).remove();
                             if($("#productList").children().length){
                                 $("#noProductError").text("");
                             }else{

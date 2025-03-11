@@ -2,15 +2,15 @@
 <cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId) AND isNumeric(url.subCategoryId)>
     <div class="mainBody">
         <cfset productData = application.adminObject.getProducts(subCategoryId = url.subCategoryId)>
-        <cfif productData.recordCount EQ 0>
+        <cfif productData.recordCount>
+            <cfset variables.categoryId = variables.productData.categoryId>
+            <cfset variables.subCategoryName = variables.productData.subCategoryName>
+        <cfelse>
             <cfset variables.subcategoryData = application.adminObject.getSubcategories(subCategoryId = url.subCategoryId)>
             <cfif arrayLen(variables.subcategoryData)>
                 <cfset variables.categoryId = variables.subcategoryData[1].categoryId>
                 <cfset variables.subCategoryName = variables.subcategoryData[1].subCategoryName>
             </cfif>
-        <cfelse>
-            <cfset variables.categoryId = variables.productData.categoryId>
-            <cfset variables.subCategoryName = variables.subcateproductDatagoryData.subCategoryName>
         </cfif>
         <cfif structKeyExists(variables, "categoryId")>
             <div class="categoryBody mx-auto my-5 border rounded shadow px-4 py-3">
@@ -68,12 +68,14 @@
                                                 data-bs-target="##addModal"
                                                 onclick="openProductModal({categoryId:#productData.CategoryID#,subCategoryId:#url.subCategoryId#,productId:#productData.fldProduct_ID#})"
                                                 value="#productData.fldProduct_ID#"
+                                                title="Edit"
                                             >
                                                 <img src="../assets/images/edit-icon.png">
                                             </button>
                                             <button 
                                                 class="productButtons deleteProductBtn" 
                                                 value="#productData.fldProduct_ID#"
+                                                title="Delete"
                                             >
                                                 <img src="../assets/images/delete-icon.png">
                                             </button>
@@ -161,10 +163,18 @@
                             </div>
                             <div class = "form-group my-3" >
                                 <label class="mb-2" for="productImages">Product Images</label>
-                                <input type="file" multiple id="productImages" name="productImages" class="form-control" required>
+                                <input 
+                                    type="file" 
+                                    id="productImages" 
+                                    name="productImages" 
+                                    class="form-control" 
+                                    accept="image/*"
+                                    required
+                                    multiple 
+                                >
                                 <div class = "errorMessage modalError" id="productImageError"></div>
                             </div>
-                            <div id="editImageBody" class="editImageBody row">
+                            <div id="editImageBody" class="editImageBody row p-2">
 
                             </div>
                             <input type="hidden" id="productId" name="productId" class="form-control">

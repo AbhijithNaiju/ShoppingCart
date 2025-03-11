@@ -249,6 +249,9 @@ body
     display: block;
     z-index: 1;
 }
+.editImageBody{
+    border-radius: 4px;
+}
 .editImageBody img{
     height: 100%;
     max-width: 100%;

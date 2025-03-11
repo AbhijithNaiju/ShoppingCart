@@ -67,7 +67,7 @@
                                         #session.userSession.cartCount#
                                     </span>
                                 </div>
-                                <div class="btn btn-outline-dark">
+                                <div class="menuButton">
                                     <button id="logOutBtn" class="me-1" onclick="logOut()" > 
                                         Logout 
                                     </button>

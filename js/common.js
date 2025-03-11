@@ -89,6 +89,7 @@ function checkProductName(input,messageLocationId){
 function setError(message,messageLocationId){
     $("#"+messageLocationId).text(message);
     $("#"+messageLocationId).prev().addClass("is-invalid").removeClass("is-valid");
+    $("#"+messageLocationId).prev().focus();
 }
 function setSuccess(messageLocationId){
     $("#"+messageLocationId).text("")
