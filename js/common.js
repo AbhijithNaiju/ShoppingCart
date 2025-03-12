@@ -43,22 +43,32 @@ function validatePassword(password,messageLocationId){
     }
 }
 function confirmPasswords(password1,password2,messageLocationId){
-    if(password1 == password2){
-        setSuccess(messageLocationId);
-        return true;
+    if(password2.trim().length){
+        if(password1 == password2){
+            setSuccess(messageLocationId);
+            return true;
+        }else{
+            setError("Passwords do not match",messageLocationId)
+            return false
+        }
     }else{
-        setError("Passwords do not match",messageLocationId)
-        return false
+        setError("Please fill this field",messageLocationId)
+        return false;
     }
 }
 function hasSpecialCharsOrWhitespace(input,messageLocationId){
     const regexMatchSpecial=/[^a-zA-Z0-9]/;
-    if(regexMatchSpecial.test(input)){
-        setError("This field should not contain any special character or whitespace",messageLocationId)
+    if(input.trim().length){
+        if(regexMatchSpecial.test(input)){
+            setError("This field should not contain any special character or whitespace",messageLocationId)
+            return false;
+        }else if(input.trim().length){
+            setSuccess(messageLocationId);
+            return true;
+        }
+    }else{
+        setError("Please fill this field",messageLocationId)
         return false;
-    }else if(input.trim().length){
-        setSuccess(messageLocationId);
-        return true;
     }
 }
 

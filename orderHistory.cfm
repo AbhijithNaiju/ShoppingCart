@@ -129,8 +129,10 @@
                             #variables.orderHistory.firstName & ' ' & variables.orderHistory.lastName#
                         </span>
                         <span>
-                            #variables.orderHistory.addressLine1 & ', '# 
-                            #variables.orderHistory.addressLine2 & ', '#
+                            #variables.orderHistory.addressLine1 & ', '#
+                            <cfif LEN(variables.orderHistory.addressLine2)>
+                                #variables.orderHistory.addressLine2 & ', '#
+                            </cfif>
                             #variables.orderHistory.city#
                             #variables.orderHistory.state & ' - ' & variables.orderHistory.pincode#
                         </span>

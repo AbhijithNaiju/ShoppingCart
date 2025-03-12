@@ -1,5 +1,5 @@
 <cfinclude  template="./userHeader.cfm">
-<cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
+<cfif structKeyExists(url, "productId") AND isValid("integer",url.productId)>
     <cfset variables.productDetails = application.userObject.getProductDetails(productId=url.productId)>
     <cfif arrayLen(variables.productDetails)>
         <cfoutput>
@@ -89,9 +89,9 @@
             </div>
         </cfoutput>
     <cfelse>
-        <div class="text-danger text-center">Product not found</div>
+        <cflocation  url="./missingPage.cfm" addtoken="false">
     </cfif>
 <cfelse>
-    <cflocation  url="./errorPage.cfm" addtoken="false">
+    <cflocation  url="./missingPage.cfm" addtoken="false">
 </cfif>
 <cfinclude  template="./userFooter.cfm">

@@ -5,10 +5,10 @@
 <cfset variables.totalTax = 0>
 <cfset variables.totalPrice = 0>
 <cfoutput>
-    <div class="cartBody container h-100">
-        <div class="row h-100">
-            <div class="col-8 h-100 pe-4">
-                <cfif variables.cartItems.recordCount>
+    <div class="cartBody container ">
+        <cfif variables.cartItems.recordCount>
+            <div class="row">
+                <div class="col-8 pe-4">
                     <cfloop query="#variables.cartItems#">
                         <div class="cartItem row my-2 p-3" id="cartItem#variables.cartItems.cartId#">
                             <div class="col-3 d-flex">
@@ -71,9 +71,7 @@
                         <cfset variables.actualPrice +=variables.cartItems.price*variables.cartItems.quantity>
                         <cfset variables.totalTax += variables.cartItems.tax*variables.cartItems.quantity>
                     </cfloop>
-                </cfif>
-            </div>
-            <cfif variables.cartItems.recordCount>
+                </div>
                 <div class="col-4 totalPriceBody px-3 mt-2 d-flex flex-column justify-content-around">
                     <div>
                         <div class="row">
@@ -106,13 +104,15 @@
                     </span>
                     <a href="./orderPage.cfm" id="placeOrder" class="btn btn-primary w-100">Place Order</a>
                 </div>
-            </cfif>
-            <div class = "text-center m-3">
-                <cfif variables.cartItems.recordCount EQ 0>
-                        <h2>No items present in cart</h2>
-                        <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
-                </cfif>
             </div>
+        </cfif>
+        <div class = "d-flex flex-column align-items-center m-3 emptyCartMessage">
+            <cfif variables.cartItems.recordCount EQ 0>
+                <img src="./assets/images/empty-cart.png" class="errorMessageImage">
+                <h4>No items present in cart</h4>
+                <p>Add items to continue</p>
+                <a href="./index.cfm" class="btn btn-primary btn-sm">Go to Home</a>
+            </cfif>
         </div>
     </div>
 </cfoutput>

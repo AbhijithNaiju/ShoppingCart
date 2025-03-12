@@ -806,7 +806,10 @@
                                     </div>
                                     <div>
                                         #local.orderDetails.addressLine1 & ', '#
-                                        # local.orderDetails.addressLine2 & ', ' & local.orderDetails.city#
+                                        <cfif LEN(local.orderDetails.addressLine2)>
+                                            # local.orderDetails.addressLine2 & ', '#
+                                        </cfif>
+                                        # local.orderDetails.city#
                                         #local.orderDetails.state & ' - ' & local.orderDetails.pincode#
                                     </div>
                                     <div>Phone : #local.orderDetails.phoneNumber#</div>

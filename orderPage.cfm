@@ -483,14 +483,18 @@
         <div class = "text-center m-3">
             <h2>Order placed Successfully</h2>
             <p>Check your email for your order Confirmation</p>
-            <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
-            <a href="./orderHistory.cfm" class="btn btn-primary">Order history</a>
+            <a href="./index.cfm" class="btn btn-primary btn-sm">Go to Home</a>
+            <a href="./orderHistory.cfm" class="btn btn-primary btn-sm">Order history</a>
         </div>
     <cfelse>
-        <div class = "text-center m-3">
-            <h2>No products available to order please add products to continue</h2>
-            <a href="./index.cfm" class="btn btn-primary">Go to Home</a>
-            <a href="./orderHistory.cfm" class="btn btn-primary">Order history</a>
+        <div class = "d-flex flex-column align-items-center m-3 emptyCartMessage">
+            <img src="./assets/images/empty-cart.png" class="emptyCartImage">
+            <h4>No items present in cart</h4>
+            <p>Add items to continue</p>
+            <div class = "d-flex">
+                <a href="./index.cfm" class="btn btn-primary btn-sm m-2">Go to Home</a>
+                <a href="./orderHistory.cfm" class="btn btn-primary btn-sm m-2">Order history</a>
+            </div>
         </div>
     </cfif>
 </cfif>

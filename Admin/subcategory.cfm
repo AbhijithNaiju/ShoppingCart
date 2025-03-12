@@ -1,5 +1,5 @@
 <cfinclude  template="./header.cfm">
-<cfif structKeyExists(url, "categoryId") AND len(url.categoryId) AND isNumeric(url.categoryId)>
+<cfif structKeyExists(url, "categoryId") AND len(url.categoryId) AND isValid("integer",url.categoryId)>
     <div class="mainBody">
         <cfset variables.subCategoryData = application.adminObject.getSubCategories(categoryId = url.categoryId)>
         <cfset variables.categoryQuery = application.adminObject.getCategories()>
@@ -7,7 +7,7 @@
         <cfloop query="variables.categoryQuery">
             <cfset variables.categoryData[variables.categoryQuery.fldCategory_ID] = variables.categoryQuery.fldCategoryName>
         </cfloop>
-        <div class="categoryBody mx-auto my-5 border rounded p-3 shadow">
+        <div class="categoryBody mx-auto my-5 border rounded px-4 py-3 shadow">
             <cfoutput>
                 <div class="categoryHeading d-flex justify-content-between my-2">
                     <cfif structKeyExists(variables.categoryData, url.categoryId)>

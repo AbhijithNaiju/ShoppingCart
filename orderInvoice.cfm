@@ -90,7 +90,10 @@
 						</div>
 						<div>
 							#variables.orderHistory.addressLine1 & ', '#
-							# variables.orderHistory.addressLine2 & ', ' & variables.orderHistory.city#
+							<cfif LEN(variables.orderHistory.addressLine2)>
+								#variables.orderHistory.addressLine2 & ','#
+							</cfif>
+							#variables.orderHistory.city#
 							#variables.orderHistory.state & ' - ' & variables.orderHistory.pincode#
 						</div>
 						<div>Phone : #variables.orderHistory.phoneNumber#</div>

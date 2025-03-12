@@ -306,7 +306,6 @@ body{
 }
 .cartItem
 {
-    height: 30%;
     border-radius: 4px;
     background-color: #f2f7fd;
 }
@@ -443,4 +442,11 @@ body{
 }
 .card-title{
     font-size: 18px;
+}
+.errorMessageImage{
+    max-width: 50vh;
+    max-height: 50vh;
+}
+.emptyCartMessage p{
+    font-size: 12px;
 }

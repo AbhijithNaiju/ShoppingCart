@@ -10,7 +10,7 @@
 <cfif url.maxPrice EQ "">
     <cfset url.maxPrice = -1>
 </cfif>
-<cfif url.searchvalue NEQ "" OR (url.subcatId NEQ 0 AND isNumeric(url.subcatId))>
+<cfif url.searchvalue NEQ "" OR (url.subcatId NEQ 0 AND isValid("integer",url.subcatId))>
     <cfset variables.arrayProductId = arrayNew(1)>
     <cfif url.searchvalue NEQ "">
         <cfset variables.productList = application.userObject.getProductList(
@@ -35,7 +35,7 @@
         <div class="m-3">
             <h3>
                 <cfif url.searchValue NEQ "">
-                    Search result for #url.searchValue#
+                    Search result for "#url.searchValue#"
                 <cfelseif url.subcatId NEQ 0 AND arrayLen(variables.productList.resultArray)>
                     #variables.productList.resultArray[1].subcategoryName#
                 </cfif>
@@ -221,6 +221,6 @@
         </div>
     </cfoutput>
 <cfelse>
-    <cflocation  url="index.cfm">
+    <cflocation  url="./missingPage.cfm" addtoken="false">
 </cfif>
 <cfinclude  template="userFooter.cfm">

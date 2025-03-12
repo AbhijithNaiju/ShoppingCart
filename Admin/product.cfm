@@ -1,5 +1,5 @@
 <cfinclude  template="./header.cfm">
-<cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId) AND isNumeric(url.subCategoryId)>
+<cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId) AND isValid("integer",url.subCategoryId)>
     <div class="mainBody">
         <cfset productData = application.adminObject.getProducts(subCategoryId = url.subCategoryId)>
         <cfif productData.recordCount>

@@ -47,15 +47,7 @@ $(document).ready(function(){
 							// Changing cart count
 							$("#cartCount").text(cartDeleteResult.cartCount);
 							if(cartDeleteResult.cartCount == 0){
-								$(".totalPriceBody").remove();
-								// Showing message to goto home
-								Swal.fire({
-									title: "Message !",
-									text: "No products remaining in cart, add products.",
-									icon: "info"
-								  }).then((result)=>{
-									  location.href="./index.cfm"	
-								  });
+								location.reload();
 							}
 						}else{
 							Swal.fire({

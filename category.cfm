@@ -1,5 +1,5 @@
 <cfinclude  template="userHeader.cfm">
-<cfif structKeyExists(url, "catId") AND isNumeric(url.catId)>
+<cfif structKeyExists(url, "catId") AND isValid("integer",url.catId)>
     <cfset variables.productCount = 0>
     <cfset variables.subcategoryList = application.userObject.getSubcategories(categoryId=url.catId)>
     <div class="container-fluid h-100">
@@ -32,7 +32,7 @@
                                 <cfif structKeyExists(variables.subcategoryProduct,"productId")>
                                     <a 
                                         href="product.cfm?productId=#variables.subcategoryProduct.productId#" 
-                                        class="border randomProducts d-flex flex-column justify-content-between align-items-center shadow"
+                                        class="border randomProducts d-flex flex-column justify-content-between align-items-center shadow-sm"
                                     >
                                         <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
                                             <img src="./assets/productimages/#variables.subcategoryProduct.imageFileName#"></img>
@@ -54,7 +54,7 @@
                     </cfif>
                 </cfloop>
             <cfelse>
-                <div class = "text-center" >No products found</div>
+                <cflocation  url="./missingPage.cfm" addtoken="false">
             </cfif>
             <cfif variables.productCount EQ 0>
                 <div class = "text-center" >No products found</div>

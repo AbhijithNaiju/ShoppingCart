@@ -1,7 +1,7 @@
 <cfinclude  template="./header.cfm">
 
 <div class="mainBody">
-    <div class="categoryBody my-5 mx-auto border p-4 shadow rounded">
+    <div class="categoryBody my-5 mx-auto border px-4 py-3 shadow rounded">
         <div class="categoryHeading d-flex justify-content-between my-2">
             <h3>CATEGORIES</h3>
             <button 

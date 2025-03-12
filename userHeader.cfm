@@ -9,7 +9,7 @@
         <title>Shopping Cart</title>
     </head>
     <body>
-        <cfset variables.excludedPages = ["/login.cfm","/missingpage.cfm","/errorpage.cfm","/signup.cfm"]>
+        <cfset variables.excludedPages = ["/login.cfm","/missingpage.cfm","/signup.cfm"]>
         <div class = "header">
             <div class="headerLinks bg-success">
                 <a href="../index.cfm" class="logo">
