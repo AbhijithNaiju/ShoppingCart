@@ -24,6 +24,10 @@
         </div>
         <cfif structKeyExists(variables,"addAddressResult") and structKeyExists(variables.addAddressResult, "error")>
             <div class = "text-center errorMessage">#variables.addAddressResult.error#</div>
+        <cfelseif structKeyExists(variables,"addAddressResult") and structKeyExists(variables.addAddressResult, "success")>
+            <div class = "text-center text-success">
+                Address added successfully
+            </div>
         </cfif>
         <h2>Addresses</h2>
         <div class="addressBody mb-2">
