@@ -1,5 +1,5 @@
 <cfcomponent>
-        <cffunction  name="getCategories" returnType="query">
+        <cffunction name="getCategories" returnType="query">
         <cfargument name = "categoryId" type = "integer" required = "false">
         <cfquery name="local.categoryData">
             SELECT
@@ -17,7 +17,7 @@
         <cfreturn local.categoryData>
     </cffunction>
 
-    <cffunction  name="getCategoryname" access = "remote" returnformat = "json" returnType="struct">
+    <cffunction name="getCategoryname" access = "remote" returnformat = "json" returnType="struct">
         <cfargument name = "categoryId" type = "integer" required = "true">
         <cfset local.resultStruct = {}>
         <cfset local.categoryData = getCategories(arguments.categoryId)>
@@ -30,9 +30,9 @@
         <cfreturn local.resultStruct>
     </cffunction>
 
-    <cffunction  name="editCategory" access="remote" returntype="struct" returnformat = "JSON">
-        <cfargument  name="categoryName" required = "true" type="string">
-        <cfargument  name="categoryId" required = "true" type="integer">
+    <cffunction name="editCategory" access="remote" returntype="struct" returnformat = "JSON">
+        <cfargument name="categoryName" required = "true" type="string">
+        <cfargument name="categoryId" required = "true" type="integer">
 
         <cfset local.structResult = structNew()>
         <cfif LEN(trim(arguments.categoryName)) EQ 0>
@@ -91,8 +91,8 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="deleteCategory" access="remote" returntype="boolean" returnformat="plain">
-        <cfargument  name="categoryId" required = "true" type="integer">
+    <cffunction name="deleteCategory" access="remote" returntype="boolean" returnformat="plain">
+        <cfargument name="categoryId" required = "true" type="integer">
 
         <cfquery>
             UPDATE

@@ -1,7 +1,6 @@
 <cfif structKeyExists(form, "placeOrder")>
     <cfif structKeyExists(form, "orderAddressId")>
-        <cfif structKeyExists(form, "cardNumber") 
-            AND structKeyExists(form, "cardNumber")
+        <cfif structKeyExists(form, "cardNumber")
             AND structKeyExists(form, "cardCVV")
             AND isNumeric(form.cardNumber)
             AND isNumeric(form.cardCVV)
@@ -27,7 +26,7 @@
         <cfset variables.error = variables.addAddressResult>
     </cfif>
 </cfif>
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 
 <cfset variables.cartItems=application.cartObject.getCartItems(userId=session.userSession.userId)>
 <cfset variables.addressList=application.userObject.getAddressList(userId=session.userSession.userId)>
@@ -161,7 +160,7 @@
                                             <button 
                                                 class="btn btn-sm btn-primary reduceQuantity" 
                                                 onclick="changeQuantity(-1,#variables.cartItems.cartId#)"
-                                            >   
+                                            >
                                                 -
                                             </button>
                                             <input 
@@ -213,22 +212,22 @@
                                 <div>
                                     <div class="row">
                                         <span class="col-6">Actual Price</span>
-                                        <div  class="col-6 text-end">
+                                        <div class="col-6 text-end">
                                             <i class="fa-solid fa-indian-rupee-sign"></i>
                                             <span id="actualPrice">#numberFormat(variables.actualPrice,'__.00')#</span>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <span  class="col-6">Total Tax</span>
-                                        <div  class="col-6 text-end">
+                                        <span class="col-6">Total Tax</span>
+                                        <div class="col-6 text-end">
                                             <i class="fa-solid fa-indian-rupee-sign"></i>
                                             <span id="totalTax">#numberFormat(variables.totalTax,'__.00')#</span>
                                         </div>
                                     </div>
                                 </div>
                                 <span class="row my-2 grandTotalContainer">
-                                    <span  class="col-6">Total Price</span>
-                                    <div  class="col-6 text-end">
+                                    <span class="col-6">Total Price</span>
+                                    <div class="col-6 text-end">
                                         <i class="fa-solid fa-indian-rupee-sign"></i>
                                         <span id="totalPrice">
                                             #numberFormat(variables.actualPrice + variables.totalTax,'__.00')#
@@ -402,7 +401,7 @@
                             <label for="addressPhoneNumber">Phone Number *</label>
                             <input 
                                 type="tel" 
-                                class="form-control"  
+                                class="form-control"
                                 name="phoneNumber"
                                 id="addressPhoneNumber"
                                 minlength="8"
@@ -510,6 +509,6 @@
         </div>
     </cfif>
 </cfif>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">
 <script src="/js/profileFunctions.js"></script>
 <script src="/js/cartAndOrder.js"></script>

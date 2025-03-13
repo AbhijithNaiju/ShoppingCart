@@ -1,11 +1,11 @@
 <cfcomponent>
     <!--- user signup --->
-    <cffunction  name = "userSignup" returntype = "struct">
-        <cfargument  name="firstName" type ="string" required = "true">
-        <cfargument  name="lastName" type ="string" required = "true">
-        <cfargument  name="emailId" type ="string" required = "true">
-        <cfargument  name="phoneNumber" type ="string" required = "true">
-        <cfargument  name="password" type ="string" required = "true">
+    <cffunction name = "userSignup" returntype = "struct">
+        <cfargument name="firstName" type ="string" required = "true">
+        <cfargument name="lastName" type ="string" required = "true">
+        <cfargument name="emailId" type ="string" required = "true">
+        <cfargument name="phoneNumber" type ="string" required = "true">
+        <cfargument name="password" type ="string" required = "true">
 
         <cfset local.structResult = structNew()>
         <cfif 
@@ -82,9 +82,9 @@
     </cffunction>
 
     <!--- userlogin --->
-    <cffunction  name="userLogin" returntype="struct">
-        <cfargument  name="username" type = "string" required = "true">
-        <cfargument  name="password" type = "string" required = "true">
+    <cffunction name="userLogin" returntype="struct">
+        <cfargument name="username" type = "string" required = "true">
+        <cfargument name="password" type = "string" required = "true">
 
         <cfset local.structResult = structNew()>
 
@@ -116,7 +116,7 @@
                     <cfset session.userSession.userId = local.userDetails.fldUser_ID>
                     <cfset session.userSession.roleId = 2>
                     <cfset session.userSession.name = local.userDetails.fldFirstName>
-                    <cfquery  name = "local.getCartCount">
+                    <cfquery name = "local.getCartCount">
                         SELECT 
                             COUNT(fldCart_ID) AS cartCount
                         FROM
@@ -140,10 +140,8 @@
     </cffunction>
 
     <!--- logout --->
-    <cffunction  name="logOut" returntype="struct" returnformat = "json" access="remote">
-        <cfif structKeyExists(session, "userSession")>
-            <cfset structClear(session.userSession)>
-        </cfif>
+    <cffunction name="logOut" returntype="struct" returnformat = "json" access="remote">
+        <cfset structClear(session)>
         <cfset local.logOutResult["success"] = true>
         <cfreturn local.logOutResult>
     </cffunction>

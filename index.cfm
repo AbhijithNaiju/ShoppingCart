@@ -1,4 +1,4 @@
-<cfinclude  template="./userHeader.cfm">
+<cfinclude template="./userHeader.cfm">
 <cfset variables.productList = application.productObject.getProductList(limit=10)>
 <cfoutput>
     <div>
@@ -9,7 +9,7 @@
                     class="border randomProducts d-flex flex-column justify-content-between align-items-center shadow-sm"
                 >
                     <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
-                        <img src="./assets/productimages/#productItem.imageFileName#" >
+                        <img src="./assets/productimages/#productItem.imageFileName#">
                     </div>
                     <div class="w-100 d-flex flex-column randomProductsDetails">
                         <h6 class="card-title p-2">#variables.productItem.productName#</h6>
@@ -24,4 +24,4 @@
         </div>
     </div>
 </cfoutput>
-<cfinclude  template="./userFooter.cfm">
+<cfinclude template="./userFooter.cfm">

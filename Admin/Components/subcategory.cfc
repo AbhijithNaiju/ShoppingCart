@@ -1,6 +1,6 @@
 <cfcomponent>
-    <cffunction  name="getSubcategories" returnType="array" access= "remote" returnFormat = "JSON">
-        <cfargument  name="categoryId" type="integer" required="false">
+    <cffunction name="getSubcategories" returnType="array" access= "remote" returnFormat = "JSON">
+        <cfargument name="categoryId" type="integer" required="false">
         <cfargument name = "subcategoryId" type = "integer" required = "false">
 
         <cfset local.subcategoryStruct = structNew()>
@@ -27,10 +27,10 @@
         <cfreturn local.subCategoryData.resultSet>
     </cffunction>
 
-    <cffunction  name="editSubCategory" returntype="struct" access = "remote" returnformat = "JSON">
-        <cfargument  name="categoryId" required = "true" type = "integer">
-        <cfargument  name="subCategoryName" required ="true" type = "string">
-        <cfargument  name="subCategoryId" requred = "true" type = "integer">
+    <cffunction name="editSubCategory" returntype="struct" access = "remote" returnformat = "JSON">
+        <cfargument name="categoryId" required = "true" type = "integer">
+        <cfargument name="subCategoryName" required ="true" type = "string">
+        <cfargument name="subCategoryId" requred = "true" type = "integer">
 
         <cfset local.structResult = structNew()>
 
@@ -59,7 +59,7 @@
                     <cfset local.structResult["error"] = "Category name already exists">
                 </cfif>
             <cfelse>
-                <cfif  val(arguments.subCategoryId) GT 0>
+                <cfif val(arguments.subCategoryId) GT 0>
                     <cfquery name="local.subCategoryAdd">
                         UPDATE
                             tblSubCategory
@@ -97,8 +97,8 @@
         <cfreturn local.structResult>
     </cffunction>
 
-    <cffunction  name="deleteSubCategory" access="remote" returnformat = "plain" returntype="boolean">
-        <cfargument  name="subCategoryId" required = "true" type = "string">
+    <cffunction name="deleteSubCategory" access="remote" returnformat = "plain" returntype="boolean">
+        <cfargument name="subCategoryId" required = "true" type = "string">
 
         <cfquery>
             UPDATE

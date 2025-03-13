@@ -1,6 +1,13 @@
-// Used to unselect radio when custom min max are used
-$('.filterInput').click(function(){
-    $('[name=filterRadio]').prop('checked',false);
+var offset = 10;
+$(document).ready(function(){
+	// Used to unselect radio when custom min max are used
+	$('.filterInput').click(function(){
+		$('[name=filterRadio]').prop('checked',false);
+	});
+
+	$(".sortProductsBtn").click(function(){
+		$("#sortOrder").val(this.value)
+	});
 });
 
 function setFilter(range){
@@ -33,13 +40,10 @@ if(myDropdown = document.getElementById('filterDropdown')){
 	})
 }
 
-$(".sortProductsBtn").click(function(){
-    $("#sortOrder").val(this.value)
-});
 
 function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 {
-	let excludedList = $("#showMoreBtn");
+	let totalProductCount = $("#showMoreBtn");
 	const productData = new Object();
 	if(subcategoryId){
 		productData.subcategoryId = subcategoryId;
@@ -50,7 +54,7 @@ function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 	productData.maxPrice = maxPrice;
 	productData.sortOrder = sortOrder;
 	productData.limit = 5;
-	productData.excludedIdList = excludedList.val();
+	productData.offset = offset;
 	
 	$.ajax({
 		type:"POST",
@@ -58,8 +62,8 @@ function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 		data:productData,
 		success: function(result) {
 			resultJson=JSON.parse(result);
-			let totalProductCount=parseInt($("#totalProductCount").val());
 			if(resultJson.success){
+				offset=offset+5;
 				if(resultJson.resultArray.length){
 					$('#listingMessage').text("");
 					resultJson.resultArray.forEach(productData => {
@@ -80,14 +84,13 @@ function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 								</div>
 							</a>
 						`;
-						excludedList.val(excludedList.val() + ',' +productData.productId);
 						$("#productListingParent").append(productBody);
 					});
-					if(totalProductCount == excludedList.val().split(",").length){
-						excludedList.hide();
+					if(offset >= totalProductCount.val()){
+						totalProductCount.hide();
 					}
 				}else{
-					excludedList.hide();
+					totalProductCount.hide();
 					Swal.fire({
 							position: "top",
 							toast: true,

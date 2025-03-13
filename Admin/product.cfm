@@ -1,4 +1,4 @@
-<cfinclude  template="./header.cfm">
+<cfinclude template="./header.cfm">
 <cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId) AND isValid("integer",url.subCategoryId)>
     <div class="mainBody">
         <cfset productData = application.adminProductObject.getProducts(subCategoryId = url.subCategoryId)>
@@ -16,7 +16,7 @@
             <div class="categoryBody mx-auto my-5 border rounded shadow px-4 py-3">
                 <cfoutput>
                     <div class="categoryHeading d-flex justify-content-between my-2">
-                        <h3 class="text-dark d-flex align-items-center"> 
+                        <h3 class="text-dark d-flex align-items-center">
                             <a 
                                 href="./subcategory.cfm?categoryId=#variables.categoryId#" 
                                 class = "text-decoration-none text-dark">
@@ -202,6 +202,6 @@
         </cfif>
     </div>
 <cfelse>
-    <cflocation  url="./index.cfm" addtoken=false>
+    <cflocation url="./index.cfm" addtoken=false>
 </cfif>
-<cfinclude  template="./footer.cfm">
+<cfinclude template="./footer.cfm">

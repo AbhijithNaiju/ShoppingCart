@@ -1,13 +1,13 @@
 <cfcomponent>
     <!--- add product to cart --->
     <cffunction name = "addToCart" returntype = "struct" returnformat = "json" access="remote">
-        <cfargument  name = "productid" type = "integer" required = "true">
+        <cfargument name = "productid" type = "integer" required = "true">
 
         <cfset local.resultStruct = structNew()>
         <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
             <!--- user is logged in --->
             <!--- checking whether product already in the cart --->
-            <cfquery  name = "local.isProductExist">
+            <cfquery name = "local.isProductExist">
                 SELECT 
                     fldCart_ID
                 FROM 
@@ -15,7 +15,7 @@
                 WHERE
                     fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
                     AND
-                    fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer"> 
+                    fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
             </cfquery>
             <cfif local.isProductExist.recordCount>
                 <!--- product is present in cart(increase quantity) --->

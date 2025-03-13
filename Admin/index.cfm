@@ -1,4 +1,4 @@
-<cfinclude  template="./header.cfm">
+<cfinclude template="./header.cfm">
 
 <div class="mainBody">
     <div class="categoryBody my-5 mx-auto border px-4 py-3 shadow rounded">
@@ -65,7 +65,7 @@
                     <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div  class=" mx-auto p-3 d-flex flex-column">
+                    <div class=" mx-auto p-3 d-flex flex-column">
                         <h4 id="modalHeading"></h4>
                         <div>
                             <label for="categoryName">
@@ -89,4 +89,4 @@
             </form>
         </div>
     </div>
-<cfinclude  template="footer.cfm">
+<cfinclude template="footer.cfm">

@@ -1,4 +1,4 @@
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 <cfif 
     structKeyExists(form, "orderSearchButton") 
     AND structKeyExists(form, "orderSearchId")
@@ -124,7 +124,7 @@
                 </div>
                 <div class = "d-flex justify-content-between p-2 w-100 bg-body-secondary">
                     <div class = "d-flex flex-column addressDetails">
-                        <b>Address details :</b> 
+                        <b>Address details :</b>
                         <span>
                             #variables.orderHistory.firstName & ' ' & variables.orderHistory.lastName#
                         </span>
@@ -149,7 +149,7 @@
                             <i class="fa-solid fa-indian-rupee-sign"></i>
                             #variables.orderHistory.totalPrice + variables.orderHistory.totalTax#
                         </div>
-                        <span class="orderDate"> 
+                        <span class="orderDate">
                             Ordered on : 
                             #variables.orderHistory.orderDate#
                         </span>
@@ -159,4 +159,4 @@
         </cfoutput>
     </div>
 </div>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">

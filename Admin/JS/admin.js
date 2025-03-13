@@ -308,7 +308,7 @@ $(document).ready(function(){
     });
 
     if(myModalElement = document.getElementById('addModal')){
-        myModalElement.addEventListener('hide.bs.modal', event => {
+        myModalElement.addEventListener('hide.bs.modal',event =>{
             $(".form-control").removeClass("is-valid is-invalid");
             $(".errorMessage").text("");
             $("#editImageBody").empty();
@@ -593,7 +593,7 @@ function openProductModal(productData){
                                                 class="deleteImage"
                                                 title="Delete"
                                             >
-                                                <i class="fa-solid fa-trash"></i>   
+                                                <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </div>
                                         <div class="d-flex mt-auto justify-content-center">
@@ -700,7 +700,7 @@ function listSubcategories(categoryId,currentSubCategoryId)
     });
 }
 
-function  deleteCategory(categoryId){
+function deleteCategory(categoryId){
     Swal.fire({
         title: "Are you sure?",
         text: "This will delete the category and its contents.",
@@ -735,7 +735,7 @@ function  deleteCategory(categoryId){
         }
     });
 }
-function  deleteSubCategory(deleteButton){
+function deleteSubCategory(deleteButton){
     Swal.fire({
         title: "Are you sure?",
         text: "This will delete the sub category and its contents",

@@ -1,4 +1,4 @@
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 
 <cfif structKeyExists(form,"addAddress")>
     <cfset variables.addAddressResult = application.userObject.addAddress(
@@ -248,5 +248,5 @@
         </form>
     </div>
 </cfoutput>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">
 <script src="/js/profileFunctions.js"></script>

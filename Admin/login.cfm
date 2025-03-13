@@ -1,4 +1,4 @@
-<cfinclude  template="./header.cfm">
+<cfinclude template="./header.cfm">
 <div class="mainBody">
     <form method="post" class="loginForm" onSubmit="return loginValidate()">
         <div class="formHeader">
@@ -31,4 +31,4 @@
         </cfif>
     </form>
 </div>
-<cfinclude  template="footer.cfm">
+<cfinclude template="footer.cfm">

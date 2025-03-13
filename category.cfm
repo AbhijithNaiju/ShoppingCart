@@ -1,4 +1,4 @@
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 <cfif structKeyExists(url, "catId") AND isValid("integer",url.catId)>
     <cfset variables.productCount = 0>
     <cfset variables.subcategoryList = application.productObject.getSubcategories(categoryId=url.catId)>
@@ -54,7 +54,7 @@
                     </cfif>
                 </cfloop>
             <cfelse>
-                <cflocation  url="./missingPage.cfm" addtoken="false">
+                <cflocation url="./missingPage.cfm" addtoken="false">
             </cfif>
             <cfif variables.productCount EQ 0>
                 <div class = "text-center" >No products found</div>
@@ -62,4 +62,4 @@
         </cfoutput>
     </div>
 </cfif>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">

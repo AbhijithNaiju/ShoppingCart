@@ -1,7 +1,7 @@
 <cfcomponent>
     <!--- Get list of products in a subcategory --->
-    <cffunction  name="getProducts" returnType="query">
-        <cfargument  name="subCategoryId" required="true" type = "integer">
+    <cffunction name="getProducts" returnType="query">
+        <cfargument name="subCategoryId" required="true" type = "integer">
         <cfquery name="local.productData">
             SELECT
                 P.fldProductName,
@@ -29,8 +29,8 @@
     </cffunction>
 
     <!--- Get details of single product --->
-    <cffunction  name="getProductDetails" returnType="struct" returnFormat="JSON" access="remote">
-        <cfargument  name="productId" required="true" type = "integer">
+    <cffunction name="getProductDetails" returnType="struct" returnFormat="JSON" access="remote">
+        <cfargument name="productId" required="true" type = "integer">
 
         <cfquery name="local.productData" returntype = "struct">
             SELECT
@@ -75,7 +75,7 @@
     </cffunction>
     
     <!--- Get details of brand --->
-    <cffunction  name="getBrands" returntype="query">
+    <cffunction name="getBrands" returntype="query">
         <cfargument name = "brandId" type = "integer" required = "false">
         <cfquery name = "local.brandData">
             SELECT
@@ -93,19 +93,19 @@
         <cfreturn local.brandData>
     </cffunction>
 
-    <cffunction  name = "addOrEditProduct" access = "remote" returnformat = "JSON" returntype="struct">
-        <cfargument  name = "formBrandId" required = "true" type = "integer">
-        <cfargument  name = "formSubCategoryId" required = "true" type = "integer">
-        <cfargument  name = "currentSubcategoryID" required = "true" type = "integer">
-        <cfargument  name = "formCategoryId" required = "true" type = "integer">
-        <cfargument  name = "productDescription" required = "true" type = "string">
-        <cfargument  name = "productName" required = "true" type = "string">
-        <cfargument  name = "productPrice" required = "true" type = "float">
-        <cfargument  name = "productTax" required = "true" type = "float">
-        <cfargument  name = "productImages" required = "false" type = "string">
-        <cfargument  name = "productId" required = "false" type = "integer">
-        <cfargument  name = "defaultImage" required = "true" type = "string">
-        <cfargument  name = "deletedProducts" required = "false" type = "string">
+    <cffunction name = "addOrEditProduct" access = "remote" returnformat = "JSON" returntype="struct">
+        <cfargument name = "formBrandId" required = "true" type = "integer">
+        <cfargument name = "formSubCategoryId" required = "true" type = "integer">
+        <cfargument name = "currentSubcategoryID" required = "true" type = "integer">
+        <cfargument name = "formCategoryId" required = "true" type = "integer">
+        <cfargument name = "productDescription" required = "true" type = "string">
+        <cfargument name = "productName" required = "true" type = "string">
+        <cfargument name = "productPrice" required = "true" type = "float">
+        <cfargument name = "productTax" required = "true" type = "float">
+        <cfargument name = "productImages" required = "false" type = "string">
+        <cfargument name = "productId" required = "false" type = "integer">
+        <cfargument name = "defaultImage" required = "true" type = "string">
+        <cfargument name = "deletedProducts" required = "false" type = "string">
 
         <cfset local.structResult = structNew()>
         <cfset local.uploadLocation = "../../assets/productImages">
@@ -262,8 +262,8 @@
     </cffunction>
 
     <!--- Delete product--->
-    <cffunction  name = "deleteProduct" access = "remote" returntype = "struct" returnformat = "json">
-        <cfargument  name = "productId" required = "true" type = "integer">
+    <cffunction name = "deleteProduct" access = "remote" returntype = "struct" returnformat = "json">
+        <cfargument name = "productId" required = "true" type = "integer">
 
         <cfset local.resultStruct = structNew()>
         <cfquery result="local.deleteResult">
@@ -285,8 +285,8 @@
     </cffunction>
 
     <!--- Delete image of a product --->
-    <cffunction  name = "deleteImage" returntype="struct">
-        <cfargument  name  ="deletedIdList" required = "true" type = "string">
+    <cffunction name = "deleteImage" returntype="struct">
+        <cfargument name  ="deletedIdList" required = "true" type = "string">
 
         <cfset local.resultStruct = structNew()>
         <cfquery result="local.deleteResult">
@@ -306,10 +306,10 @@
     </cffunction>
 
     <!--- Add edit product image--->
-    <cffunction  name="addOrEditProductImages"returntype="struct">
-        <cfargument  name = "defaultImageId" required = "true" type = "string">
-        <cfargument  name = "fileNames" required = "true" type = "array">
-        <cfargument  name = "productId" required = "true" type = "integer">
+    <cffunction name="addOrEditProductImages"returntype="struct">
+        <cfargument name = "defaultImageId" required = "true" type = "string">
+        <cfargument name = "fileNames" required = "true" type = "array">
+        <cfargument name = "productId" required = "true" type = "integer">
 
         <cfset local.resultStruct = structNew()>
 

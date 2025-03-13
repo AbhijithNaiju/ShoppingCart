@@ -52,7 +52,7 @@
 					<div class = "invoiceBody">
 						<div class = "pdfHeader">
 							<span>ORDER ID : #url.orderId#</span>
-						</div>   
+						</div>
 						<div class="orderContent">
 							<table border=1>
 								<thead>
@@ -84,7 +84,7 @@
 						Order Date : #variables.orderHistory.orderDate#
 					</div>
 					<div class = "addressDetails">
-						<b>Address details :</b> 
+						<b>Address details :</b>
 						<div>
 							#variables.orderHistory.firstName & ' ' & variables.orderHistory.lastName#
 						</div>

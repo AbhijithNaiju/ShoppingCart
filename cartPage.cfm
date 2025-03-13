@@ -1,4 +1,4 @@
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 
 <cfset variables.cartItems=application.cartObject.getCartItems(userId=session.userSession.userId)>
 <cfset variables.actualPrice = 0>
@@ -25,7 +25,7 @@
                                     <button 
                                         class="btn btn-sm btn-primary reduceQuantity" 
                                         onclick="changeQuantity(-1,#variables.cartItems.cartId#)"
-                                    >   
+                                    >
                                         -
                                     </button>
                                     <input 
@@ -76,7 +76,7 @@
                     <div>
                         <div class="row">
                             <span class="col-6">Actual Price</span>
-                            <div  class="col-6 text-end">
+                            <div class="col-6 text-end">
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
                                 <span id="actualPrice">
                                     #numberFormat(variables.actualPrice,'__.00')#
@@ -84,8 +84,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <span  class="col-6">Total Tax</span>
-                            <div  class="col-6 text-end">
+                            <span class="col-6">Total Tax</span>
+                            <div class="col-6 text-end">
                                 <i class="fa-solid fa-indian-rupee-sign"></i>
                                 <span id="totalTax">
                                     #numberFormat(variables.totalTax,'__.00')#
@@ -94,8 +94,8 @@
                         </div>
                     </div>
                     <span class="row my-2 grandTotalContainer">
-                        <span  class="col-6">Total Price</span>
-                        <div  class="col-6 text-end">
+                        <span class="col-6">Total Price</span>
+                        <div class="col-6 text-end">
                             <i class="fa-solid fa-indian-rupee-sign"></i>
                             <span id="totalPrice">
                                 #numberFormat(variables.actualPrice + variables.totalTax,'__.00')#
@@ -116,5 +116,5 @@
         </div>
     </div>
 </cfoutput>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">
 <script src="/js/cartAndOrder.js"></script>

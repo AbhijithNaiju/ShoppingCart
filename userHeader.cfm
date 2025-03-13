@@ -29,7 +29,7 @@
                                 required
                             >
                             <div>
-                                <button class="btn  btn-outline-light" type="submit">Search</button>
+                                <button class="btn btn-outline-light" type="submit">Search</button>
                             </div>
                         </form>
                     </div>
@@ -68,7 +68,7 @@
                                     </span>
                                 </div>
                                 <div class="menuButton">
-                                    <button id="logOutBtn" class="me-1" onclick="logOut()" > 
+                                    <button id="logOutBtn" class="me-1" onclick="logOut()">
                                         Logout 
                                     </button>
                                     <img 
@@ -82,24 +82,24 @@
                     <cfelse>
                         <div class="menuButtonContainer">
                             <div>
-                                <a id="profileBtn" class = "menuButton" href="./login.cfm?redirect=profilePage" > Profile </a>
+                                <a id="profileBtn" class = "menuButton" href="./login.cfm?redirect=profilePage">Profile </a>
                             </div>
                             <div>
-                                <a id="cartBtn" class = "menuButton" href="./login.cfm?redirect=cart" > Cart </a>
+                                <a id="cartBtn" class = "menuButton" href="./login.cfm?redirect=cart">Cart </a>
                             </div>
                             <div>
-                                <a id="logOutBtn" class="menuButton" href="login.cfm" > Login </a>
+                                <a class="menuButton" href="login.cfm">Login </a>
                             </div>
                         </div>
                     </cfif>
-                </cfif> 
+                </cfif>
             </div>
             <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
                 <cfset variables.allSubcategories = application.productObject.getSubcategories()>
                 <div class="categoryNav px-3 py-2">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
-                        <div  class = "navCategory" >
-                            <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName" >
+                        <div class = "navCategory">
+                            <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName">
                                 #variables.allSubcategories.categoryName#
                             </a>
                             <div class="categoryDropDown dropdown-menu d-flex flex-column ">

@@ -1,5 +1,5 @@
 <cfinclude template="userHeader.cfm">
-<cfparam name="url.sortOrder" default="0">
+<cfparam name="url.sortOrder" default="name">
 <cfparam name="url.searchValue" default="">
 <cfparam name="url.subcatId" default="0">
 <cfparam name="url.minPrice" default="-1">
@@ -10,27 +10,16 @@
 <cfif url.maxPrice EQ "">
     <cfset url.maxPrice = -1>
 </cfif>
-<cfif url.searchvalue NEQ "" OR (url.subcatId NEQ 0 AND isValid("integer",url.subcatId))>
-    <cfset variables.arrayProductId = arrayNew(1)>
-    <cfif url.searchvalue NEQ "">
-        <cfset variables.productList = application.productObject.getProductList(
-            searchValue=url.searchValue,
-            sortOrder=url.sortOrder,
-            limit=10,
-            count=true,
-            minPrice=url.minPrice,
-            maxPrice=url.maxPrice
-        )>
-    <cfelse>
-        <cfset variables.productList = application.productObject.getProductList(
-            sortOrder=url.sortOrder,
-            subcategoryId=url.subcatId,
-            limit=10,
-            count=true,
-            minPrice=url.minPrice,
-            maxPrice=url.maxPrice
-        )>
-    </cfif>
+<cfif len(trim(url.searchvalue)) OR (url.subcatId NEQ 0 AND isValid("integer",url.subcatId))>
+    <cfset variables.productList = application.productObject.getProductList(
+        searchValue=url.searchValue,
+        subcategoryId=url.subcatId,
+        sortOrder=url.sortOrder,
+        limit=10,
+        count=true,
+        minPrice=url.minPrice,
+        maxPrice=url.maxPrice
+    )>
     <cfoutput>
         <div class="m-3">
             <h3>
@@ -187,15 +176,14 @@
                                 </span>
                             </div>
                         </a>
-                        <cfset arrayAppend(variables.arrayProductId, variables.productDetails.productId)>
                     </cfloop>
                 </div>
-                <cfif variables.productList.productCount GT 10>
+                <cfif variables.productList.resultArray[1].totalCount GT 10>
                     <div class="d-flex justify-content-center">
-                        <button 
+                        <button
                             class="btn border my-1"
                             id="showMoreBtn"
-                            value="#arraytolist(variables.arrayProductId)#"
+                            value="#variables.productList.resultArray[1].totalCount#"
                             onclick="showMore(
                                 #url.subcatId#,
                                 '#url.searchValue#',
@@ -203,16 +191,10 @@
                                 #url.minPrice#,
                                 #url.maxPrice#
                             )" 
-                            aria-expanded="false"
                         >
                             Show more
                         </button>
                     </div>
-                    <input 
-                        type="hidden" 
-                        value="#variables.productList.productCount#"
-                        id="totalProductCount"
-                    >
                 </cfif>
                 <div class="text-center" id="listingMessage"></div>
             <cfelse>
@@ -221,7 +203,7 @@
         </div>
     </cfoutput>
 <cfelse>
-    <cflocation  url="./missingPage.cfm" addtoken="false">
+    <cflocation url="./missingPage.cfm" addtoken="false">
 </cfif>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">
 <script src="./js/productListing.js"></script>

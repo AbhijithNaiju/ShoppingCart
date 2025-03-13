@@ -17,19 +17,19 @@
                     <cfset addTocart = application.cartObject.addToCart(url.productId)>
                     <cfif url.redirect EQ "order">
                         <!--- goto to order page --->
-                        <cflocation  url="./orderPage.cfm" addtoken="no">
+                        <cflocation url="./orderPage.cfm" addtoken="no">
                     <cfelse>
-                        <cflocation  url="./product.cfm?productId=#url.productId#" addtoken="no">
+                        <cflocation url="./product.cfm?productId=#url.productId#" addtoken="no">
                     </cfif>
                 </cfif>
 
             <cfelseif url.redirect EQ "cart">
                 <!--- go to cart page(productid is not present) --->
-                <cflocation  url="./cartPage.cfm" addtoken="no">
+                <cflocation url="./cartPage.cfm" addtoken="no">
 
             <cfelseif url.redirect EQ "profilePage">
                 <!--- go to cart page(productid is not present) --->
-                <cflocation  url="./profilePage.cfm" addtoken="no">
+                <cflocation url="./profilePage.cfm" addtoken="no">
                 
             </cfif>
 
@@ -40,7 +40,7 @@
     </cfif>
 </cfif>
 
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 <div class="mainBody">
     <form method="post" class="loginForm">
         <div class="formHeader">
@@ -66,8 +66,8 @@
         <input type="submit" class="btn btn-success" name="loginBtn" value="Submit">
         <div class="d-flex my-2">
             Dont have an account ? 
-            <a href="./signup.cfm" class = "mx-1" >Signup</a>
+            <a href="./signup.cfm" class = "mx-1">Signup</a>
         </div>
     </form>
 </div>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">

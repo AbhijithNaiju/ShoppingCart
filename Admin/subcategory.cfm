@@ -1,4 +1,4 @@
-<cfinclude  template="./header.cfm">
+<cfinclude template="./header.cfm">
 <cfif structKeyExists(url, "categoryId") AND len(url.categoryId) AND isValid("integer",url.categoryId)>
     <div class="mainBody">
         <cfset variables.subCategoryData = application.adminSubcategoryObject.getSubCategories(categoryId = url.categoryId)>
@@ -117,6 +117,6 @@
         </div>
     </div>
 <cfelse>
-    <cflocation  url="./index.cfm" addtoken=false>
+    <cflocation url="./index.cfm" addtoken=false>
 </cfif>
-<cfinclude  template="footer.cfm">
+<cfinclude template="footer.cfm">

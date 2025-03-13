@@ -12,7 +12,7 @@
     </cfif>
 </cfif>
 
-<cfinclude  template="userHeader.cfm">
+<cfinclude template="userHeader.cfm">
 <div class="mainBody">
     <form method="post" class="loginForm" id="signupForm">
         <div class="formHeader">
@@ -99,4 +99,4 @@
         </div>
     </form>
 </div>
-<cfinclude  template="userFooter.cfm">
+<cfinclude template="userFooter.cfm">

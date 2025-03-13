@@ -132,7 +132,7 @@
                                         Order Date : #local.orderDetails.orderDate#
                                     </div>
                                     <div class = "addressDetails">
-                                        <b>Address details :</b> 
+                                        <b>Address details :</b>
                                         <div>
                                             #local.orderDetails.firstName & ' ' & local.orderDetails.lastName#
                                         </div>
