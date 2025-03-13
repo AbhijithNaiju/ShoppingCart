@@ -14,7 +14,7 @@
 
                 <cfif url.redirect EQ "cart" OR url.redirect EQ "order">
                     <!--- adding product to cart and going back to product page --->
-                    <cfset addTocart = application.userObject.addToCart(url.productId)>
+                    <cfset addTocart = application.cartObject.addToCart(url.productId)>
                     <cfif url.redirect EQ "order">
                         <!--- goto to order page --->
                         <cflocation  url="./orderPage.cfm" addtoken="no">
@@ -46,19 +46,19 @@
         <div class="formHeader">
             User Login
         </div>
-        <div class="form-group my-3">
+        <div class="form-group">
             <label for="userName">User name</label>
             <input type="text" class="form-control" id="userName" name="userName" placeholder="Username" required>
             <span class="errorMessage"></span>
         </div>
-        <div class="form-group my-3">
+        <div class="form-group">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             <span class="errorMessage"></span>
         </div>
         <cfif structKeyExists(variables, "loginResult") AND structKeyExists(variables.loginResult, "error")>
             <cfoutput>
-                <div class="errorMessage loginError">
+                <div class="errorMessage loginError text-center">
                     #variables.loginResult.error#
                 </div>
             </cfoutput>

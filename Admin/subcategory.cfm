@@ -1,8 +1,8 @@
 <cfinclude  template="./header.cfm">
 <cfif structKeyExists(url, "categoryId") AND len(url.categoryId) AND isValid("integer",url.categoryId)>
     <div class="mainBody">
-        <cfset variables.subCategoryData = application.adminObject.getSubCategories(categoryId = url.categoryId)>
-        <cfset variables.categoryQuery = application.adminObject.getCategories()>
+        <cfset variables.subCategoryData = application.adminSubcategoryObject.getSubCategories(categoryId = url.categoryId)>
+        <cfset variables.categoryQuery = application.adminCategoryObject.getCategories()>
         <cfset variables.categoryData = {}>
         <cfloop query="variables.categoryQuery">
             <cfset variables.categoryData[variables.categoryQuery.fldCategory_ID] = variables.categoryQuery.fldCategoryName>

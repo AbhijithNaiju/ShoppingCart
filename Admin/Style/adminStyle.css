@@ -60,19 +60,6 @@ body
     font-size: 22px;
     padding: 10px 0;
 }
-#userName,#password
-{
-    background: #fff;
-    height: 33px;
-    padding: 0 10px;
-}
-#submitBtn
-{
-    border: 2px solid #666;
-    background-color: #fff;
-    padding: 8px 0;
-    box-sizing: border-box;
-}
 .loginForm input
 {
     border-radius: 4px;

@@ -1,12 +1,12 @@
 <cfinclude  template="./header.cfm">
 <cfif structKeyExists(url, "subCategoryId") AND len(url.subCategoryId) AND isValid("integer",url.subCategoryId)>
     <div class="mainBody">
-        <cfset productData = application.adminObject.getProducts(subCategoryId = url.subCategoryId)>
+        <cfset productData = application.adminProductObject.getProducts(subCategoryId = url.subCategoryId)>
         <cfif productData.recordCount>
             <cfset variables.categoryId = variables.productData.categoryId>
             <cfset variables.subCategoryName = variables.productData.subCategoryName>
         <cfelse>
-            <cfset variables.subcategoryData = application.adminObject.getSubcategories(subCategoryId = url.subCategoryId)>
+            <cfset variables.subcategoryData = application.adminSubcategoryObject.getSubcategories(subCategoryId = url.subCategoryId)>
             <cfif arrayLen(variables.subcategoryData)>
                 <cfset variables.categoryId = variables.subcategoryData[1].categoryId>
                 <cfset variables.subCategoryName = variables.subcategoryData[1].subCategoryName>
@@ -92,8 +92,8 @@
                     </div>
                 </cfoutput>
             </div>
-            <cfset categoryList = application.adminObject.getCategories()>
-            <cfset brandData = application.adminObject.getBrands()>
+            <cfset categoryList = application.adminCategoryObject.getCategories()>
+            <cfset brandData = application.adminProductObject.getBrands()>
             <div class="modal fade" tabindex="-1" id="addModal" data-bs-backdrop="static">
                 <div class="modal-dialog modal-dialog-scrollable modal-lg">
                     <form 

@@ -39,7 +39,7 @@
                                 <div>
                                     <a id="profileBtn"
                                         <cfif CGI.script_name EQ "/profilePage.cfm">
-                                            class="menuButton active"
+                                            class="menuButton"
                                         <cfelse>
                                             class="menuButton" 
                                             href="./profilePage.cfm" 
@@ -52,7 +52,7 @@
                                     <a 
                                         id="cartBtn" 
                                         <cfif CGI.script_name EQ "/cartPage.cfm">
-                                            class="menuButton active"
+                                            class="menuButton"
                                         <cfelse>
                                             class="menuButton" 
                                             href="./cartPage.cfm" 
@@ -95,7 +95,7 @@
                 </cfif> 
             </div>
             <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
-                <cfset variables.allSubcategories = application.userObject.getSubcategories()>
+                <cfset variables.allSubcategories = application.productObject.getSubcategories()>
                 <div class="categoryNav px-3 py-2">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
                         <div  class = "navCategory" >

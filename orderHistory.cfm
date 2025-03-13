@@ -4,12 +4,12 @@
     AND structKeyExists(form, "orderSearchId")
     AND len(trim(form.orderSearchId))
 >
-    <cfset variables.orderHistory=application.userObject.getOrderHistory(
+    <cfset variables.orderHistory=application.orderObject.getOrderHistory(
         userId=session.userSession.userId,
         orderSearchId=form.orderSearchId
     )>
 <cfelse>
-    <cfset variables.orderHistory=application.userObject.getOrderHistory(
+    <cfset variables.orderHistory=application.orderObject.getOrderHistory(
         userId=session.userSession.userId
     )>
 </cfif>

@@ -7,7 +7,7 @@ $(document).ready(function(){
 		if(isCategoryNameValid){
             $.ajax({
                 type:"post",
-                url:"components/admin.cfc",
+                url:"components/category.cfc",
                 data:{
                     categoryName:categoryName,
                     categoryId:categoryId,
@@ -75,7 +75,7 @@ $(document).ready(function(){
                         $("#addModal").modal("hide");
                         $("#categoryName").val("");
                     }else if(resultJson.error){
-                        setError(resultJson.error,"categoryNameError")
+                        setError(message = resultJson.error,messageLocationId = "categoryNameError");
                     }else{
                         alert("Unexpected error occured")
                     }
@@ -95,7 +95,7 @@ $(document).ready(function(){
 		if(isSubcategoryNameValid){
             $.ajax({
                 type:"post",
-                url:"components/admin.cfc",
+                url:"components/subcategory.cfc",
                 data:{
                     categoryId:categoryId,
                     subcategoryName:subcategoryName,
@@ -168,7 +168,7 @@ $(document).ready(function(){
                         $("#subCategoryName").val("");
                         $("#addModal").modal("hide");
                     }else if(resultJson.error){
-                        setError(resultJson.error,"modalError");
+                        setError(message = resultJson.error,messageLocationId = "modalError");
                     }else{
                         alert("Unexpected error occured");
                     }
@@ -196,7 +196,7 @@ $(document).ready(function(){
         let isproductNameValid = checkProductName(productName,"productNameError");
         
         if(parseFloat(productTax)>100){
-            setError("Please enter a valid tax percentage","productTaxError");
+            setError(message = "Please enter a valid tax percentage",messageLocationId = "productTaxError");
             isError=true;
         }else{
             setSuccess("productTaxError");
@@ -218,7 +218,7 @@ $(document).ready(function(){
             }
             $.ajax({
                 type: "POST",
-                url: "components/admin.cfc?method=addOrEditProduct",
+                url: "components/product.cfc?method=addOrEditProduct",
                 data: productData,
                 processData: false,
                 contentType: false,
@@ -290,11 +290,11 @@ $(document).ready(function(){
                             $("#noProductError").text("No Products Found");
                         }
                     }else if(resultJson.productNameError){
-                        setError(resultJson.productNameError,"productNameError");
+                        setError(message = resultJson.productNameError,messageLocationId = "productNameError");
                     }else if(resultJson.productTaxError){
-                        setError(resultJson.productTaxError,"productTaxError");
+                        setError(message = resultJson.productTaxError,messageLocationId = "productTaxError");
                     }else if(resultJson.imageError){
-                        setError(resultJson.imageError,"productImageError");
+                        setError(message = resultJson.imageError,messageLocationId = "productImageError");
                     }else if(resultJson.defaultImageError){
                         $("#modalError").text(resultJson.defaultImageError);
                         $("#editImageBody").addClass("bg-danger-subtle");
@@ -412,7 +412,7 @@ $(document).ready(function(){
             if (result.isConfirmed){
                 $.ajax({
                     type:"POST",
-                    url:"components/admin.cfc?method=deleteProduct",
+                    url:"components/product.cfc?method=deleteProduct",
                     data:{productId:deleteProductId},
                     success: function(result) {
                         resultJson=JSON.parse(result);
@@ -443,13 +443,13 @@ function loginValidate(){
     $(".errorMessage").text("");
     error = false;
     if(!userName.trim().length){
-        setError("Please enter email or phone number","userNameError");
+        setError(message = "Please enter email or phone number",messageLocationId = "userNameError");
         error = true
     }else{
         setSuccess("userNameError");
     }
     if(!password.trim().length){
-        setError("Please enter the password","passwordError")
+        setError(message = "Please enter the password",messageLocationId = "passwordError");
         error = true
     }else{
         setSuccess("passwordError");
@@ -494,7 +494,7 @@ function openCategoryModal(categoryId){
     if(categoryId){
         $.ajax({
             type:"post",
-            url:"components/admin.cfc",
+            url:"components/category.cfc",
             data:{
                 categoryId:categoryId,
                 method:"getCategoryname"
@@ -526,7 +526,7 @@ function openSubCategoryModal(categoryId,subcategoryId){
     if(subcategoryId){
         $.ajax({
             type:"post",
-            url:"components/admin.cfc",
+            url:"components/subcategory.cfc",
             data:{
                 subcategoryId:subcategoryId,
                 method:"getSubcategories"
@@ -562,7 +562,7 @@ function openProductModal(productData){
         $("#productImages").removeAttr("required")
         $.ajax({
             type:"POST",
-            url:"components/admin.cfc?method=getProductDetails",
+            url:"components/product.cfc?method=getProductDetails",
             data:{productId:productData.productId},
             success: function(result) {
                 resultJson=JSON.parse(result);
@@ -674,7 +674,7 @@ function listSubcategories(categoryId,currentSubCategoryId)
     $("#subCategorySelect").empty();
     $.ajax({
         type:"POST",
-        url:"components/admin.cfc?method=getSubcategories",
+        url:"components/subcategory.cfc?method=getSubcategories",
         data:{categoryId:categoryId},
         success: function(result) {
             if(result){
@@ -713,7 +713,7 @@ function  deleteCategory(categoryId){
         if (result.isConfirmed){
             $.ajax({
                 type:"POST",
-                url:"components/admin.cfc?method=deleteCategory",
+                url:"components/category.cfc?method=deleteCategory",
                 data:{categoryId:categoryId.value},
                 success: function(result) {
                     if(result){
@@ -748,7 +748,7 @@ function  deleteSubCategory(deleteButton){
         if (result.isConfirmed){
             $.ajax({
                 type:"POST",
-                url:"components/admin.cfc?method=deleteSubCategory",
+                url:"components/subcategory.cfc?method=deleteSubCategory",
                 data:{subCategoryId:deleteButton.value},
                 success: function(result) {
                     if(result){

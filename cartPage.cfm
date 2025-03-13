@@ -1,6 +1,6 @@
 <cfinclude  template="userHeader.cfm">
 
-<cfset variables.cartItems=application.userObject.getCartItems(userId=session.userSession.userId)>
+<cfset variables.cartItems=application.cartObject.getCartItems(userId=session.userSession.userId)>
 <cfset variables.actualPrice = 0>
 <cfset variables.totalTax = 0>
 <cfset variables.totalPrice = 0>
@@ -117,3 +117,4 @@
     </div>
 </cfoutput>
 <cfinclude  template="userFooter.cfm">
+<script src="/js/cartAndOrder.js"></script>

@@ -1,7 +1,7 @@
 <cfinclude  template="userHeader.cfm">
 <cfif structKeyExists(url, "catId") AND isValid("integer",url.catId)>
     <cfset variables.productCount = 0>
-    <cfset variables.subcategoryList = application.userObject.getSubcategories(categoryId=url.catId)>
+    <cfset variables.subcategoryList = application.productObject.getSubcategories(categoryId=url.catId)>
     <div class="container-fluid h-100">
         <cfoutput>
             <div class = "d-flex border-bottom border-secondary my-2">
@@ -11,7 +11,7 @@
             </div>
             <cfif variables.subcategoryList.recordCount>
                 <cfloop query="variables.subcategoryList">
-                    <cfset variables.subcategoryProductList =  application.userObject.getProductList(
+                    <cfset variables.subcategoryProductList =  application.productObject.getProductList(
                         subcategoryId=variables.subcategoryList.subcategoryId,
                         limit=5
                     )>

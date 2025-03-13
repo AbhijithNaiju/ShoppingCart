@@ -27,7 +27,7 @@
                 name="firstName" 
                 placeholder="First name" 
             >
-            <div class = "errorMessage text-center" id="firstNameError"></div>
+            <div class = "errorMessage" id="firstNameError"></div>
         </div>
         <div class="form-group my-2">
             <label for="lastName">Last name</label>
@@ -38,7 +38,7 @@
                 name="lastName" 
                 placeholder="Last name" 
             >
-            <div class = "errorMessage text-center" id="lastNameError"></div>
+            <div class = "errorMessage" id="lastNameError"></div>
         </div>
         <div class="form-group my-2">
             <label for="emailId">Email Id</label>
@@ -49,7 +49,7 @@
                 name="emailId" 
                 placeholder="Email Id" 
             >
-            <div class = "errorMessage text-center" id="emailError"></div>
+            <div class = "errorMessage" id="emailError"></div>
         </div>
         <div class="form-group my-2">
             <label for="phoneNumber">Phone</label>
@@ -61,7 +61,7 @@
                 placeholder="Phone"
                 maxlength="15"
             >
-            <div class = "errorMessage text-center" id="phoneNumberError"></div>
+            <div class = "errorMessage" id="phoneNumberError"></div>
         </div>
         <div class="form-group my-2">
             <label for="password">Password</label>
@@ -72,7 +72,7 @@
                 name="password" 
                 placeholder="Password" 
             >
-            <div class = "errorMessage text-center" id="passwordError"></div>
+            <div class = "errorMessage" id="passwordError"></div>
         </div>
         <div class="form-group my-2">
             <label for="confirmPassword">Confirm Password</label>
@@ -83,7 +83,7 @@
                 name="confirmPassword" 
                 placeholder="Password" 
             >
-            <div class = "errorMessage text-center" id="confirmPasswordError"></div>
+            <div class = "errorMessage" id="confirmPasswordError"></div>
         </div>
         <cfif structKeyExists(variables, "signupResult") AND structKeyExists(variables.signupResult, "error")>
             <cfoutput>

@@ -1,5 +1,5 @@
 <cfif structKeyExists(url, "orderId")>
-	<cfset variables.orderHistory=application.userObject.getOrderHistory(
+	<cfset variables.orderHistory=application.orderObject.getOrderHistory(
 		userId=session.userSession.userId,
 		orderId=url.orderId
 	)>

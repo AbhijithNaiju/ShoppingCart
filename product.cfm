@@ -1,6 +1,6 @@
 <cfinclude  template="./userHeader.cfm">
 <cfif structKeyExists(url, "productId") AND isValid("integer",url.productId)>
-    <cfset variables.productDetails = application.userObject.getProductDetails(productId=url.productId)>
+    <cfset variables.productDetails = application.productObject.getProductDetails(productId=url.productId)>
     <cfif arrayLen(variables.productDetails)>
         <cfoutput>
             <div class="productBody d-flex m-3">

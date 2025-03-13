@@ -15,7 +15,7 @@
             </button>
         </div>
         <div class="d-flex flex-column" id="categoryList">
-            <cfset variables.categoryData = application.adminObject.getCategories()>
+            <cfset variables.categoryData = application.adminCategoryObject.getCategories()>
             <cfoutput>
                 <cfif variables.categoryData.recordCount>
                     <cfloop query="variables.categoryData">

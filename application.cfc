@@ -6,7 +6,14 @@
 
     <cffunction  name="onApplicationStart" returnType="boolean">
         <cfset application.adminObject = createObject("component","admin.components.admin")>
+        <cfset application.adminProductObject = createObject("component","admin.components.product")>
+        <cfset application.adminCategoryObject = createObject("component","admin.components.category")>
+        <cfset application.adminSubcategoryObject = createObject("component","admin.components.subcategory")>
+        
         <cfset application.userObject = createObject("component","components.user")>
+        <cfset application.productObject = createObject("component","components.product")>
+        <cfset application.cartObject = createObject("component","components.cart")>
+        <cfset application.orderObject = createObject("component","components.order")>
         <cfreturn true>
     </cffunction>
 

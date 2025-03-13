@@ -1,107 +1,101 @@
-function validatePhoneNumber(phoneNumber,messageLocationId) {
-    const regex = /^(\+?[0-9-]{8,15})$/;
-    if(regex.test(phoneNumber)){
-        setSuccess(messageLocationId)
-        return true;
-    }else{
-        setError("Please enter a valid phone number",messageLocationId)
-        return false
-    }
-}
-function validatePincode(pincode,messageLocationId) {
-    const regex =  /^[0-9]{6}$/;
-    if(regex.test(pincode)){
-        setSuccess(messageLocationId)
-        return true;
-    }else{
-        setError("Please enter a valid pincode",messageLocationId)
-        return false
-    }
-}
-  
-function validateEmail(email,messageLocationId) {
-    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if(regex.test(email)){
-        setSuccess(messageLocationId);
-        return true;
-    }else{
-        setError("Please Enter a valid email",messageLocationId)
-        return false
-    }
-}
-function validatePassword(password,messageLocationId){
-    const match_space=/\s/;
-    if(match_space.test(password)){
-        setError("Password should not contain any special character",messageLocationId)
-        return false
-    }else if(password.length<8){
-        setError("Password needs to be at least 8 characters long.",messageLocationId)
-        return false
-    }else{
-        setSuccess(messageLocationId);
-        return true;
-    }
-}
-function confirmPasswords(password1,password2,messageLocationId){
-    if(password2.trim().length){
-        if(password1 == password2){
-            setSuccess(messageLocationId);
-            return true;
-        }else{
-            setError("Passwords do not match",messageLocationId)
-            return false
-        }
-    }else{
-        setError("Please fill this field",messageLocationId)
-        return false;
-    }
-}
-function hasSpecialCharsOrWhitespace(input,messageLocationId){
-    const regexMatchSpecial=/[^a-zA-Z0-9]/;
-    if(input.trim().length){
-        if(regexMatchSpecial.test(input)){
-            setError("This field should not contain any special character or whitespace",messageLocationId)
-            return false;
-        }else if(input.trim().length){
-            setSuccess(messageLocationId);
-            return true;
-        }
-    }else{
-        setError("Please fill this field",messageLocationId)
-        return false;
-    }
-}
+$(document).ready(function(){
+    $("#logOutBtn").click(function(){
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will log out of this page and need to authenticate again to login",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Logout"
+          }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type:"POST",
+                    url:"components/user.cfc?method=logOut",
+                    success: function(result) {
+                        logOutResult=JSON.parse(result)
+                        if(logOutResult.success){
+                            location.reload();
+                        }
+                        else{
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Please try again.",
+                                icon: "error"
+                              });
+                        }
+                    },error: function(){
+                        alert("Error occured");
+                    }
+                });
+            }
+        });
+    })
 
-function checkSpecialCharacter(input,messageLocationId){
-    const regexMatchSpecial=/[^a-zA-Z0-9-\s\+]/;
-    if(regexMatchSpecial.test(input)){
-        setError("This field should not contain any special character",messageLocationId)
-        return false;
-    }else{
-        if(input.trim().length){
-        setSuccess(messageLocationId)
+    $("#buyNow").click(function(){
+		productId=this.value;
+		addToCart(productId,"order");
+		location.href="./orderPage.cfm"
+	})
+
+    $("#orderSearchClearButton").click(function(){
+		$("#orderSearchField").val('');
+	});
+    $("#signupForm").submit(function(){
+		let firstName =$("#firstName").val();
+		let lastName =$("#lastName").val();
+		let emailId =$("#emailId").val();
+		let phoneNumber =$("#phoneNumber").val();
+		let password =$("#password").val();
+		let confirmPassword =$("#confirmPassword").val();
+
+		let isFirstNameValid = hasSpecialCharsOrWhitespace(firstName,"firstNameError");
+		let isLastNameValid = hasSpecialCharsOrWhitespace(lastName,"lastNameError");
+		let isEmailValid = validateEmail(emailId,"emailError");
+		let isPhoneValid = validatePhoneNumber(phoneNumber,"phoneNumberError");
+		let isPasswordValid = validatePassword(password,"passwordError");
+		let isConfirmValid = confirmPasswords(password,confirmPassword,"confirmPasswordError");
+		if(isFirstNameValid &&
+			isLastNameValid &&
+			isEmailValid &&
+			isPhoneValid &&
+			isPasswordValid &&
+			isConfirmValid){	
+				return true;
+			}else{
+				return false;
+			}
+	});
+});
+function addToCart(productId,redirect){
+    $.ajax({
+        type:"POST",
+        url:"components/cart.cfc?method=addToCart",
+        data:{productId:productId},
+        success: function(result) {
+            addToCartResult=JSON.parse(result)
+            if(addToCartResult.redirect){
+                if(redirect && redirect==="order"){
+                    location.href="login.cfm?redirect=order&productId="+productId
+                }else{
+                    location.href="login.cfm?redirect=cart&productId="+productId
+                }
+            }else{
+                Swal.fire({
+                    position: "top",
+                    toast: true,
+                    icon: "success",
+                    title: "Product added to cart",
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                if(addToCartResult.cartCount){
+                    $("#cartCount").text(addToCartResult.cartCount);
+                }
+            }
+        },error: function(){
+            alert("Error occured");
         }
-        return true;
-    }
-}
-function checkProductName(input,messageLocationId){
-    const regexMatchSpecial=/[^a-zA-Z0-9.\s&/()"%-+,\[\]\*\$]/;
-    if(regexMatchSpecial.test(input)){
-        setError("This field should not contain any special character",messageLocationId)
-        return false;
-    }else{
-        if(input.trim().length){
-        setSuccess(messageLocationId)
-        }
-        return true;
-    }
-}
-function setError(message,messageLocationId){
-    $("#"+messageLocationId).text(message);
-    $("#"+messageLocationId).prev().addClass("is-invalid").removeClass("is-valid");
-    $("#"+messageLocationId).prev().focus();
-}
-function setSuccess(messageLocationId){
-    $("#"+messageLocationId).text("")
-    $("#"+messageLocationId).prev().addClass("is-valid").removeClass("is-invalid");
+    });
 }

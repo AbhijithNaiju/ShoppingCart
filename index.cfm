@@ -1,5 +1,5 @@
 <cfinclude  template="./userHeader.cfm">
-<cfset variables.productList = application.userObject.getProductList(limit=10)>
+<cfset variables.productList = application.productObject.getProductList(limit=10)>
 <cfoutput>
     <div>
         <div class="productListingParent my-3 mx-5">

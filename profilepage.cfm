@@ -76,9 +76,8 @@
                         class="form-control" 
                         name="firstName"
                         id="addressFirstName"
-                        required
                         >
-                        <div class = "errorMessage text-center" id="FirstNameError"></div>
+                        <div class = "errorMessage" id="FirstNameError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="addressLastName">Last Name *</label>
@@ -87,9 +86,8 @@
                             class="form-control" 
                             name="lastName"
                             id="addressLastName"
-                            required
                         >
-                        <div class = "errorMessage text-center" id="LastNameError"></div>
+                        <div class = "errorMessage" id="LastNameError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="addressLine1">Address Line 1 *</label>
@@ -98,9 +96,8 @@
                             class="form-control" 
                             name="addressLine1"
                             id="addressLine1"
-                            required
                         >
-                        <div class = "errorMessage text-center" id="addressLine1Error"></div>
+                        <div class = "errorMessage" id="addressLine1Error"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="addressLine2">Address Line 2</label>
@@ -110,7 +107,7 @@
                             name="addressLine2"
                             id="addressLine2"
                         >
-                        <div class = "errorMessage text-center" id="addressLine2Error"></div>
+                        <div class = "errorMessage" id="addressLine2Error"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="city">City *</label>
@@ -119,9 +116,8 @@
                             class="form-control" 
                             name="city"
                             id="city"
-                            required
                         >
-                        <div class = "errorMessage text-center" id="cityError"></div>
+                        <div class = "errorMessage" id="cityError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="state">State *</label>
@@ -130,9 +126,8 @@
                             class="form-control" 
                             name="state"
                             id="state"
-                            required
                         >
-                        <div class = "errorMessage text-center" id="stateError"></div>
+                        <div class = "errorMessage" id="stateError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="addressPhoneNumber">Phone Number *</label>
@@ -143,9 +138,8 @@
                             id="addressPhoneNumber"
                             minlength="8"
                             maxlength="15"
-                            required
                         >
-                        <div class = "errorMessage text-center" id="addressPhoneNumberError"></div>
+                        <div class = "errorMessage" id="addressPhoneNumberError"></div>
                     </div>
                     <div class="form-group my-2">
                         <label for="pincode">Pincode *</label>
@@ -156,9 +150,8 @@
                             id="pincode"
                             minlength="6"
                             maxlength="6"
-                            required
                         >
-                        <div class = "errorMessage text-center" id="pincodeError"></div>
+                        <div class = "errorMessage" id="pincodeError"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -252,3 +245,4 @@
     </div>
 </cfoutput>
 <cfinclude  template="userFooter.cfm">
+<script src="/js/profileFunctions.js"></script>

@@ -6,14 +6,14 @@
             AND isNumeric(form.cardNumber)
             AND isNumeric(form.cardCVV)
         >
-            <cfset variables.placeOrder = application.userObject.placeOrder(
+            <cfset variables.placeOrder = application.orderObject.placeOrder(
                 userId = session.userSession.userId,
                 orderAddressId = form.orderAddressId,
                 cardNumber = form.cardNumber,
                 cardCVV = form.cardCVV
             )>
         <cfelse>
-            <cfset variables.error = "An unexpected error occured please try again">
+            <cfset variables.error = "Please fill all the fields and try again">
         </cfif>
     <cfelse>
         <cfset variables.addressError = "Please enter delivery address to continue">
@@ -23,10 +23,13 @@
         userId = session.userSession.userId,
         formStruct = form
     )>
+    <cfif structKeyExists(variables.addAddressResult, "error")>
+        <cfset variables.error = variables.addAddressResult>
+    </cfif>
 </cfif>
 <cfinclude  template="userHeader.cfm">
 
-<cfset variables.cartItems=application.userObject.getCartItems(userId=session.userSession.userId)>
+<cfset variables.cartItems=application.cartObject.getCartItems(userId=session.userSession.userId)>
 <cfset variables.addressList=application.userObject.getAddressList(userId=session.userSession.userId)>
 <cfset variables.actualPrice = 0>
 <cfset variables.totalTax = 0>
@@ -37,6 +40,11 @@
             <div class = "text-center text-danger">
                 <cfif structKeyExists(variables, "error")>
                     #variables.error#
+                </cfif>
+            </div>
+            <div class = "text-center text-success">
+                <cfif structKeyExists(variables, "addAddressResult") AND structKeyExists(variables.addAddressResult, "success")>
+                    Address added successfully
                 </cfif>
             </div>
             <div class="accordion" id="orderAccordion">
@@ -290,13 +298,14 @@
                                             aria-describedby="cvvHelp" 
                                             minlength="3"
                                             maxlength="3"
+                                            autocomplete="false"
                                         >
                                         <div class = "errorMessage" id="cardCVVError"></div>
                                         <div id="cvvHelp" class="form-text">
                                             3 digit code printed on the back of your card
                                         </div>
                                     </div>
-                                    <div class="text-center errorMessage m-2" id="cardError"></div>
+                                    <div class="errorMessage m-2" id="cardError"></div>
                                     <cfif variables.cartItems.recordCount AND arrayLen(variables.addressList)>
                                         <div class="col-12 d-flex justify-content-end">
                                             <button 
@@ -315,106 +324,103 @@
                     </div>
                 </div>
             </div>
-            <div class = "text-center errorMessage my-2" id="orderError">
-                <cfif structKeyExists(variables,"placeOrder") AND structKeyExists(variables.placeOrder, "error")>
-                    #variables.placeOrder.error#
-                </cfif>
-            </div>
+            <cfif structKeyExists(variables,"cardError") AND structKeyExists(variables.placeOrder, "cardError")>
+                <div class = "text-center my-2 text-danger p-3 bg-danger-subtle" id="cardError">
+                        #variables.placeOrder.error#
+                </div>
+            </cfif>
         </form>
         <div class="modal fade" tabindex="-1" id="addAddressModal" data-bs-backdrop="static">
-            <form method="post" class = "modal-dialog modal-dialog-scrollable">
+            <form method="post" class = "modal-dialog modal-dialog-scrollable" id="addAddressForm">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Add address</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="m-4">
-                            <div class="form-group my-2">
-                                <label for="firstName">First Name *</label>
+                        <div class="form-group my-2">
+                            <label for="addressFirstName">First Name *</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            name="firstName"
+                            id="addressFirstName"
+                            >
+                            <div class = "errorMessage" id="FirstNameError"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="addressLastName">Last Name *</label>
                             <input 
                                 type="text" 
                                 class="form-control" 
-                                name="firstName"
-                                id="firstName"
-                                required
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="lastName">Last Name *</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    name="lastName"
-                                    id="lastName"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="addressLine1">Address Line 1 *</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    name="addressLine1"
-                                    id="addressLine1"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="addressLine2">Address Line 2 *</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    name="addressLine2"
-                                    id="addressLine2"
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="city">City *</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    name="city"
-                                    id="city"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="state">State *</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    name="state"
-                                    id="state"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="phoneNumber">Phone Number *</label>
-                                <input 
-                                    type="tel" 
-                                    class="form-control"  
-                                    name="phoneNumber"
-                                    id="phoneNumber"
-                                    minlength="8"
-                                    maxlength="15"
-                                    pattern="[0-9-]"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group my-2">
-                                <label for="pincode">Pincode *</label>
-                                <input 
-                                    type="tel" 
-                                    class="form-control" 
-                                    name="pincode"
-                                    id="pincode"
-                                    minlength="6"
-                                    maxlength="6"
-                                    pattern="[0-9]{6}"
-                                    required
-                                >
-                            </div>
+                                name="lastName"
+                                id="addressLastName"
+                            >
+                            <div class = "errorMessage" id="LastNameError"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="addressLine1">Address Line 1 *</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="addressLine1"
+                                id="addressLine1"
+                            >
+                            <div class = "errorMessage" id="addressLine1Error"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="addressLine2">Address Line 2</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="addressLine2"
+                                id="addressLine2"
+                            >
+                            <div class = "errorMessage" id="addressLine2Error"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="city">City *</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="city"
+                                id="city"
+                            >
+                            <div class = "errorMessage" id="cityError"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="state">State *</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="state"
+                                id="state"
+                            >
+                            <div class = "errorMessage" id="stateError"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="addressPhoneNumber">Phone Number *</label>
+                            <input 
+                                type="tel" 
+                                class="form-control"  
+                                name="phoneNumber"
+                                id="addressPhoneNumber"
+                                minlength="8"
+                                maxlength="15"
+                            >
+                            <div class = "errorMessage" id="addressPhoneNumberError"></div>
+                        </div>
+                        <div class="form-group my-2">
+                            <label for="pincode">Pincode *</label>
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                name="pincode"
+                                id="pincode"
+                                minlength="6"
+                                maxlength="6"
+                            >
+                            <div class = "errorMessage" id="pincodeError"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -486,9 +492,15 @@
             <a href="./index.cfm" class="btn btn-primary btn-sm">Go to Home</a>
             <a href="./orderHistory.cfm" class="btn btn-primary btn-sm">Order history</a>
         </div>
+    <cfelseif structKeyExists(variables,"placeOrder") AND structKeyExists(variables.placeOrder, "emptyCartError")>
+        <div class = "text-center my-2 text-danger p-3 bg-danger-subtle">
+            <cfoutput>
+                <h2>#variables.placeOrder.emptyCartError#</h2>
+            </cfoutput>
+        </div>
     <cfelse>
         <div class = "d-flex flex-column align-items-center m-3 emptyCartMessage">
-            <img src="./assets/images/empty-cart.png" class="emptyCartImage">
+            <img src="./assets/images/empty-cart.png" class="errorMessageImage">
             <h4>No items present in cart</h4>
             <p>Add items to continue</p>
             <div class = "d-flex">
@@ -499,3 +511,5 @@
     </cfif>
 </cfif>
 <cfinclude  template="userFooter.cfm">
+<script src="/js/profileFunctions.js"></script>
+<script src="/js/cartAndOrder.js"></script>
