@@ -1,5 +1,4 @@
 <cfinclude template="./header.cfm">
-
 <div class="mainBody">
     <div class="categoryBody my-5 mx-auto border px-4 py-3 shadow rounded">
         <div class="categoryHeading d-flex justify-content-between my-2">

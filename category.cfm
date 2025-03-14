@@ -1,5 +1,5 @@
 <cfinclude template="userHeader.cfm">
-<cfif structKeyExists(url, "catId") AND isValid("integer",url.catId)>
+<cfif structKeyExists(url, "catId") AND len(url.catId)>
     <cfset variables.productCount = 0>
     <cfset variables.subcategoryList = application.productObject.getSubcategories(categoryId=url.catId)>
     <div class="container-fluid h-100">
@@ -11,8 +11,9 @@
             </div>
             <cfif variables.subcategoryList.recordCount>
                 <cfloop query="variables.subcategoryList">
+                    <cfset variables.subcategoryId = encrypt(variables.subcategoryList.subcategoryId, application.secretKey,'AES', 'Base64')>
                     <cfset variables.subcategoryProductList =  application.productObject.getProductList(
-                        subcategoryId=variables.subcategoryList.subcategoryId,
+                        subcategoryId=variables.subcategoryId,
                         limit=5
                     )>
                     <cfif arraylen(variables.subcategoryProductList.resultArray)>
@@ -21,7 +22,7 @@
                                 #variables.subcategoryList.subcategoryName#
                             </h3>
                             <a
-                                href="./productListing.cfm?subcatId=#variables.subcategoryList.subcategoryId#"
+                                href="./productListing.cfm?subcatId=#urlEncodedFormat(variables.subcategoryId)#"
                                 class = "subCategoryLink btn border" 
                             >
                                 View all
@@ -31,7 +32,7 @@
                             <cfloop array="#variables.subcategoryProductList.resultArray#" item="variables.subcategoryProduct">
                                 <cfif structKeyExists(variables.subcategoryProduct,"productId")>
                                     <a 
-                                        href="product.cfm?productId=#variables.subcategoryProduct.productId#" 
+                                        href="product.cfm?productId=#urlEncodedFormat(variables.subcategoryProduct.productId)#" 
                                         class="border randomProducts d-flex flex-column justify-content-between align-items-center shadow-sm"
                                     >
                                         <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
@@ -61,5 +62,7 @@
             </cfif>
         </cfoutput>
     </div>
+<cfelse>
+    <cflocation url="./missingPage.cfm" addtoken="false">
 </cfif>
 <cfinclude template="userFooter.cfm">

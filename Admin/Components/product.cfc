@@ -359,9 +359,8 @@
                         fldCreatedBy
                     )
                     VALUES
-                        <cfloop array="#arguments.fileNames#" item="local.fileArrayItem" index="local.fileArrayIndex">
-                        <cfif local.fileArrayIndex NEQ 1>,
-                        </cfif>
+                    <cfloop array="#arguments.fileNames#" item="local.fileArrayItem" index="local.fileArrayIndex">
+                        <cfif local.fileArrayIndex NEQ 1>,</cfif>
                         (
                             <cfqueryparam value='#arguments.productid#' cfsqltype="integer">,
                             <cfqueryparam value='#local.fileArrayItem.serverfile#' cfsqltype="varchar">,

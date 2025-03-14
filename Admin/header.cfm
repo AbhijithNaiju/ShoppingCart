@@ -10,11 +10,10 @@
     </head>
     <body>
         <div class="header bg-success">
-            <a href="../admin/index.cfm" class="logo">
+            <a href="./index.cfm" class="logo">
                 <img src="../assets/Images/shopping cart_transparent.png">
             </a>
             <cfset excludedPages = ["/admin/login.cfm"]>
-            
             <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
                 <div class="logOutBtn">
                     <button onclick="logOut()">

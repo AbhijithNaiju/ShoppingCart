@@ -1,8 +1,8 @@
 <cfcomponent>
     <!--- add product to cart --->
     <cffunction name = "addToCart" returntype = "struct" returnformat = "json" access="remote">
-        <cfargument name = "productid" type = "integer" required = "true">
-
+        <cfargument name = "productid" type = "string" required = "true">
+        <cfset local.productId = decrypt(arguments.productId, application.secretKey,'AES', 'Base64')>
         <cfset local.resultStruct = structNew()>
         <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
             <!--- user is logged in --->
@@ -13,7 +13,7 @@
                 FROM 
                     tblCart
                 WHERE
-                    fldProductId = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
+                    fldProductId = <cfqueryparam value = "#local.productId#" cfSqlType = "integer">
                     AND
                     fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
             </cfquery>
@@ -36,7 +36,7 @@
                             fldQuantity,
                             fldUserId
                         )VALUES(
-                            <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">,
+                            <cfqueryparam value = "#local.productId#" cfSqlType = "integer">,
                             1,
                             <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
                         );

@@ -5,6 +5,8 @@
     <cfset this.sessiontimeout = CreateTimeSpan(0,1,0,0)>
 
     <cffunction name="onApplicationStart" returnType="boolean">
+        <cfset application.secretKey = "p085TCupwllF2ks0JiBD3Q==">
+        
         <cfset application.adminObject = createObject("component","admin.components.admin")>
         <cfset application.adminProductObject = createObject("component","admin.components.product")>
         <cfset application.adminCategoryObject = createObject("component","admin.components.category")>
@@ -22,23 +24,13 @@
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
-        <cfif listfirst(CGI.script_name,'/') EQ "admin">
-            <cfset local.adminPublicPages = ["/admin/login.cfm"]>
-            <cfif arrayFindNoCase(local.adminPublicPages, arguments.requestedPage) 
-                OR (structKeyExists(session, "adminSession") AND structKeyExists(session.adminSession, "userId"))>
-                <cfreturn true>
-            <cfelse>
-                <cflocation url="../admin/login.cfm" addtoken ="false"> 
-            </cfif>
+        <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm","/orderHistory.cfm"]>
+        <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) 
+            AND NOT (structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId"))
+        >
+            <cflocation url="/login.cfm" addtoken ="false">
         <cfelse>
-            <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm","/orderHistory.cfm"]>
-            <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) 
-                AND NOT (structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId"))
-            >
-                <cflocation url="/login.cfm" addtoken ="false">
-            <cfelse>
-                <cfreturn true>
-            </cfif>
+            <cfreturn true>
         </cfif>
     </cffunction>
 
@@ -75,7 +67,7 @@
                     </html>
                 </cfmailpart>
             </cfmail>
-            <cflocation url="errorPage.cfm" addtoken="false">
+            <cflocation url="/errorPage.cfm" addtoken="false">
         </cfif>
     </cffunction>
 

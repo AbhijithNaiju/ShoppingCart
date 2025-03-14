@@ -1,5 +1,5 @@
 <cfinclude template="./userHeader.cfm">
-<cfif structKeyExists(url, "productId") AND isValid("integer",url.productId)>
+<cfif structKeyExists(url, "productId") AND len(trim(url.productId))>
     <cfset variables.productData = application.productObject.getProductList(productId=url.productId)>
     <cfset variables.productDetails = variables.productData.resultArray>
     <cfif arrayLen(variables.productDetails)>
@@ -33,7 +33,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a 
-                                    href="./category.cfm?catId=#variables.productDetails[1].categoryID#"
+                                    href="./category.cfm?catId=#urlEncodedFormat(variables.productDetails[1].categoryID)#"
                                     class = "text-decoration-none"
                                 >
                                     #variables.productDetails[1].categoryName#
@@ -41,7 +41,7 @@
                             </li>
                             <li class="breadcrumb-item">
                                 <a 
-                                    href="./productListing.cfm?subcatId=#variables.productDetails[1].subCategoryId#"
+                                    href="./productListing.cfm?subcatId=#urlEncodedFormat(variables.productDetails[1].subCategoryId)#"
                                     class = "text-decoration-none"
                                 >
                                     #variables.productDetails[1].SubcategoryName#
@@ -78,7 +78,7 @@
                             <button 
                                 class="btn btn-warning"
                                 name="addToCart"
-                                onclick="addToCart(#url.productId#)"
+                                onclick="addToCart('#url.productId#')"
                             >
                                 ADD TO CART
                             </button>
@@ -102,3 +102,4 @@
     <cflocation url="./missingPage.cfm" addtoken="false">
 </cfif>
 <cfinclude template="./userFooter.cfm">
+<script src="./js/productPage.js"></script>

@@ -10,7 +10,11 @@
 <cfif url.maxPrice EQ "">
     <cfset url.maxPrice = -1>
 </cfif>
-<cfif len(trim(url.searchvalue)) OR (url.subcatId NEQ 0 AND isValid("integer",url.subcatId))>
+<cfif len(url.sortOrder) EQ 0>
+    <cfset url.sortOrder = "name">
+</cfif>
+
+<cfif len(trim(url.searchvalue)) OR (url.subcatId NEQ 0 AND len(url.subcatId))>
     <cfset variables.productList = application.productObject.getProductList(
         searchValue=url.searchValue,
         subcategoryId=url.subcatId,
@@ -49,7 +53,7 @@
                     <button 
                         type="submit" 
                         value="asc" 
-                        class="btn me-1 sortProductsBtn"
+                        class="btn btn-sm me-1 sortProductsBtn #(url.sortOrder EQ "asc")?"btn-dark":"btn-outline-dark"#"
                         <cfif url.sortOrder EQ "asc">
                             disabled
                         </cfif>
@@ -59,13 +63,22 @@
                     <button 
                         type="submit" 
                         value="desc" 
-                        class="btn sortProductsBtn"
+                        class="btn btn-sm me-1 sortProductsBtn #(url.sortOrder EQ "desc")?"btn-dark":"btn-outline-dark"#"
                         <cfif url.sortOrder EQ "desc">
                             disabled
                         </cfif>
                     >
                         Price : High to low
                     </button>
+                    <cfif url.sortOrder EQ "asc" OR url.sortOrder EQ "desc">
+                        <button 
+                            type="submit" 
+                            class="btn btn-sm btn-outline-danger sortProductsBtn d-flex align-items-center"
+                        >
+                            Clear
+                            <i class="fa-solid fa-xmark mx-1"></i>
+                        </button>
+                    </cfif>
                 </div>
                 <div class="dropdown" id="dropdownForm">
                     <button 
@@ -83,6 +96,7 @@
                             <input 
                                 type="radio" 
                                 class="filterRadio" 
+                                name = "filterRadio"
                                 id="filter1" 
                                 onclick='setFilter({min:0,max:1000})'
                             >
@@ -92,6 +106,7 @@
                             <input 
                                 type="radio" 
                                 class="filterRadio" 
+                                name="filterRadio" 
                                 id="filter2" 
                                 onclick='setFilter({min:1000,max:10000})'
                             >
@@ -101,6 +116,7 @@
                             <input 
                                 type="radio" 
                                 class="filterRadio" 
+                                name="filterRadio" 
                                 id="filter3" 
                                 onclick='setFilter({min:10000,max:15000})'
                             >
@@ -115,6 +131,8 @@
                                 name="minPrice"
                                 <cfif LEN(url.minPrice) AND url.minPrice GTE 0>
                                     value="#url.minPrice#"
+                                <cfelse>
+                                    value=""
                                 </cfif>
                             >
                             TO
@@ -144,7 +162,7 @@
                                 onclick="filterProducts()"
                                 aria-expanded="false"
                             >
-                                Submit
+                                Apply
                             </button>
                         </li>
                         <li class = " text-center">
@@ -161,7 +179,7 @@
                 <div class="productListingParent my-3 mx-5" id="productListingParent">
                     <cfloop array = "#variables.productList.resultArray#" item="variables.productDetails">
                         <a 
-                            href="product.cfm?productId=#variables.productDetails.productId#" 
+                            href="product.cfm?productId=#urlEncodedFormat(variables.productDetails.productId)#" 
                             class="randomProducts d-flex flex-column justify-content-between align-items-center border shadow-sm"
                         >
                             <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
@@ -183,9 +201,8 @@
                         <button
                             class="btn border my-1"
                             id="showMoreBtn"
-                            value="#variables.productList.resultArray[1].totalCount#"
                             onclick="showMore(
-                                #url.subcatId#,
+                                '#url.subcatId#',
                                 '#url.searchValue#',
                                 '#url.sortOrder#',
                                 #url.minPrice#,

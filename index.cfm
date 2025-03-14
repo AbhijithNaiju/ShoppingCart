@@ -5,7 +5,7 @@
         <div class="productListingParent my-3 mx-5">
             <cfloop array = "#variables.productList.resultArray#" item="variables.productItem">
                 <a 
-                    href="product.cfm?productId=#variables.productItem.productId#" 
+                    href="product.cfm?productId=#urlEncodedFormat(variables.productItem.productId)#" 
                     class="border randomProducts d-flex flex-column justify-content-between align-items-center shadow-sm"
                 >
                     <div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">

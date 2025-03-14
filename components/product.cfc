@@ -1,7 +1,10 @@
 <cfcomponent>
     <!--- subcategory list --->
     <cffunction name = "getSubcategories" returntype = "query">
-        <cfargument name = "categoryId" type = "integer" required = "false">
+        <cfargument name = "categoryId" type = "string" required = "false">
+        <cfif structKeyExists(arguments, "categoryId")>
+            <cfset local.categoryId = decrypt(arguments.categoryId, application.secretKey,'AES', 'Base64')>
+        </cfif>
         <cfquery name = "local.subcategories">
             SELECT 
                 SC.fldSubcategory_ID AS subcategoryId,
@@ -13,9 +16,9 @@
             INNER JOIN tblSubCategory SC ON SC.fldCategoryId = C.fldCategory_ID AND SC.fldActive = 1
             WHERE
                 C.fldActive=1
-                <cfif structKeyExists(arguments, "categoryId")>
+                <cfif structKeyExists(local, "categoryId")>
                     AND
-                    C.fldCategory_ID = <cfqueryparam value = "#arguments.categoryId#" cfSqlType = "integer">
+                    C.fldCategory_ID = <cfqueryparam value = "#local.categoryId#" cfSqlType = "integer">
                 </cfif>
             ORDER BY
                 C.fldCategory_id
@@ -26,27 +29,33 @@
     <!--- get list of products --->
     <cffunction name = "getProductList" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument name = "searchValue" type = "string" required = "false">
-        <cfargument name = "subcategoryId" type = "integer" required = "false">
-        <cfargument name = "productId" type = "integer" required = "false">
+        <cfargument name = "subcategoryId" type = "string" required = "false">
+        <cfargument name = "productId" type = "string" required = "false">
         <cfargument name = "sortOrder" type = "string" required = "false">
         <cfargument name = "minPrice" type = "float" required = "false">
         <cfargument name = "maxPrice" type = "float" required = "false">
         <cfargument name = "offset" type = "integer" required = "false">
         <cfargument name = "count" type = "string" required = "false">
         <cfargument name = "limit" type = "integer" required = "false">
-
+        <cfset local.productId = "">
+        <cfset local.subcategoryId = "">
+        <cfif structKeyExists(arguments, "productId") AND arguments.productId NEQ 0>
+            <cfset local.productId = decrypt(arguments.productId, application.secretKey,'AES', 'Base64')>
+        </cfif>
+        <cfif structKeyExists(arguments, "subcategoryId") AND arguments.subcategoryId NEQ 0>
+            <cfset local.subcategoryId = decrypt(arguments.subcategoryId, application.secretKey,'AES', 'Base64')>
+        </cfif>
         <cfset local.resultStruct = structNew()>
         <cfquery name = "local.getProducts" returntype="struct">
             SELECT 
                 P.fldproductName AS productName,
-                <cfif structKeyExists(arguments, "productId")>
+                <cfif len(local.productId)>
                     P.fldDescription AS description,
                     PI.fldDefaultImage AS defaultImage,
                     C.fldCategoryname AS categoryName,
-                    C.fldCategory_ID AS categoryId,
-                <cfelse>
-                    P.fldProduct_ID AS productId,
                 </cfif>
+                C.fldCategory_ID AS categoryId,
+                P.fldProduct_ID AS productId,
                 P.fldPrice AS productPrice,
                 (P.fldPrice*P.fldTax/100) AS productTax,
                 B.fldBrandName AS brandName,
@@ -60,19 +69,20 @@
             INNER JOIN tblProduct P ON SC.fldSubcategory_ID = P.fldSubcategoryId AND P.fldActive = 1
             INNER JOIN tblBrands B ON P.fldBrandId = B.fldBrand_ID AND B.fldActive = 1
             LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId AND PI.fldActive = 1
-            <cfif NOT structKeyExists(arguments, "productId")>
+            <cfif len(local.productId) EQ 0>
                 AND
                 PI.fldDefaultImage = 1 
             </cfif>
             WHERE
                 C.fldActive=1
-                <cfif structKeyExists(arguments, "productId")>
+                <cfif len(local.productId)>
+                    <!--- If product id is present(no other conditions apply) --->
                     AND
-                    P.fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
+                    P.fldProduct_ID = <cfqueryparam value = "#local.productId#" cfSqlType = "integer">
                 <cfelse>
-                    <cfif structKeyExists(arguments, "subcategoryId") AND val(arguments.subcategoryId)>
+                    <cfif len(local.subcategoryId)>
                         AND
-                        SC.fldSubcategory_ID = <cfqueryparam value = "#arguments.subcategoryId#" cfSqlType = "integer">
+                        SC.fldSubcategory_ID = <cfqueryparam value = "#local.subcategoryId#" cfSqlType = "integer">
                     </cfif>
                     <cfif structKeyExists(arguments, "searchValue") AND len(trim(arguments.searchValue))>
                         AND(
@@ -92,7 +102,7 @@
                         (P.fldPrice+P.fldTax) <= <cfqueryparam value = '#val(arguments.maxPrice)#' cfSqlType = "decimal" scale="2">
                     </cfif>
                     ORDER BY
-                        <cfif structKeyExists(arguments, "productId")>
+                        <cfif len(local.productId)>
                             PI.fldDefaultImage DESC
                         <cfelseif structKeyExists(arguments, "sortOrder") AND arguments.sortOrder EQ "asc">
                             (P.fldPrice+P.fldTax) ASC
@@ -114,6 +124,11 @@
                     </cfif>
                 </cfif>
         </cfquery>
+        <cfloop array="#local.getProducts.resultSet#" item="local.arrayItem">
+            <cfset local.arrayItem.productId=encrypt(local.arrayItem.productId, application.secretKey,'AES', 'Base64')>
+            <cfset local.arrayItem.subCategoryId=encrypt(local.arrayItem.subCategoryId, application.secretKey,'AES', 'Base64')>
+            <cfset local.arrayItem.categoryId=encrypt(local.arrayItem.categoryId, application.secretKey,'AES', 'Base64')>
+        </cfloop>
         <cfset local.resultStruct["resultArray"] = local.getProducts.resultSet>
         <cfset local.resultStruct["success"] = true>
         <cfreturn local.resultStruct>

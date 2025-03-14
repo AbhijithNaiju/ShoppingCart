@@ -11,13 +11,15 @@ $(document).ready(function(){
 });
 
 function setFilter(range){
-	$('#filterMin').val(range.min)
-	$('#filterMax').val(range.max)
+	$('#filterMin').val(range.min);
+	$('#filterMax').val(range.max);
 }
 
 function clearFilter(){
-	$('#filterMin').attr("value",'')
-	$('#filterMax').attr("value",'')
+	$('#filterMin').val('');
+	$('#filterMax').val('');
+	// $('#filterMin').attr("value",'')
+	// $('#filterMax').attr("value",'')
 	$('[name=filterRadio]').prop('checked',false);
 }
 
@@ -33,13 +35,6 @@ function filterProducts(){
 		$("#filterMax").attr("value",maxValue);
 	}
 }
-
-if(myDropdown = document.getElementById('filterDropdown')){
-	myDropdown.addEventListener('hide.bs.dropdown', event => {
-		document.getElementById("dropdownForm").reset();
-	})
-}
-
 
 function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 {
@@ -63,13 +58,13 @@ function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 		success: function(result) {
 			resultJson=JSON.parse(result);
 			if(resultJson.success){
-				offset=offset+5;
 				if(resultJson.resultArray.length){
+					offset+=resultJson.resultArray.length;
 					$('#listingMessage').text("");
 					resultJson.resultArray.forEach(productData => {
 						let productBody = `
 							<a 
-								href="product.cfm?productId=${productData.productId}" 
+								href="product.cfm?productId=${encodeURIComponent(productData.productId)}" 
 								class="randomProducts d-flex flex-column justify-content-between align-items-center border shadow-sm"
 							>
 								<div class="card-img-top randomProductImage d-flex align-items-center justify-content-center">
@@ -86,7 +81,8 @@ function showMore(subcategoryId,searchValue,sortOrder,minPrice,maxPrice)
 						`;
 						$("#productListingParent").append(productBody);
 					});
-					if(offset >= totalProductCount.val()){
+
+					if(offset >= resultJson.resultArray[0].totalCount){
 						totalProductCount.hide();
 					}
 				}else{

@@ -98,15 +98,17 @@
                 <cfset variables.allSubcategories = application.productObject.getSubcategories()>
                 <div class="categoryNav px-3 py-2">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
+                        <cfset variables.categoryId = urlEncodedFormat(encrypt(variables.allSubcategories.categoryId, application.secretKey,'AES', 'Base64'))>
                         <div class = "navCategory">
-                            <a href="category.cfm?catId=#variables.allSubcategories.categoryId#" class = "navCategoryName">
+                            <a href="category.cfm?catId=#variables.categoryId#" class = "navCategoryName">
                                 #variables.allSubcategories.categoryName#
                             </a>
                             <div class="categoryDropDown dropdown-menu d-flex flex-column ">
                                 <cfoutput>
+                                    <cfset variables.subcategoryId = urlEncodedFormat(encrypt(variables.allSubcategories.subcategoryId, application.secretKey,'AES', 'Base64'))>
                                     <li>
                                         <a 
-                                            href="productListing.cfm?subcatId=#variables.allSubcategories.subcategoryId#" 
+                                            href="productListing.cfm?subcatId=#variables.subcategoryId#" 
                                             class="navSubcategoryName dropdown-item py-2 btn"
                                         >
                                             #variables.allSubcategories.subcategoryName#
