@@ -2,7 +2,7 @@
     <!--- add product to cart --->
     <cffunction name = "addToCart" returntype = "struct" returnformat = "json" access="remote">
         <cfargument name = "productid" type = "string" required = "true">
-        <cfset local.productId = decrypt(arguments.productId, application.secretKey,'AES', 'Base64')>
+        <cfset local.decryptedProductId = application.userObject.decryptId(arguments.productId)>
         <cfset local.resultStruct = structNew()>
         <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
             <!--- user is logged in --->
@@ -13,7 +13,7 @@
                 FROM 
                     tblCart
                 WHERE
-                    fldProductId = <cfqueryparam value = "#local.productId#" cfSqlType = "integer">
+                    fldProductId = <cfqueryparam value = "#local.decryptedProductId#" cfSqlType = "integer">
                     AND
                     fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
             </cfquery>
@@ -36,7 +36,7 @@
                             fldQuantity,
                             fldUserId
                         )VALUES(
-                            <cfqueryparam value = "#local.productId#" cfSqlType = "integer">,
+                            <cfqueryparam value = "#local.decryptedProductId#" cfSqlType = "integer">,
                             1,
                             <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
                         );
@@ -54,10 +54,11 @@
 
     <!--- Update quantity in cart --->
     <cffunction name = "updateCartQnty" returntype = "struct" returnformat = "json" access = "remote">
-        <cfargument name = "cartId" type = "integer" required = "true">
+        <cfargument name = "cartId" type = "string" required = "true">
         <cfargument name = "quantityChange" type = "integer" required = "true">
         <cfset local.resultStruct = structNew()>
 
+        <cfset local.decryptedCartId = application.userObject.decryptId(arguments.cartId)>
         <cfquery name = "local.getCartItemQuantity">
             SELECT
                 C.fldQuantity AS cartItemQuantity,
@@ -67,7 +68,7 @@
                 tblCart C
             INNER JOIN tblProduct P ON P.fldProduct_ID = C.fldProductId AND P.fldActive = 1
             WHERE 
-                C.fldCart_id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">;
+                C.fldCart_id=<cfqueryparam value = "#local.decryptedCartId#" cfSqlType = "integer">;
         </cfquery>
             <cfset local.resultStruct["unitPrice"] = local.getCartItemQuantity.unitPrice>
             <cfset local.resultStruct["unitTax"] = local.getCartItemQuantity.unitTax>
@@ -86,7 +87,7 @@
                     ELSE fldQuantity
                 END
                 WHERE
-                    fldCart_Id=<cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+                    fldCart_Id=<cfqueryparam value = "#local.decryptedCartId#" cfSqlType = "integer">
             </cfquery>
             <cfset local.resultStruct["success"] = true>
             <cfif arguments.quantityChange EQ -1>
@@ -124,13 +125,15 @@
 
     <!--- Delete an item from cart --->
     <cffunction name = "removeFromCart" returntype = "struct" returnformat = "JSON" access = "remote">
-        <cfargument name = "cartId" type = "integer" required = "true">
+        <cfargument name = "cartId" type = "string" required = "true">
         <cfset local.structResult = structNew()>
+
+        <cfset local.decryptedId = application.userObject.decryptId(arguments.cartId)>
         <cfquery result="local.deleteResult">
             DELETE FROM
                 tblcart
             WHERE 
-                fldCart_ID = <cfqueryparam value = "#arguments.cartId#" cfSqlType = "integer">
+                fldCart_ID = <cfqueryparam value = "#local.decryptedId#" cfSqlType = "integer">
         </cfquery>
         <cfif local.deleteResult.recordCount>
             <cfset session.userSession.cartCount -= 1>

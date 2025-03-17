@@ -1,6 +1,7 @@
 <cfinclude template="./userHeader.cfm">
 <cfif structKeyExists(url, "productId") AND len(trim(url.productId))>
-    <cfset variables.productData = application.productObject.getProductList(productId=url.productId)>
+    <cfset variables.decryptedProductId = application.userObject.decryptId(url.productId)>
+    <cfset variables.productData = application.productObject.getProductList(productId=variables.decryptedProductId)>
     <cfset variables.productDetails = variables.productData.resultArray>
     <cfif arrayLen(variables.productDetails)>
         <cfoutput>
@@ -33,7 +34,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a 
-                                    href="./category.cfm?catId=#urlEncodedFormat(variables.productDetails[1].categoryID)#"
+                                    href="./category.cfm?categoryId=#urlEncodedFormat(variables.productDetails[1].categoryID)#"
                                     class = "text-decoration-none"
                                 >
                                     #variables.productDetails[1].categoryName#
@@ -41,7 +42,7 @@
                             </li>
                             <li class="breadcrumb-item">
                                 <a 
-                                    href="./productListing.cfm?subcatId=#urlEncodedFormat(variables.productDetails[1].subCategoryId)#"
+                                    href="./productListing.cfm?subcategoryId=#urlEncodedFormat(variables.productDetails[1].subCategoryId)#"
                                     class = "text-decoration-none"
                                 >
                                     #variables.productDetails[1].SubcategoryName#
@@ -78,7 +79,7 @@
                             <button 
                                 class="btn btn-warning"
                                 name="addToCart"
-                                onclick="addToCart('#url.productId#')"
+                                onclick="addToCart(productId='#url.productId#')"
                             >
                                 ADD TO CART
                             </button>
@@ -90,6 +91,7 @@
                             >
                                 BUY NOW
                             </button>
+                            <input type="hidden" id="addToCartId">
                         </div>
                     </div>
                 </div>
@@ -102,4 +104,3 @@
     <cflocation url="./missingPage.cfm" addtoken="false">
 </cfif>
 <cfinclude template="./userFooter.cfm">
-<script src="./js/productPage.js"></script>

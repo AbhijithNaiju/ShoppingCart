@@ -93,17 +93,6 @@ body{
 .displayNone{
     display: none !important;
 }
-#loginModal{
-    background-color: rgba(216, 216, 216, 0.815);
-    height: 100%;
-    width: 100%;
-    top: 0;
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-}
 #loginForm{
     width: 35%;
     background-color: #fff;

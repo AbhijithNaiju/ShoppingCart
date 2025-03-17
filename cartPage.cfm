@@ -10,7 +10,8 @@
             <div class="row">
                 <div class="col-8 pe-4">
                     <cfloop query="#variables.cartItems#">
-                        <div class="cartItem row my-2 p-3" id="cartItem#variables.cartItems.cartId#">
+                        <cfset variables.encryptedCartId = application.userObject.encryptId(variables.cartItems.cartId)>
+                        <div class="cartItem row my-2 p-3" id="cartItem#variables.encryptedCartId#">
                             <div class="col-3 d-flex">
                                 <img 
                                     src="./assets/productimages/#variables.cartItems.imageFileName#"
@@ -21,10 +22,10 @@
                                 <a href="./product.cfm?productId=#variables.cartItems.productId#">
                                     #variables.cartItems.productName#
                                 </a>
-                                <div class="quantityButtons" id="quantityButton#variables.cartItems.cartId#">
+                                <div class="quantityButtons" id="quantityButton#variables.encryptedCartId#">
                                     <button 
                                         class="btn btn-sm btn-primary reduceQuantity" 
-                                        onclick="changeQuantity(-1,#variables.cartItems.cartId#)"
+                                        value="#variables.encryptedCartId#"
                                     >
                                         -
                                     </button>
@@ -34,8 +35,8 @@
                                         readonly
                                     >
                                     <button 
-                                        class="btn btn-sm btn-primary addQuantity" 
-                                        onclick="changeQuantity(1,#variables.cartItems.cartId#)"
+                                        class="btn btn-sm btn-primary increaseQuantity" 
+                                        value="#variables.encryptedCartId#"
                                     >
                                         +
                                     </button>
@@ -62,7 +63,7 @@
                                 </div>
                                 <button 
                                     class="btn border border-dark removeButton"
-                                    value="#variables.cartItems.cartId#"
+                                    value="#variables.encryptedCartId#"
                                 >
                                     Remove
                                 </button>

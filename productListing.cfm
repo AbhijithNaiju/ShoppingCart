@@ -1,9 +1,11 @@
 <cfinclude template="userHeader.cfm">
+
 <cfparam name="url.sortOrder" default="name">
 <cfparam name="url.searchValue" default="">
-<cfparam name="url.subcatId" default="0">
+<cfparam name="url.subcategoryId" default="">
 <cfparam name="url.minPrice" default="-1">
 <cfparam name="url.maxPrice" default="-1">
+
 <cfif url.minPrice EQ "">
     <cfset url.minPrice = -1>
 </cfif>
@@ -14,10 +16,15 @@
     <cfset url.sortOrder = "name">
 </cfif>
 
-<cfif len(trim(url.searchvalue)) OR (url.subcatId NEQ 0 AND len(url.subcatId))>
+<cfif len(trim(url.searchvalue)) OR (url.subcategoryId NEQ 0 AND len(url.subcategoryId))>
+    <cfif len(url.subcategoryId)>
+        <cfset local.decryptedSubcategoryId = application.userObject.decryptId(url.subcategoryId)>
+    <cfelse>
+        <cfset local.decryptedSubcategoryId = 0>
+    </cfif>
     <cfset variables.productList = application.productObject.getProductList(
         searchValue=url.searchValue,
-        subcategoryId=url.subcatId,
+        subcategoryId=local.decryptedSubcategoryId,
         sortOrder=url.sortOrder,
         limit=10,
         count=true,
@@ -29,16 +36,16 @@
             <h3>
                 <cfif url.searchValue NEQ "">
                     Search result for "#url.searchValue#"
-                <cfelseif url.subcatId NEQ 0 AND arrayLen(variables.productList.resultArray)>
+                <cfelseif url.subcategoryId NEQ 0 AND arrayLen(variables.productList.resultArray)>
                     #variables.productList.resultArray[1].subcategoryName#
                 </cfif>
             </h3>
             <form method="get" class="d-flex justify-content-between mx-2">
                 <div class="d-flex justify-content-between mx-2">
                     <cfif LEN(url.searchValue)>
-                        <input type="hidden" name="searchValue" value="#url.searchValue#">
-                    <cfelseif structKeyExists(url, "subcatId")>
-                        <input type="hidden" name="subcatId" value="#url.subcatId#">
+                        <input type="hidden" name="searchValue" value="#url.searchValue#" id="searchValue">
+                    <cfelseif structKeyExists(url, "subcategoryId")>
+                        <input type="hidden" name="subcategoryId" value="#url.subcategoryId#" id="subcategoryId">
                     </cfif>
                     <input 
                         type="hidden" 
@@ -80,7 +87,7 @@
                         </button>
                     </cfif>
                 </div>
-                <div class="dropdown" id="dropdownForm">
+                <div class="dropdown" id="minMaxDropdown">
                     <button 
                         class="btn btn-secondary dropdown-toggle"
                         id="filterDropdown"
@@ -201,13 +208,7 @@
                         <button
                             class="btn border my-1"
                             id="showMoreBtn"
-                            onclick="showMore(
-                                '#url.subcatId#',
-                                '#url.searchValue#',
-                                '#url.sortOrder#',
-                                #url.minPrice#,
-                                #url.maxPrice#
-                            )" 
+                            value=#arrayLen(variables.productList.resultArray)#
                         >
                             Show more
                         </button>

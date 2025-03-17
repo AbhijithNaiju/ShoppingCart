@@ -29,7 +29,7 @@ $(document).ready(function(){
                         }else if(resultJson.create){
                             let categoryItem=`
                                 <div 
-                                    class="categoryItem d-flex justify-content-between align-items-center my-1"
+                                    class="categoryItem d-flex justify-content-between align-items-center p-2 my-1 shadow-sm"
                                     id="categoryItem${resultJson.categoryId}"
                                 >
                                     <div class = "categoryName">${categoryName}</div>
@@ -122,7 +122,7 @@ $(document).ready(function(){
                         }else if(resultJson.create){
                             let subcategoryItem=`
                                 <div 
-                                    class="categoryItem d-flex justify-content-between align-items-center my-1"
+                                    class="categoryItem d-flex justify-content-between align-items-center p-2 my-1 shadow-sm"
                                     id="subCategory${resultJson.subcategoryId}"
                                 >
                                     <div class = "categoryName">${subcategoryName}</div>

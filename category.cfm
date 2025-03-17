@@ -1,7 +1,10 @@
 <cfinclude template="userHeader.cfm">
-<cfif structKeyExists(url, "catId") AND len(url.catId)>
+<cfif structKeyExists(url, "categoryId") AND len(url.categoryId)>
     <cfset variables.productCount = 0>
-    <cfset variables.subcategoryList = application.productObject.getSubcategories(categoryId=url.catId)>
+    <cfset variables.decryptedCategoryId = application.userObject.decryptId(url.categoryId)>
+    <cfset variables.subcategoryList = application.productObject.getSubcategories(
+        categoryId=variables.decryptedCategoryId
+    )>
     <div class="container-fluid h-100">
         <cfoutput>
             <div class = "d-flex border-bottom border-secondary my-2">
@@ -11,9 +14,9 @@
             </div>
             <cfif variables.subcategoryList.recordCount>
                 <cfloop query="variables.subcategoryList">
-                    <cfset variables.subcategoryId = encrypt(variables.subcategoryList.subcategoryId, application.secretKey,'AES', 'Base64')>
+                    <cfset variables.subcategoryId = application.userObject.encryptId(variables.subcategoryList.subcategoryId)>
                     <cfset variables.subcategoryProductList =  application.productObject.getProductList(
-                        subcategoryId=variables.subcategoryId,
+                        subcategoryId=variables.subcategoryList.subcategoryId,
                         limit=5
                     )>
                     <cfif arraylen(variables.subcategoryProductList.resultArray)>
@@ -22,7 +25,7 @@
                                 #variables.subcategoryList.subcategoryName#
                             </h3>
                             <a
-                                href="./productListing.cfm?subcatId=#urlEncodedFormat(variables.subcategoryId)#"
+                                href="./productListing.cfm?subcategoryId=#urlEncodedFormat(variables.subcategoryId)#"
                                 class = "subCategoryLink btn border" 
                             >
                                 View all

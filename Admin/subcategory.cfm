@@ -34,7 +34,7 @@
                     <cfif arrayLen(variables.subCategoryData)>
                         <cfloop array="#variables.subCategoryData#" item="subcategoryItem">
                             <div 
-                                class="categoryItem d-flex justify-content-between align-items-center my-1"
+                                class="categoryItem d-flex justify-content-between align-items-center p-2 my-1 shadow-sm"
                                 id="subCategory#subcategoryItem.subCategoryId#"
                             >
                                 <div class = "subcategoryName">#subcategoryItem.subCategoryName#</div>
@@ -65,7 +65,7 @@
                     </cfif>
                 </div>
                 <div 
-                    class="categoryItem"
+                    class=""
                     id="noSubcategoryError"
                 >
                     <cfif arrayLen(variables.subCategoryData) EQ 0>

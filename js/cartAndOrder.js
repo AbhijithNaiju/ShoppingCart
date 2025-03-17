@@ -1,6 +1,6 @@
 $(document).ready(function(){ 
 	$('.removeButton').click(function(){
-		const cartId = $(this).val();
+		const cartId = this.value;
 		Swal.fire({
 			title: "Are you sure?",
 			text: "This product will be removed from the cart.",
@@ -13,13 +13,16 @@ $(document).ready(function(){
 			if (result.isConfirmed) {
 				$.ajax({
 					type:"POST",
-					url:"components/cart.cfc?method=removeFromCart",
-					data:{cartId:cartId},
+					url:"components/cart.cfc",
+					data:{
+						cartId:cartId,
+						method:"removeFromCart"
+					},
 					success: function(result) {
 						cartDeleteResult=JSON.parse(result)
 						if(cartDeleteResult.success){
 							// updating total price
-							cartItem = $("#cartItem"+cartId)
+							cartItem = $("#cartItem"+$.escapeSelector(cartId))
 							itemPrice = parseFloat($(cartItem).find(".itemPrice").text());
 							itemTax = parseFloat($(cartItem).find(".itemTax").text());
 							itemQuantity = parseFloat($(cartItem).find(".cartQuantity").val());
@@ -118,6 +121,14 @@ $(document).ready(function(){
 			return false;
 		}
 	});
+	$(".reduceQuantity").click(function(){
+		cartId=this.value;
+		changeQuantity(change=-1,cartId=this.value);
+	});
+	$(".increaseQuantity").click(function(){
+		cartId=this.value;
+		changeQuantity(change=1,cartId=this.value);
+	});
 });
 
 function changeQuantity(change,cartId){
@@ -130,16 +141,16 @@ function changeQuantity(change,cartId){
 		},
 		success: function(result){
 			changeQuantityResult=JSON.parse(result)
-				quantityElement= $("#quantityButton"+cartId).find(".cartQuantity");
+				quantityElement= $("#quantityButton"+$.escapeSelector(cartId)).find(".cartQuantity");
 			if(changeQuantityResult.cartItemQuantity){
 				quantityElement.val(changeQuantityResult.cartItemQuantity);
 				if(changeQuantityResult.cartItemQuantity==1){
 					// disabling reduce button
-					$("#quantityButton"+cartId).find(".reduceQuantity").prop("disabled",true);
+					$("#quantityButton"+$.escapeSelector(cartId)).find(".reduceQuantity").prop("disabled",true);
 				}
 				if(changeQuantityResult.cartItemQuantity==2){
 					// enabling reduce button
-					$("#quantityButton"+cartId).find(".reduceQuantity").prop("disabled",false);
+					$("#quantityButton"+$.escapeSelector(cartId)).find(".reduceQuantity").prop("disabled",false);
 				}
 			}
 			if(changeQuantityResult.success){

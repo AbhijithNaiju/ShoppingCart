@@ -194,6 +194,10 @@ body
     right: 10px;
     top:10px;
 }
+.categoryItem{
+    border-radius: 5px;
+    border:1px solid #dddddd;
+}
 .categoryItem img{
     height: 25px;
 }

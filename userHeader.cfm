@@ -3,8 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../style/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="icon" type="image/x-icon" href="assets/images/flaticon.png">
+        <link rel="stylesheet" href="style/bootstrap.min.css">
+        <link rel="stylesheet" href="style/sweetalert2.min.css">
+        <link rel="stylesheet" href="style/fontawesome/css/all.min.css">
         <link rel="stylesheet" href="style/user.css">
         <title>Shopping Cart</title>
     </head>
@@ -68,7 +70,7 @@
                                     </span>
                                 </div>
                                 <div class="menuButton">
-                                    <button id="logOutBtn" class="me-1" onclick="logOut()">
+                                    <button id="logOutBtn" class="me-1">
                                         Logout 
                                     </button>
                                     <img 
@@ -98,17 +100,17 @@
                 <cfset variables.allSubcategories = application.productObject.getSubcategories()>
                 <div class="categoryNav px-3 py-2">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
-                        <cfset variables.categoryId = urlEncodedFormat(encrypt(variables.allSubcategories.categoryId, application.secretKey,'AES', 'Base64'))>
+                        <cfset variables.categoryId = urlEncodedFormat(application.userObject.encryptID(variables.allSubcategories.categoryId))>
                         <div class = "navCategory">
-                            <a href="category.cfm?catId=#variables.categoryId#" class = "navCategoryName">
+                            <a href="category.cfm?categoryId=#variables.categoryId#" class = "navCategoryName">
                                 #variables.allSubcategories.categoryName#
                             </a>
                             <div class="categoryDropDown dropdown-menu d-flex flex-column ">
                                 <cfoutput>
-                                    <cfset variables.subcategoryId = urlEncodedFormat(encrypt(variables.allSubcategories.subcategoryId, application.secretKey,'AES', 'Base64'))>
+                                    <cfset variables.subcategoryId = urlEncodedFormat(application.userObject.encryptId(variables.allSubcategories.subcategoryId))>
                                     <li>
                                         <a 
-                                            href="productListing.cfm?subcatId=#variables.subcategoryId#" 
+                                            href="productListing.cfm?subcategoryId=#variables.subcategoryId#" 
                                             class="navSubcategoryName dropdown-item py-2 btn"
                                         >
                                             #variables.allSubcategories.subcategoryName#

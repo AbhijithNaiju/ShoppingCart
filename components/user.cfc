@@ -82,7 +82,7 @@
     </cffunction>
 
     <!--- userlogin --->
-    <cffunction name="userLogin" returntype="struct">
+    <cffunction name="userLogin" returntype="struct" access="remote" returnFormat="json">
         <cfargument name="username" type = "string" required = "true">
         <cfargument name="password" type = "string" required = "true">
 
@@ -350,5 +350,28 @@
         </cfquery>
         <cfset local.resultStruct["success"] = true>
         <cfreturn local.resultStruct>
+    </cffunction>
+    
+    <cffunction name = "encryptId" returntype = "string">
+        <cfargument name = "inputId" type = "integer" required = "true">
+        <cfset local.resultStruct = structNew()>
+        <cftry>
+            <cfset local.encryptedId=encrypt(arguments.inputId, application.secretKey,'AES', 'Base64')>
+        <cfcatch>
+            <cfset local.encryptedId="-1">
+        </cfcatch>
+        </cftry>
+        <cfreturn local.encryptedId>
+    </cffunction>
+    <cffunction name = "decryptId" returntype = "string">
+        <cfargument name = "encryptedId" type = "string" required = "true">
+        <cfset local.resultStruct = structNew()>
+        <cftry>
+            <cfset local.decryptedId = decrypt(arguments.encryptedId, application.secretKey,'AES', 'Base64')>
+        <cfcatch>
+            <cfset local.decryptedId = "-1">
+        </cfcatch>
+        </cftry>
+        <cfreturn local.decryptedId>
     </cffunction>
 </cfcomponent>

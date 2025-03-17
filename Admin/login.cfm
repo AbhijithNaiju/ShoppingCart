@@ -11,7 +11,14 @@
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+            <input 
+                type="password" 
+                class="form-control" 
+                id="password" 
+                name="password" 
+                placeholder="Password"
+                autocomplete="false"
+            >
             <span class="errorMessage" id ="passwordError"></span>
         </div>
         <input type="submit" class="btn btn-success" name="submitBtn">

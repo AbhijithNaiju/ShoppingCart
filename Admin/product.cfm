@@ -85,7 +85,7 @@
                             </cfloop>
                         </cfif>
                     </div>
-                    <div class="categoryItem" id="noProductError">
+                    <div class="" id="noProductError">
                         <cfif productData.recordCount EQ 0>
                             No Products Found
                         </cfif>

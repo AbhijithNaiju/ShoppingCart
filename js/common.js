@@ -36,6 +36,7 @@ $(document).ready(function(){
     $("#orderSearchClearButton").click(function(){
 		$("#orderSearchField").val('');
 	});
+
     $("#signupForm").submit(function(){
 		let firstName =$("#firstName").val();
 		let lastName =$("#lastName").val();
@@ -61,4 +62,38 @@ $(document).ready(function(){
 				return false;
 			}
 	});
+
+    $("#modalLoginBtn").click(function(){
+        const modalUserName = $("#modalUserName").val();
+        const modalPassword = $("#modalPassword").val();
+        if(modalUserName.length == 0){
+            setError(message = "Please enter email or phone",messageLocationId = "modalUserNameError");
+        }if(modalPassword.length == 0){
+            setError(message = "Please enter your password",messageLocationId = "modalPasswordError");
+        }
+        if(modalUserName.length && modalPassword.length){
+            $.ajax({
+                type:"POST",
+                url:"components/user.cfc",
+                data:{
+                    userName:modalUserName,
+                    password:modalPassword,
+                    method:"userLogin"
+                },
+                success: function(result) {
+                    loginResult=JSON.parse(result)
+                    if(loginResult.success){
+                        if($("#addToCartId").val()){
+                            addToCart(productId=$("#addToCartId").val());
+                        }
+                    }
+                    else{
+                        $("#loginModalError").text("Please enter valid username and password");
+                    }
+                },error: function(){
+                    alert("Error occured");
+                }
+            });
+        }
+    });
 });

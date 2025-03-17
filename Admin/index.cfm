@@ -19,7 +19,7 @@
                 <cfif variables.categoryData.recordCount>
                     <cfloop query="variables.categoryData">
                         <div 
-                            class="categoryItem d-flex justify-content-between align-items-center my-1"
+                            class="categoryItem d-flex justify-content-between align-items-center p-2 my-1 shadow-sm"
                             id="categoryItem#variables.categoryData.fldCategory_ID#"
                         >
                             <div class = "categoryName">#variables.categoryData.fldCategoryName#</div>
@@ -50,7 +50,7 @@
                 </cfif>
             </cfoutput>
         </div>
-        <div class="categoryItem" id="noCategoryError">
+        <div class="" id="noCategoryError">
             <cfif variables.categoryData.recordCount EQ 0>
                 No Category Found
             </cfif>
