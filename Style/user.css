@@ -289,6 +289,8 @@ body{
 .grandTotalContainer{
     font-size: 18px;
     font-weight: bold;
+    border-top: 1px solid #aaa;
+    padding-top: 5px;
 }
 .quantityButtons input{
     width: 20%;
@@ -417,4 +419,8 @@ body{
 }
 .emptyCartMessage p{
     font-size: 12px;
+}
+.totalOrderPrice{
+    margin: 0 0 0 auto;
+    width: 40%;
 }

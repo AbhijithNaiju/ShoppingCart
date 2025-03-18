@@ -80,7 +80,7 @@ $(document).ready(function(){
 	$(".orderAddress").change(function(){
 		const addressId=this.value;
 		$("#orderAddressId").val(addressId);
-		addressItem=$("#addressItem"+addressId);
+		addressItem=$("#addressItem"+$.escapeSelector(addressId));
 		$("#selectedAddress").empty()
 		$("#selectedAddress").append(addressItem.find(".addressName").clone())
 		$("#selectedAddress").append(addressItem.find(".addressDetails").clone())
@@ -89,6 +89,7 @@ $(document).ready(function(){
 	});
 
 	$("#placeOrderForm").submit(function(){
+		console.log($("#cardError").text())
 		$("#cardError").hide();
 		const orderAddressId=$("#orderAddressId").val();
 		const cardNumber=$("#cardNumber").val();

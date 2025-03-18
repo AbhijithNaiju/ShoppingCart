@@ -6,33 +6,26 @@
     )>
     <cfif structKeyExists(variables.loginResult,"success")>
         <!--- Login is success --->
+        <cfif structKeyExists(url, "productId") AND len(url.productId)>
+            <!--- product id is present in url --->
+            <cfif url.redirect EQ "cart" OR url.redirect EQ "order">
+                <!--- adding product to cart --->
+                <cfset addTocart = application.cartObject.addToCart(url.productId)>
+            </cfif>
+        </cfif>
         <cfif structKeyExists(url, "redirect")>
             <!--- redirect is present in url --->
-            
-            <cfif structKeyExists(url, "productId") AND isNumeric(url.productId)>
-                <!--- product id is present in url --->
-
-                <cfif url.redirect EQ "cart" OR url.redirect EQ "order">
-                    <!--- adding product to cart and going back to product page --->
-                    <cfset addTocart = application.cartObject.addToCart(url.productId)>
-                    <cfif url.redirect EQ "order">
-                        <!--- goto to order page --->
-                        <cflocation url="./orderPage.cfm" addtoken="no">
-                    <cfelse>
-                        <cflocation url="./product.cfm?productId=#url.productId#" addtoken="no">
-                    </cfif>
-                </cfif>
-
-            <cfelseif url.redirect EQ "cart">
+            <cfif url.redirect EQ "cart">
                 <!--- go to cart page(productid is not present) --->
                 <cflocation url="./cartPage.cfm" addtoken="no">
 
             <cfelseif url.redirect EQ "profilePage">
                 <!--- go to cart page(productid is not present) --->
                 <cflocation url="./profilePage.cfm" addtoken="no">
-                
+            <cfelseif url.redirect EQ "order">
+                    <!--- goto to order page --->
+                    <cflocation url="./orderPage.cfm" addtoken="no">
             </cfif>
-
         <cfelse>
             <!--- goto home page(no redirect value) --->
             <cflocation url="index.cfm" addtoken="false">

@@ -118,12 +118,15 @@ $(document).ready(function(){
 			if (result.isConfirmed) {
 				$.ajax({
 					type:"POST",
-					url:"components/user.cfc?method=deleteAddress",
-					data:{addressId:addressId},
+					url:"components/user.cfc",
+					data:{
+						addressId:addressId,
+						method:"deleteAddress"
+					},
 					success: function(result) {
 						logOutResult=JSON.parse(result)
 						if(logOutResult.success){
-							$("#address"+addressId).remove();
+							$("#address"+$.escapeSelector(addressId)).remove();
 						}else{
 							Swal.fire({
 								title: "Error occured while deleting!",

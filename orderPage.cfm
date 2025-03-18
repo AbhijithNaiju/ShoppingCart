@@ -5,9 +5,10 @@
             AND isNumeric(form.cardNumber)
             AND isNumeric(form.cardCVV)
         >
+            <cfset variables.decryptedAddressId = application.userObject.decryptId(form.orderAddressId  )>
             <cfset variables.placeOrder = application.orderObject.placeOrder(
                 userId = session.userSession.userId,
-                orderAddressId = form.orderAddressId,
+                orderAddressId = variables.decryptedAddressId,
                 cardNumber = form.cardNumber,
                 cardCVV = form.cardCVV
             )>
@@ -35,7 +36,7 @@
 <cfset variables.totalPrice = 0>
 <cfif variables.cartItems.recordCount>
     <cfoutput>
-        <form method="post" id="placeOrderForm" class="orderBody container h-100 mt-5">
+        <form method="post" id="placeOrderForm" class="orderBody container h-100 mt-2">
             <div class = "text-center text-danger">
                 <cfif structKeyExists(variables, "error")>
                     #variables.error#
@@ -47,7 +48,7 @@
                 </cfif>
             </div>
             <div class="accordion" id="orderAccordion">
-                <div class="accordion-item">
+                <div class="accordion-item border my-2">
                     <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="##collapseOne" aria-expanded="true" aria-controls="collapseOne">
                         Delivery Address
@@ -59,17 +60,19 @@
                             <div class = "border p-3 d-flex justify-content-between align-items-center">
                                 <div class="d-flex flex-column" id = "selectedAddress">
                                     <cfif arrayLen(variables.addressList)>
-                                        <span class="addressName">#variables.addressList[1].firstName & ' ' & variables.addressList[1].lastName#</span>
-                                        <span>
-                                            #variables.addressList[1].addressLine1 & ', '#
-                                            <cfif structKeyExists(variables.addressList[1],"addressLine2")>
-                                                #variables.addressList[1].addressLine2 & ', '#
+                                        <cfset variables.selectedAddress = arrayLast(variables.addressList)>
+                                        <cfset variables.selectedAddressId = application.userObject.encryptId(variables.selectedAddress.addressId)>
+                                        <span class="addressName">#variables.selectedAddress.firstName & ' ' & variables.selectedAddress.lastName#</span>
+                                        <span class="addressDetails">
+                                            #variables.selectedAddress.addressLine1 & ', '#
+                                            <cfif len(variables.selectedAddress.addressLine2)>
+                                                #variables.selectedAddress.addressLine2 & ', '#
                                             </cfif>
-                                            #variables.addressList[1].city & ', '#
-                                            #variables.addressList[1].state & ', '#
-                                            #variables.addressList[1].pincode#
+                                            #variables.selectedAddress.city & ', '#
+                                            #variables.selectedAddress.state & ', '#
+                                            #variables.selectedAddress.pincode#
                                         </span>
-                                        <span>#variables.addressList[1].phoneNumber#</span>
+                                        <span class="addressPhone">Phone : #variables.selectedAddress.phoneNumber#</span>
                                     <cfelse>
                                         <div class = "text-center text-danger">
                                             <cfif structKeyExists(variables,"addressError")>
@@ -94,7 +97,7 @@
                                             type="hidden" 
                                             id="orderAddressId" 
                                             name="orderAddressId" 
-                                            value="#variables.addressList[1].addressId#"
+                                            value="#variables.selectedAddressId#"
                                         >
                                     </cfif>
                                     <button 
@@ -126,7 +129,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="accordion-item">
+                <div class="accordion-item border my-2">
                     <h2 class="accordion-header">
                     <button 
                         class="accordion-button collapsed" 
@@ -212,7 +215,7 @@
                             </cfloop>
                         </div>
                         <div class="my-1">
-                            <div class="border p-3 d-flex flex-column justify-content-around">
+                            <div class="totalOrderPrice p-3 d-flex flex-column justify-content-around">
                                 <div>
                                     <div class="row">
                                         <span class="col-6">Actual Price</span>
@@ -257,7 +260,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="accordion-item">
+                <div class="accordion-item border my-2">
                     <h2 class="accordion-header">
                     <button 
                         class="accordion-button collapsed" 
@@ -275,7 +278,7 @@
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="##orderAccordion">
                         <div class=" my-1">
-                            <div class="border p-3">
+                            <div class="p-3">
                                 <h2>Card details</h2>
                                 <div class="row g-3">
                                     <div class="col-6">
@@ -301,35 +304,39 @@
                                             aria-describedby="cvvHelp" 
                                             minlength="3"
                                             maxlength="3"
-                                            autocomplete="false"
+                                            autocomplete="true"
                                         >
                                         <div class = "errorMessage" id="cardCVVError"></div>
                                         <div id="cvvHelp" class="form-text">
                                             3 digit code printed on the back of your card
                                         </div>
                                     </div>
-                                    <div class="errorMessage m-2" id="cardError"></div>
-                                    <cfif variables.cartItems.recordCount AND arrayLen(variables.addressList)>
                                         <div class="col-12 d-flex justify-content-end">
                                             <button 
                                                 type="submit" 
                                                 class="btn btn-warning w-25" 
                                                 name = "placeOrder"
                                                 id="placeOrder"
+                                                <cfif 
+                                                    variables.cartItems.recordCount EQ 0
+                                                        OR 
+                                                    arrayLen(variables.addressList) EQ 0
+                                                >
+                                                    disabled
+                                                </cfif>
                                             >
                                             Place Order
                                             </button>
                                         </div>
-                                    </cfif>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <cfif structKeyExists(variables,"cardError") AND structKeyExists(variables.placeOrder, "cardError")>
+            <cfif structKeyExists(variables,"placeOrder") AND structKeyExists(variables.placeOrder, "cardError")>
                 <div class = "text-center my-2 text-danger p-3 bg-danger-subtle" id="cardError">
-                        #variables.placeOrder.error#
+                        #variables.placeOrder.cardError#
                 </div>
             </cfif>
         </form>
@@ -444,26 +451,26 @@
                     </div>
                     <div class="modal-body">
                         <cfloop array="#variables.addressList#" item="variables.addressItem" index="variables.addressIndex">
+                            <cfset variables.encryptedAddressId = application.userObject.encryptId(variables.addressItem.addressId)>
                             <div 
                                 class = "border rounded my-2 p-3 d-flex align-items-center" 
-                                id="addressItem#variables.addressItem.addressId#"
+                                id="addressItem#variables.encryptedAddressId#"
                             >
                                 <input 
                                     type = "radio" 
                                     name = "orderAddressRadio" 
                                     class = "orderAddress mx-1" 
-                                    value = "#variables.addressItem.addressId#"
-                                    id="addressRadio#variables.addressItem.addressId#"
-                                    #(variables.addressIndex EQ 1)?'checked':''#
+                                    value = "#variables.encryptedAddressId#"
+                                    id="addressRadio#variables.encryptedAddressId#"
+                                    #(variables.encryptedAddressId EQ variables.selectedAddressId)?'checked':''#
                                 >
-                                <label class="d-flex flex-column ms-1" for="addressRadio#variables.addressItem.addressId#">
+                                <label class="d-flex flex-column ms-1" for="addressRadio#variables.encryptedAddressId#">
                                     <span class="addressName">
                                         #variables.addressItem.firstName & ' ' & variables.addressItem.lastName#
                                     </span>
                                     <span class = "addressDetails">
                                         #variables.addressItem.addressLine1 & ', '#
-                                        <cfif structKeyExists(variables.addressItem,"addressLine2")
-                                            AND LEN(variables.addressItem.addressLine2)
+                                        <cfif LEN(variables.addressItem.addressLine2)
                                         >
                                             #variables.addressItem.addressLine2 & ', '#
                                         </cfif>
@@ -472,7 +479,7 @@
                                         #variables.addressItem.pincode#
                                     </span>
                                     <span class = "addressPhone">
-                                        Phone: #variables.addressItem.phoneNumber#
+                                        Phone : #variables.addressItem.phoneNumber#
                                     </span>
                                 </label>
                             </div>

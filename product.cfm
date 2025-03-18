@@ -104,3 +104,4 @@
     <cflocation url="./missingPage.cfm" addtoken="false">
 </cfif>
 <cfinclude template="./userFooter.cfm">
+<script src="./js/productPage.js"></script>

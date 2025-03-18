@@ -185,8 +185,9 @@
             WHERE
                 fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
                 AND
-                fldActive = 1;
-
+                fldActive = 1
+            ORDER BY 
+                fldCreatedDate ASC;
         </cfquery>
         <cfreturn local.qryaddressList.resultSet>
     </cffunction>
@@ -337,16 +338,17 @@
 
     <!--- Delete address --->
     <cffunction name = "deleteAddress" returntype = "struct" access = "remote" returnformat = "json">
-        <cfargument name = "addressId" type = "integer" required = "true">
-
+        <cfargument name = "addressId" type = "string" required = "true">
+        
         <cfset local.resultStruct = structNew()>
+        <cfset local.decryptedAddressId =  application.userObject.decryptId(arguments.addressId)>
         <cfquery>
             UPDATE
                 tblAddress
             SET
                 fldActive = 0
             WHERE
-                fldAddress_ID = <cfqueryparam value = '#arguments.addressId#' cfsqltype = "integer">
+                fldAddress_ID = <cfqueryparam value = '#local.decryptedAddressId#' cfsqltype = "integer">
         </cfquery>
         <cfset local.resultStruct["success"] = true>
         <cfreturn local.resultStruct>

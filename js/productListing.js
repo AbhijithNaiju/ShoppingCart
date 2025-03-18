@@ -1,4 +1,3 @@
-var offset;
 $(document).ready(function(){
 	// Used to unselect radio when custom min max are used
 	$('.filterInput').click(function(){
@@ -16,7 +15,7 @@ $(document).ready(function(){
 		const maxPrice = $("#filterMax").val();
 		const sortOrder = $("#sortOrder").val();
 		const showMoreBtn = $("#showMoreBtn");
-		offset = parseInt(showMoreBtn.val());
+		let offset = parseInt(showMoreBtn.val());
 		const productData = new Object();
 
 		productData.subcategoryId = (subcategoryId)?subcategoryId:'';

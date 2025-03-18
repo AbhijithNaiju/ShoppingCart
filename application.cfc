@@ -24,7 +24,7 @@
         <cfif structKeyExists(url, "reload") AND url.reload EQ "true">
             <cfset onApplicationStart()>
         </cfif>
-        <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm","/orderHistory.cfm"]>
+        <cfset local.userRestrictedPages = ["/orderPage.cfm","/cartPage.cfm","/profilePage.cfm","/orderHistory.cfm","/orderInvoice.cfm"]>
         <cfif arrayFindNoCase(local.userRestrictedPages, arguments.requestedPage) 
             AND NOT (structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId"))
         >

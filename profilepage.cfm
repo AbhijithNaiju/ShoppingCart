@@ -32,9 +32,10 @@
         <h2>Addresses</h2>
         <div class="addressBody mb-2">
             <cfloop array="#variables.addressList#" item="variables.addressItem">
+                <cfset variables.encryptedAddressId = application.userObject.encryptId(variables.addressItem.addressId)>
                 <div 
                     class = "border rounded-1 p-3 my-2 d-flex justify-content-between align-items-center" 
-                    id="address#variables.addressItem.addressId#"
+                    id="address#variables.encryptedAddressId#"
                 >
                     <div class="d-flex flex-column">
                         <span class="addressName">#variables.addressItem.firstName & ' ' & variables.addressItem.lastName#</span>
@@ -47,11 +48,11 @@
                             #variables.addressItem.state & ', '#
                             #variables.addressItem.pincode#
                         </span>
-                        <span>#variables.addressItem.phoneNumber#</span>
+                        <span>Phone:#variables.addressItem.phoneNumber#</span>
                     </div>
                     <button 
                         class = "btn btn-danger btn-sm deleteAddress" 
-                        value="#variables.addressItem.addressId#"
+                        value="#variables.encryptedAddressId#"
                     >
                         <img src="./assets/images/delete-white.png">
                     </button>
