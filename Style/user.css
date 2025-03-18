@@ -424,3 +424,9 @@ body{
     margin: 0 0 0 auto;
     width: 40%;
 }
+.profileAddressItem:hover,.changeAddressItem:hover{
+    background-color: #ebf5fc;
+}
+.editProfileButton{
+    font-size: 18px;
+}

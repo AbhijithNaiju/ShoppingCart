@@ -88,31 +88,37 @@ $(document).ready(function(){
 			}
 		});
 	});
+
+	$("#clearFilter").click(function(){
+		$('#filterMin').val('');
+		$('#filterMax').val('');
+		$('[name=filterRadio]').prop('checked',false);
+	});
+	$("#filterForm").submit(function(){
+		let minValue = $("#filterMin").val();
+		let maxValue = $("#filterMax").val();
+		if(minValue < 0 || maxValue < 0){
+			$("#filterError").text("Please enter a positive price");
+			if(minValue<0){
+				$("#filterMin").focus();
+			}
+			if(maxValue<0){
+				$("#filterMax").focus();
+			}
+			return false;
+		}else{
+			$("#filterError").text("");
+			$("#filterMin").attr("value",minValue);
+			$("#filterMax").attr("value",maxValue);
+		}
+	});
 });
 
-function setFilter(range){
-	$('#filterMin').val(range.min);
-	$('#filterMax').val(range.max);
+function setFilter(min,max){
+	$('#filterMin').val(min);
+	$('#filterMax').val(max);
 }
 
-function clearFilter(){
-	$('#filterMin').val('');
-	$('#filterMax').val('');
-	$('[name=filterRadio]').prop('checked',false);
-}
-
-function filterProducts(){
-	let minValue = $("#filterMin").val();
-	let maxValue = $("#filterMax").val();
-	if(minValue < 0 || maxValue < 0){
-		$("#filterError").text("Please enter a positive number");
-		event.preventDefault();
-	}else{
-		$("#filterError").text("");
-		$("#filterMin").attr("value",minValue);
-		$("#filterMax").attr("value",maxValue);
-	}
-}
 const myDropdown = document.getElementById('minMaxDropdown')
 myDropdown.addEventListener('hide.bs.dropdown', event => {
 	$("#filterMin").val('');

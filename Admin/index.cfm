@@ -5,10 +5,10 @@
             <h3>CATEGORIES</h3>
             <button 
                 type="button" 
-                class="btn btn-success btn-sm" 
+                class="btn btn-success btn-sm openCategoryModal" 
                 data-bs-toggle="modal" 
                 data-bs-target="#addModal"
-                onclick="openCategoryModal(0)"
+                value="0"
             >
                 Add +
             </button>
@@ -26,16 +26,15 @@
                             <div class="d-flex justify-content-between categoryButtons">
                                 <button 
                                     type="button" 
-                                    class="btn btn-sm" 
+                                    class="btn btn-sm openCategoryModal" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="##addModal"
-                                    onclick="openCategoryModal(#variables.categoryData.fldCategory_ID#)"
+                                    value="#variables.categoryData.fldCategory_ID#"
                                 >
                                     <img src="../assets/images/edit-icon.png">
                                 </button>
                                 <button 
-                                    class="btn btn-sm" 
-                                    onclick="deleteCategory(this)" 
+                                    class="btn btn-sm deleteCategory"
                                     value="#variables.categoryData.fldCategory_ID#">
                                     <img src="../assets/images/delete-icon.png">
                                 </button>

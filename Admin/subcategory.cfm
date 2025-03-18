@@ -49,8 +49,7 @@
                                         <img src="../assets/images/edit-icon.png">
                                     </button>
                                     <button 
-                                        class="btn btn-sm" 
-                                        onclick="deleteSubCategory(this)" 
+                                        class="btn btn-sm deleteSubCategory"
                                         value="#subcategoryItem.subCategoryId#">
                                         <img src="../assets/images/delete-icon.png">
                                     </button>

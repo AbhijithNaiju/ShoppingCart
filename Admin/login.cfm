@@ -1,6 +1,6 @@
 <cfinclude template="./header.cfm">
 <div class="mainBody">
-    <form method="post" class="loginForm" onSubmit="return loginValidate()">
+    <form method="post" class="loginForm" id="loginform">
         <div class="formHeader">
             Admin Login
         </div>

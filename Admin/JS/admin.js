@@ -36,16 +36,15 @@ $(document).ready(function(){
                                     <div class="d-flex justify-content-between categoryButtons">
                                         <button 
                                             type="button" 
-                                            class="btn btn-sm" 
+                                            class="btn btn-sm openCategoryModal" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#addModal"
-                                            onclick="openCategoryModal(${resultJson.categoryId})"
+                                            value="${resultJson.categoryId}"
                                         >
                                             <img src="../assets/images/edit-icon.png">
                                         </button>
                                         <button 
-                                            class="btn btn-sm" 
-                                            onclick="deleteCategory(this)" 
+                                            class="btn btn-sm deleteCategory" 
                                             value="${resultJson.categoryId}">
                                             <img src="../assets/images/delete-icon.png">
                                         </button>
@@ -137,8 +136,7 @@ $(document).ready(function(){
                                             <img src="../assets/images/edit-icon.png">
                                         </button>
                                         <button 
-                                            class="btn btn-sm" 
-                                            onclick="deleteSubCategory(this)" 
+                                            class="btn btn-sm deleteSubCategory"
                                             value="${resultJson.subcategoryId}">
                                             <img src="../assets/images/delete-icon.png">
                                         </button>
@@ -216,9 +214,10 @@ $(document).ready(function(){
             if(deletedProducts != []){
                 productData.append("deletedProducts",deletedProducts.toString());
             }
+            productData.append("method",addOrEditProduct);
             $.ajax({
                 type: "POST",
-                url: "components/product.cfc?method=addOrEditProduct",
+                url: "components/product.cfc",
                 data: productData,
                 processData: false,
                 contentType: false,
@@ -412,8 +411,11 @@ $(document).ready(function(){
             if (result.isConfirmed){
                 $.ajax({
                     type:"POST",
-                    url:"components/product.cfc?method=deleteProduct",
-                    data:{productId:deleteProductId},
+                    url:"components/product.cfc",
+                    data:{
+                        productId:deleteProductId,
+                        method:"deleteProduct"
+                    },
                     success: function(result) {
                         resultJson=JSON.parse(result);
                         if(resultJson.success){
@@ -435,92 +437,178 @@ $(document).ready(function(){
             }
         });
     });
-});
-function loginValidate(){
-    
-    let userName = $("#userName").val();
-    let password = $("#password").val();
-    $(".errorMessage").text("");
-    error = false;
-    if(!userName.trim().length){
-        setError(message = "Please enter email or phone number",messageLocationId = "userNameError");
-        error = true
-    }else{
-        setSuccess("userNameError");
-    }
-    if(!password.trim().length){
-        setError(message = "Please enter the password",messageLocationId = "passwordError");
-        error = true
-    }else{
-        setSuccess("passwordError");
-    }
-    if(error)
-        return false
-}
-function logOut(){
-	Swal.fire({
-		title: "Are you sure?",
-		text: "You will log out of this page and need to authenticate again to login",
-		icon: "warning",
-		showCancelButton: true,
-		confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
-		confirmButtonText: "Logout"
-	  }).then((result) => {
-		if (result.isConfirmed) {
-			$.ajax({
-				type:"POST",
-				url:"components/admin.cfc?method=logOut",
-				success: function(result) {
-					logOutResult=JSON.parse(result)
-					if(logOutResult.success){
-						location.reload();
-					}else{
-						Swal.fire({
-							title: "Error!",
-							text: "Please try again.",
-							icon: "error"
-						  });
-					}
-				},error: function(){
-					alert("Error occured");
-				}
-			});
-		}
-	});
-}
 
-function openCategoryModal(categoryId){
-    if(categoryId){
-        $.ajax({
-            type:"post",
-            url:"components/category.cfc",
-            data:{
-                categoryId:categoryId,
-                method:"getCategoryname"
-            },
-            success:function(result){
-                resultJson=JSON.parse(result);
-                if(resultJson.success){
-                    $("#categoryName").val(resultJson.categoryName);
-                }else if(resultJson.error){
-                    alert(resultJson.error);
-                }else{
-                    alert("Unexpected error occured")
+    $(document).on("click",".openCategoryModal",function(){
+        categoryId = this.value;
+        if(categoryId && categoryId != 0){
+            $.ajax({
+                type:"post",
+                url:"components/category.cfc",
+                data:{
+                    categoryId:categoryId,
+                    method:"getCategoryname"
+                },
+                success:function(result){
+                    resultJson=JSON.parse(result);
+                    if(resultJson.success){
+                        $("#categoryName").val(resultJson.categoryName);
+                    }else if(resultJson.error){
+                        alert(resultJson.error);
+                    }else{
+                        alert("Unexpected error occured")
+                    }
+                },error:function(){
+                    alert("Error occured");
                 }
-            },error:function(){
-                alert("Error occured");
+            });
+            $("#modalHeading").text("Edit category");
+            $("#modalCategorySubmit").val(categoryId);
+            $("#modalCategorySubmit").text("EDIT");
+        }else{
+            $("#modalHeading").text("Add category");
+            $("#modalCategorySubmit").val(0);
+            $("#modalCategorySubmit").text("ADD");
+        }
+    });
+
+    $("#logout").click(function logOut(){
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will log out of this page and need to authenticate again to login",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Logout"
+          }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type:"POST",
+                    url:"components/admin.cfc",
+                    data:{method:"logOut"},
+                    success: function(result) {
+                        logOutResult=JSON.parse(result)
+                        if(logOutResult.success){
+                            location.reload();
+                        }else{
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Please try again.",
+                                icon: "error"
+                              });
+                        }
+                    },error: function(){
+                        alert("Error occured");
+                    }
+                });
             }
         });
-        $("#modalHeading").text("Edit category");
-        $("#modalCategorySubmit").val(categoryId);
-        $("#modalCategorySubmit").text("EDIT");
-    }else{
-        $("#modalHeading").text("Add category");
-        $("#modalCategorySubmit").val(0);
-        $("#modalCategorySubmit").text("ADD");
-    }
-}
+    });
+
+    $("#loginform").submit(function(){
+        let userName = $("#userName").val();
+        let password = $("#password").val();
+        $(".errorMessage").text("");
+        error = false;
+        if(!userName.trim().length){
+            setError(message = "Please enter email or phone number",messageLocationId = "userNameError");
+            error = true
+        }else{
+            setSuccess("userNameError");
+        }
+        if(!password.trim().length){
+            setError(message = "Please enter the password",messageLocationId = "passwordError");
+            error = true
+        }else{
+            setSuccess("passwordError");
+        }
+        if(error)
+            return false
+    });
+
+    $(document).on("click",".deleteCategory",function(){
+        categoryItem=this;
+        categoryId=this.value;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete the category and its contents.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Delete"
+        }).then((result) => {
+            if (result.isConfirmed){
+                $.ajax({
+                    type:"POST",
+                    url:"components/category.cfc",
+                    data:{
+                        categoryId:categoryId,
+                        method:"deleteCategory"
+                    },
+                    success: function(result) {
+                        if(result){
+                            categoryItem.parentElement.parentElement.remove();
+                            if($("#categoryList").children().length){
+                                $("#noCategoryError").text("");
+                            }else{
+                                $("#noCategoryError").text("No Subcategory Found");
+                            }
+                        }else{
+                            alert("Error occured while deleteing");
+                        }
+                    },
+                    error:function()
+                    {
+                        alert("An error occured");
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on("click",".deleteSubCategory",function(){
+        deleteButton = this;
+        subcategoryId = this.value;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete the sub category and its contents",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Delete"
+        }).then((result) => {
+            if (result.isConfirmed){
+                $.ajax({
+                    type:"POST",
+                    url:"components/subcategory.cfc",
+                    data:{
+                        subCategoryId:subcategoryId,
+                        method:"deleteSubCategory"
+                    },
+                    success: function(result) {
+                        if(result){
+                            deleteButton.parentElement.parentElement.remove();
+                            if($("#subcategoryList").children().length){
+                                $("#noSubcategoryError").text("");
+                            }else{
+                                $("#noSubcategoryError").text("No Subcategory Found");
+                            }
+                        }else{
+                            alert("Error occured while deleteing");
+                        }
+                    },
+                    error:function(){
+                        alert("An error occured");
+                    }
+                });
+            }
+        });
+    });
+});
+
+
 function openSubCategoryModal(categoryId,subcategoryId){
     $("#categorySelect").val(categoryId);
     if(subcategoryId){
@@ -562,8 +650,11 @@ function openProductModal(productData){
         $("#productImages").removeAttr("required")
         $.ajax({
             type:"POST",
-            url:"components/product.cfc?method=getProductDetails",
-            data:{productId:productData.productId},
+            url:"components/product.cfc",
+            data:{
+                productId:productData.productId,
+                method:"getProductDetails"
+            },
             success: function(result) {
                 resultJson=JSON.parse(result);
                 if(resultJson.success){
@@ -674,8 +765,11 @@ function listSubcategories(categoryId,currentSubCategoryId)
     $("#subCategorySelect").empty();
     $.ajax({
         type:"POST",
-        url:"components/subcategory.cfc?method=getSubcategories",
-        data:{categoryId:categoryId},
+        url:"components/subcategory.cfc",
+        data:{
+            categoryId:categoryId,
+            method:"getSubcategories"
+        },
         success: function(result) {
             if(result){
                 subCategoryDetails=JSON.parse(result);
@@ -696,76 +790,6 @@ function listSubcategories(categoryId,currentSubCategoryId)
         },
         error:function(){
             alert("An error occured")
-        }
-    });
-}
-
-function deleteCategory(categoryId){
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This will delete the category and its contents.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Delete"
-    }).then((result) => {
-        if (result.isConfirmed){
-            $.ajax({
-                type:"POST",
-                url:"components/category.cfc?method=deleteCategory",
-                data:{categoryId:categoryId.value},
-                success: function(result) {
-                    if(result){
-                        categoryId.parentElement.parentElement.remove();
-                        if($("#categoryList").children().length){
-                            $("#noCategoryError").text("");
-                        }else{
-                            $("#noCategoryError").text("No Subcategory Found");
-                        }
-                    }else{
-                        alert("Error occured while deleteing");
-                    }
-                },
-                error:function()
-                {
-                    alert("An error occured");
-                }
-            });
-        }
-    });
-}
-function deleteSubCategory(deleteButton){
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This will delete the sub category and its contents",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Delete"
-    }).then((result) => {
-        if (result.isConfirmed){
-            $.ajax({
-                type:"POST",
-                url:"components/subcategory.cfc?method=deleteSubCategory",
-                data:{subCategoryId:deleteButton.value},
-                success: function(result) {
-                    if(result){
-                        deleteButton.parentElement.parentElement.remove();
-                        if($("#subcategoryList").children().length){
-                            $("#noSubcategoryError").text("");
-                        }else{
-                            $("#noSubcategoryError").text("No Subcategory Found");
-                        }
-                    }else{
-                        alert("Error occured while deleteing");
-                    }
-                },
-                error:function(){
-                    alert("An error occured");
-                }
-            });
         }
     });
 }

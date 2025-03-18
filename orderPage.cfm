@@ -453,7 +453,7 @@
                         <cfloop array="#variables.addressList#" item="variables.addressItem" index="variables.addressIndex">
                             <cfset variables.encryptedAddressId = application.userObject.encryptId(variables.addressItem.addressId)>
                             <div 
-                                class = "border rounded my-2 p-3 d-flex align-items-center" 
+                                class = "border changeAddressItem rounded my-2 p-3 d-flex align-items-center" 
                                 id="addressItem#variables.encryptedAddressId#"
                             >
                                 <input 

@@ -17,7 +17,7 @@
             <cfset excludedPages = ["/admin/login.cfm"]>
             <cfif NOT arrayFindNoCase(excludedPages, CGI.script_name)>
                 <div class="logOutBtn">
-                    <button onclick="logOut()">
+                    <button id="logout">
                         Logout
                     </button>
                     <img src="../assets/images/icons8-logOut-24.png" alt="image not found">

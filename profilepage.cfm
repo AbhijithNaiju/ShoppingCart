@@ -18,8 +18,13 @@
                 </span>
                 <p id="profileEmail">#variables.profileDetails.email#</p>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="##profileEditModal">
-                <img src="./assets/images/edit-icon-white.png">
+            <button 
+                type="button" 
+                class="btn brn-sm btn-outline-primary editProfileButton" 
+                data-bs-toggle="modal" 
+                data-bs-target="##profileEditModal"
+            >
+                <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
         <cfif structKeyExists(variables,"addAddressResult") and structKeyExists(variables.addAddressResult, "error")>
@@ -34,7 +39,7 @@
             <cfloop array="#variables.addressList#" item="variables.addressItem">
                 <cfset variables.encryptedAddressId = application.userObject.encryptId(variables.addressItem.addressId)>
                 <div 
-                    class = "border rounded-1 p-3 my-2 d-flex justify-content-between align-items-center" 
+                    class = "profileAddressItem border rounded-1 p-3 my-2 d-flex justify-content-between align-items-center" 
                     id="address#variables.encryptedAddressId#"
                 >
                     <div class="d-flex flex-column">

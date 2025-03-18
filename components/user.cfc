@@ -69,6 +69,7 @@
                     <cfset session.userSession.userId = local.signUpresult.generatedKey>
                     <cfset session.userSession.name = arguments.firstName>
                     <cfset session.userSession.roleId = 2>
+                    <cfset session.userSession.cartCount = getCartCount(userId=session.userSession.userId).cartCount>
                 </cfif>
             </cfif>
         <cfelse>
@@ -116,15 +117,8 @@
                     <cfset session.userSession.userId = local.userDetails.fldUser_ID>
                     <cfset session.userSession.roleId = 2>
                     <cfset session.userSession.name = local.userDetails.fldFirstName>
-                    <cfquery name = "local.getCartCount">
-                        SELECT 
-                            COUNT(fldCart_ID) AS cartCount
-                        FROM
-                            tblCart
-                        WHERE
-                            fldUserId = <cfqueryparam value = "#session.userSession.userId#" cfSqlType = "integer">
-                    </cfquery>
-                    <cfset session.userSession.cartCount = local.getCartCount.cartCount>
+                    <cfset session.userSession.cartCount = getCartCount(userId=session.userSession.userId).cartCount>
+                    
                     <cfset local.structResult["success"] = true>
                 <cfelse>
                     <cfset local.structResult["error"] = "Invalid password">
@@ -137,6 +131,22 @@
         </cfif>
 
         <cfreturn local.structResult>
+    </cffunction>
+
+
+    <cffunction name = "getCartCount" returntype = "struct">
+        <cfargument name = "userId" type = "integer" required = "true">
+        
+        <cfquery name = "local.getCartCount">
+            SELECT 
+                COUNT(fldCart_ID) AS cartCount
+            FROM
+                tblCart
+            WHERE
+                fldUserId = <cfqueryparam value = "#arguments.userId#" cfSqlType = "integer">
+        </cfquery>
+        <cfset local.resultStruct.cartCount = local.getCartCount.cartCount>
+        <cfreturn local.resultStruct>
     </cffunction>
 
     <!--- logout --->

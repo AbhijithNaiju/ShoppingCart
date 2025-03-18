@@ -40,7 +40,7 @@
                     #variables.productList.resultArray[1].subcategoryName#
                 </cfif>
             </h3>
-            <form method="get" class="d-flex justify-content-between mx-2">
+            <form method="get" class="d-flex justify-content-between mx-2" id="filterForm">
                 <div class="d-flex justify-content-between mx-2">
                     <cfif LEN(url.searchValue)>
                         <input type="hidden" name="searchValue" value="#url.searchValue#" id="searchValue">
@@ -105,7 +105,7 @@
                                 class="filterRadio" 
                                 name = "filterRadio"
                                 id="filter1" 
-                                onclick='setFilter({min:0,max:1000})'
+                                onclick='setFilter(min=0,max=1000)'
                             >
                             <label for="filter1">0 - 1000</label>
                         </li>
@@ -115,7 +115,7 @@
                                 class="filterRadio" 
                                 name="filterRadio" 
                                 id="filter2" 
-                                onclick='setFilter({min:1000,max:10000})'
+                                onclick='setFilter(min=1000,max=10000)'
                             >
                             <label for="filter2">1000 - 10000</label>
                         </li>
@@ -125,7 +125,7 @@
                                 class="filterRadio" 
                                 name="filterRadio" 
                                 id="filter3" 
-                                onclick='setFilter({min:10000,max:15000})'
+                                onclick='setFilter(min=10000,max=15000)'
                             >
                             <label for="filter3">10000 - 15000</label>
                         </li>
@@ -159,14 +159,13 @@
                             <button 
                                 class = "btn w-100 border my-1" 
                                 type = "button"
-                                onclick="clearFilter()"
+                                id="clearFilter"
                             >
                                 Clear
                             </button>
                             <button 
                                 class="btn w-100 border my-1"
                                 type = "submit"
-                                onclick="filterProducts()"
                                 aria-expanded="false"
                             >
                                 Apply

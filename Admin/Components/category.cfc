@@ -1,5 +1,5 @@
 <cfcomponent>
-        <cffunction name="getCategories" returnType="query">
+    <cffunction name="getCategories" returnType="query">
         <cfargument name = "categoryId" type = "integer" required = "false">
         <cfquery name="local.categoryData">
             SELECT
