@@ -16,7 +16,7 @@
 <div class="container orderHistoryBody">
     <cfoutput>
         <div class="d-flex justify-content-between align-items-center bg-white my-3">
-            <h2>
+            <h2 class = "orderSearchContent w-50">
                 <cfif structKeyExists(form, "orderSearchButton")
                     AND structKeyExists(form, "orderSearchId")
                     AND len(trim(form.orderSearchId))

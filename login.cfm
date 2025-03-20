@@ -10,7 +10,7 @@
             <!--- product id is present in url --->
             <cfif url.redirect EQ "cart" OR url.redirect EQ "order">
                 <!--- adding product to cart --->
-                <cfset addTocart = application.cartObject.addToCart(url.productId)>
+                <cfset addTocart = application.cartObject.addToCart(encryptedProductId=url.productId)>
             </cfif>
         </cfif>
         <cfif structKeyExists(url, "redirect")>

@@ -50,9 +50,9 @@
             <div class="accordion" id="orderAccordion">
                 <div class="accordion-item border my-2">
                     <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="##collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Delivery Address
-                    </button>
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="##collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Delivery Address
+                        </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="##orderAccordion">
                         <div class = "my-1 accordion-body">

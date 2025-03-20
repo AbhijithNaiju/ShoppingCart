@@ -11,7 +11,7 @@ function addToCart(productId,redirect){
         type:"POST",
         url:"components/cart.cfc",
         data:{
-            productId:productId,
+            encryptedProductId:productId,
             method:"addToCart"
         },
         success: function(result) {

@@ -2,6 +2,12 @@
 <cfset variables.productList = application.productObject.getProductList(limit=10)>
 <cfoutput>
     <div>
+        <div class="homeBanner d-flex justify-content-center">
+            <img src="./assets/images/sale.jpg" alt="Image not found">
+        </div>
+        <h3 class="mx-4">
+            Top picks
+        </h3>
         <div class="productListingParent my-3 mx-5">
             <cfloop array = "#variables.productList.resultArray#" item="variables.productItem">
                 <a 

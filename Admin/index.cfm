@@ -10,7 +10,7 @@
                 data-bs-target="#addModal"
                 value="0"
             >
-                Add +
+                <i class="fa-solid fa-plus"></i> Add
             </button>
         </div>
         <div class="d-flex flex-column" id="categoryList">

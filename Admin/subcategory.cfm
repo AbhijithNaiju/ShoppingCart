@@ -27,7 +27,7 @@
                         data-bs-target="##addModal"
                         onclick="openSubCategoryModal(#url.categoryId#,0)"
                     >
-                        Add +
+                        <i class="fa-solid fa-plus"></i> Add
                     </button>
                 </div>
                 <div class="d-flex flex-column categoryList" id="subcategoryList">

@@ -21,7 +21,7 @@
             >
             <span class="errorMessage" id ="passwordError"></span>
         </div>
-        <input type="submit" class="btn btn-success" name="submitBtn">
+        <input type="submit" class="btn btn-success" name="submitBtn" value="Login">
 
         <cfif structKeyExists(form,"submitBtn")>
             <cfset local.loginResult = application.adminObject.adminLogin(

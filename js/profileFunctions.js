@@ -120,7 +120,7 @@ $(document).ready(function(){
 					type:"POST",
 					url:"components/user.cfc",
 					data:{
-						addressId:addressId,
+						encryptedAddressId:addressId,
 						method:"deleteAddress"
 					},
 					success: function(result) {

@@ -31,7 +31,7 @@
                             data-bs-target="##addModal"
                             onclick="openProductModal({categoryId:#variables.categoryId#,subCategoryId:#url.subCategoryId#})"
                         >
-                            Add +
+                            <i class="fa-solid fa-plus"></i> Add
                         </button>
                     </div>
                     <div class="d-flex flex-column categoryList" id="productList">

@@ -23,7 +23,7 @@
                         <form class="d-flex" action="productlisting.cfm">
                             <input 
                                 type="text" 
-                                class="form-control me-2" 
+                                class="form-control form-control-sm me-2" 
                                 name="searchValue" 
                                 placeholder="Search products" 
                                 aria-label="Search" 
@@ -31,7 +31,9 @@
                                 required
                             >
                             <div>
-                                <button class="btn btn-outline-light" type="submit">Search</button>
+                                <button class="btn btn-sm btn-outline-light" type="submit">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -98,7 +100,7 @@
             </div>
             <cfif NOT arrayFindNoCase(variables.excludedPages, CGI.script_name)>
                 <cfset variables.allSubcategories = application.productObject.getSubcategories()>
-                <div class="categoryNav px-3 py-2">
+                <div class="categoryNav px-3 py-1">
                     <cfoutput query="variables.allSubcategories" group="categoryId">
                         <cfset variables.categoryId = urlEncodedFormat(application.userObject.encryptID(variables.allSubcategories.categoryId))>
                         <div class = "navCategory">

@@ -12,19 +12,18 @@ body{
     z-index:1;
 }
 .headerLinks{
-    padding: 0px 10px;
+    padding: 5px 10px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 50px;
 }
 .logo{
     text-decoration: none;
     color: #772300;
 }
 .logo img{
-    height: 40px;
+    height: 30px;
     margin-top: 5px;
 }
 .logo span{
@@ -153,6 +152,10 @@ body{
 }
 .navSubcategoryName:hover{
     background-color: #e6f2fa;
+}
+.homeBanner img{
+    width: 98%;
+    margin: 20px 0;
 }
 .randomProducts{
     width: 95%;
@@ -429,4 +432,12 @@ body{
 }
 .editProfileButton{
     font-size: 18px;
+}
+.productListingBody h3{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.orderSearchContent{
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

@@ -32,7 +32,7 @@
         maxPrice=url.maxPrice
     )>
     <cfoutput>
-        <div class="m-3">
+        <div class="m-3 productListingBody">
             <h3>
                 <cfif url.searchValue NEQ "">
                     Search result for "#url.searchValue#"

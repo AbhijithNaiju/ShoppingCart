@@ -348,10 +348,10 @@
 
     <!--- Delete address --->
     <cffunction name = "deleteAddress" returntype = "struct" access = "remote" returnformat = "json">
-        <cfargument name = "addressId" type = "string" required = "true">
+        <cfargument name = "encryptedAddressId" type = "string" required = "true">
         
         <cfset local.resultStruct = structNew()>
-        <cfset local.decryptedAddressId =  application.userObject.decryptId(arguments.addressId)>
+        <cfset local.decryptedAddressId =  application.userObject.decryptId(arguments.encryptedAddressId)>
         <cfquery>
             UPDATE
                 tblAddress

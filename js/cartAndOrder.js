@@ -15,7 +15,7 @@ $(document).ready(function(){
 					type:"POST",
 					url:"components/cart.cfc",
 					data:{
-						cartId:cartId,
+						encryptedCartId:cartId,
 						method:"removeFromCart"
 					},
 					success: function(result) {
@@ -137,7 +137,7 @@ function changeQuantity(change,cartId){
 		type:"POST",
 		url:"components/cart.cfc?method=updateCartQnty",
 		data:{
-			cartId:cartId,
+			encryptedCartId:cartId,
 			quantityChange:change
 		},
 		success: function(result){

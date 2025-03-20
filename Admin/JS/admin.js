@@ -214,7 +214,7 @@ $(document).ready(function(){
             if(deletedProducts != []){
                 productData.append("deletedProducts",deletedProducts.toString());
             }
-            productData.append("method",addOrEditProduct);
+            productData.append("method","addOrEditProduct");
             $.ajax({
                 type: "POST",
                 url: "components/product.cfc",

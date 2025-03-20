@@ -1,8 +1,8 @@
 <cfcomponent>
     <!--- add product to cart --->
     <cffunction name = "addToCart" returntype = "struct" returnformat = "json" access="remote">
-        <cfargument name = "productid" type = "string" required = "true">
-        <cfset local.decryptedProductId = application.userObject.decryptId(arguments.productId)>
+        <cfargument name = "encryptedProductId" type = "string" required = "true">
+        <cfset local.decryptedProductId = application.userObject.decryptId(arguments.encryptedProductId)>
         <cfset local.resultStruct = structNew()>
         <cfif structKeyExists(session, "userSession") AND structKeyExists(session.userSession, "userId")>
             <!--- user is logged in --->
@@ -54,11 +54,11 @@
 
     <!--- Update quantity in cart --->
     <cffunction name = "updateCartQnty" returntype = "struct" returnformat = "json" access = "remote">
-        <cfargument name = "cartId" type = "string" required = "true">
+        <cfargument name = "encryptedCartId" type = "string" required = "true">
         <cfargument name = "quantityChange" type = "integer" required = "true">
         <cfset local.resultStruct = structNew()>
 
-        <cfset local.decryptedCartId = application.userObject.decryptId(arguments.cartId)>
+        <cfset local.decryptedCartId = application.userObject.decryptId(arguments.encryptedCartId)>
         <cfquery name = "local.getCartItemQuantity">
             SELECT
                 C.fldQuantity AS cartItemQuantity,
@@ -125,10 +125,10 @@
 
     <!--- Delete an item from cart --->
     <cffunction name = "removeFromCart" returntype = "struct" returnformat = "JSON" access = "remote">
-        <cfargument name = "cartId" type = "string" required = "true">
+        <cfargument name = "encryptedCartId" type = "string" required = "true">
         <cfset local.structResult = structNew()>
 
-        <cfset local.decryptedId = application.userObject.decryptId(arguments.cartId)>
+        <cfset local.decryptedId = application.userObject.decryptId(arguments.encryptedCartId)>
         <cfquery result="local.deleteResult">
             DELETE FROM
                 tblcart

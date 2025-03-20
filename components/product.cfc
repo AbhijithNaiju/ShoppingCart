@@ -123,15 +123,15 @@
     </cffunction>
     <cffunction name = "getProductListRemote" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument name = "searchValue" type = "string" required = "false">
-        <cfargument name = "subcategoryId" type = "string" required = "false">
+        <cfargument name = "encryptedSubcategoryId" type = "string" required = "false">
         <cfargument name = "sortOrder" type = "string" required = "false">
         <cfargument name = "minPrice" type = "float" required = "false">
         <cfargument name = "maxPrice" type = "float" required = "false">
         <cfargument name = "offset" type = "integer" required = "false">
         <cfargument name = "limit" type = "integer" required = "false">
 
-        <cfif structKeyExists(arguments, "subcategoryId") AND len(arguments.subcategoryId)>
-            <cfset local.decryptedSubcategoryId = application.userObject.decryptId(arguments.subcategoryId)>
+        <cfif structKeyExists(arguments, "encryptedSubcategoryId") AND len(arguments.encryptedSubcategoryId)>
+            <cfset local.decryptedSubcategoryId = application.userObject.decryptId(arguments.encryptedSubcategoryId)>
         <cfelse>
             <cfset local.decryptedSubcategoryId = 0>
         </cfif>

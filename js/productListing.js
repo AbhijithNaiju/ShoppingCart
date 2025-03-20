@@ -18,7 +18,7 @@ $(document).ready(function(){
 		let offset = parseInt(showMoreBtn.val());
 		const productData = new Object();
 
-		productData.subcategoryId = (subcategoryId)?subcategoryId:'';
+		productData.encryptedSubcategoryId = (subcategoryId)?subcategoryId:'';
 		productData.searchValue = (searchValue)?searchValue:'';
 		productData.minPrice = (minPrice.length)?minPrice:-1;
 		productData.maxPrice = (maxPrice.length)?maxPrice:-1;
@@ -112,6 +112,15 @@ $(document).ready(function(){
 			$("#filterMax").attr("value",maxValue);
 		}
 	});
+	$(document).on('scroll', function(){
+		var documentBody = $("body");
+		console.log($(documentBody[0].scrollHeight))
+		if(documentBody[0].scrollHeight - documentBody.scrollTop() - documentBody.outerHeight() < 1){
+		  $('.alert').show();
+		}else{
+		  $('.alert').hide();
+		}
+	  })
 });
 
 function setFilter(min,max){
