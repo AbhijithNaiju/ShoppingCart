@@ -11,6 +11,7 @@
                 <div class="col-8 pe-4">
                     <cfloop query="#variables.cartItems#">
                         <cfset variables.encryptedCartId = application.userObject.encryptId(variables.cartItems.cartId)>
+                        <cfset variables.productId = urlEncodedFormat(application.userObject.encryptId(variables.cartItems.productId))>
                         <div class="cartItem row my-2 p-3" id="cartItem#variables.encryptedCartId#">
                             <div class="col-3 d-flex">
                                 <img 
@@ -19,12 +20,12 @@
                                 >
                             </div>
                             <div class="col-5 cartItemName d-flex flex-column justify-content-around">
-                                <a href="./product.cfm?productId=#variables.cartItems.productId#">
+                                <a href="./product.cfm?productId=#variables.productId#">
                                     #variables.cartItems.productName#
                                 </a>
                                 <div class="quantityButtons" id="quantityButton#variables.encryptedCartId#">
                                     <button 
-                                        class="btn btn-sm btn-primary reduceQuantity" 
+                                        class="btn btn-sm btn-primary reduceCartQuantity" 
                                         value="#variables.encryptedCartId#"
                                     >
                                         -
@@ -35,7 +36,7 @@
                                         readonly
                                     >
                                     <button 
-                                        class="btn btn-sm btn-primary increaseQuantity" 
+                                        class="btn btn-sm btn-primary increaseCartQuantity" 
                                         value="#variables.encryptedCartId#"
                                     >
                                         +

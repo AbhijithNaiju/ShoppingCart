@@ -8,9 +8,14 @@
         <!--- Login is success --->
         <cfif structKeyExists(url, "productId") AND len(url.productId)>
             <!--- product id is present in url --->
-            <cfif url.redirect EQ "cart" OR url.redirect EQ "order">
-                <!--- adding product to cart --->
-                <cfset addTocart = application.cartObject.addToCart(encryptedProductId=url.productId)>
+            <cfif structKeyExists(url, "redirect")>
+                <cfif url.redirect EQ "cart">
+                    <!--- adding product to cart --->
+                    <cfset addTocart = application.cartObject.addToCart(encryptedProductId=url.productId)>
+                <cfelseif url.redirect EQ "order">
+                    <!--- goto to order page --->
+                    <cflocation url="./orderPage.cfm?productId=#urlEncodedFormat(url.productId)#" addtoken="no">
+                </cfif>
             </cfif>
         </cfif>
         <cfif structKeyExists(url, "redirect")>
@@ -18,13 +23,9 @@
             <cfif url.redirect EQ "cart">
                 <!--- go to cart page(productid is not present) --->
                 <cflocation url="./cartPage.cfm" addtoken="no">
-
             <cfelseif url.redirect EQ "profilePage">
                 <!--- go to cart page(productid is not present) --->
                 <cflocation url="./profilePage.cfm" addtoken="no">
-            <cfelseif url.redirect EQ "order">
-                    <!--- goto to order page --->
-                    <cflocation url="./orderPage.cfm" addtoken="no">
             </cfif>
         <cfelse>
             <!--- goto home page(no redirect value) --->

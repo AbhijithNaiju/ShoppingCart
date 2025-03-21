@@ -1,16 +1,26 @@
 <cfcomponent>
-    <!--- Verify card details --->
-    <cffunction name = "verifyCard" returntype = "struct">
-        <cfargument name = "cardNumber" type = "numeric" required = "true">
-        <cfargument name = "cardCVV" type = "numeric" required = "true">
-
-        <cfset local.resultStruct = structNew()>
-        <cfset local.cardNumber = "1122334455667788">
-        <cfset local.cardCVV = "123">
-        <cfif arguments.cardNumber EQ local.cardNumber AND arguments.cardCVV EQ local.cardCVV>
-            <cfset local.resultStruct["success"] = true>
-        </cfif>
-        <cfreturn local.resultStruct>
+<cffunction name = "getProductData" returntype = "query">
+        <cfargument name = "productId" type = "integer" required = "true">
+        
+        <cfquery name = "local.getProducts" returntype="query">
+            SELECT 
+                P.fldProduct_ID AS productId,
+                P.fldproductName AS productName,
+                PI.fldDefaultImage AS defaultImage,
+                P.fldPrice AS Price,
+                (P.fldPrice*P.fldTax/100) AS Tax,
+                PI.fldImageFileName AS imageFileName
+            FROM
+                tblProduct P
+            LEFT JOIN tblProductImages PI ON P.fldProduct_ID = PI.fldProductId 
+                AND PI.fldActive = 1
+                AND PI.fldDefaultImage = 1 
+            WHERE
+                P.fldActive=1
+                AND
+                P.fldProduct_ID = <cfqueryparam value = "#arguments.productId#" cfSqlType = "integer">
+        </cfquery>
+        <cfreturn local.getProducts>
     </cffunction>
 
     <!--- Place order --->
@@ -19,14 +29,17 @@
         <cfargument name = "orderAddressId" type = "integer" required = "true">
         <cfargument name = "cardNumber" type = "numeric" required = "true">
         <cfargument name = "cardCVV" type = "numeric" required = "true">
+        <cfargument name = "productId" type = "integer" required = "true">
+        <cfargument name = "quantity" type = "integer" required = "true">
 
+        <cfset local.cardNumber = "1122334455667788">
+        <cfset local.cardCVV = "123">
         <cfset local.resultStruct = structNew()>
-        <cfset local.verifyCardResult = verifyCard(cardNumber=arguments.cardNumber,cardCVV=arguments.cardCVV)>
-        <cfif structKeyExists(local.verifyCardResult, "success")>
+        <cfif arguments.cardNumber EQ local.cardNumber AND arguments.cardCVV EQ local.cardCVV>
             <cfset local.UUID = createUUID()>
             <cfset local.cardLastFour = right(arguments.cardNumber, 4)>
             <cfstoredproc
-                procedure = "placeOrder" 
+                procedure = "placeOrderTest" 
             >
                 <cfprocparam 
                     CFSQLType = "integer"
@@ -50,23 +63,30 @@
                 >
                 <cfprocparam 
                     CFSQLType = "varchar"
-                    type = "out" 
-                    variable = "local.emailId"
+                    type = "in" 
+                    value = "#arguments.productId#"
                 >
                 <cfprocparam 
                     CFSQLType = "varchar"
+                    type = "in" 
+                    value = "#arguments.quantity#"
+                >
+                <cfprocparam 
+                    CFSQLType = "bit"
                     type = "out" 
-                    variable = "local.firstName"
+                    variable = "local.isOrderSuccess"
                 >
             </cfstoredproc>
-            <cfif structKeyExists(local, "emailId") AND len(local.emailId)>
-                <cfset session.userSession.cartCount = 0>
+            <cfif structKeyExists(local, "isOrderSuccess") AND len(local.isOrderSuccess)>
+                <cfif arguments.productId EQ 0>
+                    <cfset session.userSession.cartCount = 0>
+                </cfif>
                 <cfset local.orderDetails = getOrderHistory(userId=arguments.userId,orderId=local.UUID)>
                 <!--- Sending mail if order placed --->
                 <cfmail  
                     from="shoppingCart@gmail.com"  
                     subject="Order placed"  
-                    to="#local.emailId#"
+                    to="#session.userSession.emailId#"
                     type="html"
                 >
                     <cfmailpart type="text/html">
@@ -103,7 +123,7 @@
                                 </style>
                             </head>
                             <body>
-                                <h3>Dear #local.firstName#,</h3>
+                                <h3>Dear #session.userSession.name#,</h3>
                                 <p>Your order placed successfully.</p>
                                 <p>Order ID : #local.UUID#</p>
                                     <table border=1 style="width:100%;">

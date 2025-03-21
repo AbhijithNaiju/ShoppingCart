@@ -263,7 +263,7 @@ body{
 .productButtons{
     height: 10%;
 }
-.productButtons button{
+.productButtons button,.productButtons a{
     width: 40%;
     margin: auto;
 }

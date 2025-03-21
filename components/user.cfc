@@ -69,6 +69,7 @@
                     <cfset session.userSession.userId = local.signUpresult.generatedKey>
                     <cfset session.userSession.name = arguments.firstName>
                     <cfset session.userSession.roleId = 2>
+                    <cfset session.userSession.emailId = arguments.emailId>
                     <cfset session.userSession.cartCount = getCartCount(userId=session.userSession.userId).cartCount>
                 </cfif>
             </cfif>
@@ -94,6 +95,7 @@
                 SELECT
                     fldUser_ID,
                     fldFirstName,
+                    fldEmail,
                     fldHashedPassword,
                     fldUserSaltString
                 FROM
@@ -117,6 +119,7 @@
                     <cfset session.userSession.userId = local.userDetails.fldUser_ID>
                     <cfset session.userSession.roleId = 2>
                     <cfset session.userSession.name = local.userDetails.fldFirstName>
+                    <cfset session.userSession.emailId = local.userDetails.fldEmail>
                     <cfset session.userSession.cartCount = getCartCount(userId=session.userSession.userId).cartCount>
                     
                     <cfset local.structResult["success"] = true>

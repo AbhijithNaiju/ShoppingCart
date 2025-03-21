@@ -39,7 +39,7 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction name="onError" returntype ="void">
+    <!--- <cffunction name="onError" returntype ="void">
         <cfargument name="exception" type="any" required=true>
         <cfargument name="eventName" type="String" required=true>
         <cfif NOT (arguments.eventName IS "onSessionEnd") OR (arguments.eventName IS "onApplicationEnd")>
@@ -69,6 +69,6 @@
             </cfmail>
             <cflocation url="/errorPage.cfm" addtoken="false">
         </cfif>
-    </cffunction>
+    </cffunction> --->
 
 </cfcomponent>

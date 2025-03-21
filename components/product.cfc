@@ -121,6 +121,7 @@
         <cfset local.resultStruct["success"] = true>
         <cfreturn local.resultStruct>
     </cffunction>
+
     <cffunction name = "getProductListRemote" returntype = "struct" access = "remote" returnformat = "json">
         <cfargument name = "searchValue" type = "string" required = "false">
         <cfargument name = "encryptedSubcategoryId" type = "string" required = "false">

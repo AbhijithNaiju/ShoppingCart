@@ -1,12 +1,11 @@
 $(document).ready(function(){
     $("#buyNow").click(function(){
 		productId=this.value;
-		addToCart(productId=productId,redirect="order");
 		location.href="./orderPage.cfm"
 	});
 });
 
-function addToCart(productId,redirect){
+function addToCart(productId){
     $.ajax({
         type:"POST",
         url:"components/cart.cfc",

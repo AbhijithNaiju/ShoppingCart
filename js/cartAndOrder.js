@@ -122,17 +122,21 @@ $(document).ready(function(){
 			return false;
 		}
 	});
-	$(".reduceQuantity").click(function(){
-		cartId=this.value;
-		changeQuantity(change=-1,cartId=this.value);
+	$(".reduceCartQuantity").click(function(){
+		changeCartQuantity(change=-1,cartId=this.value);
 	});
-	$(".increaseQuantity").click(function(){
-		cartId=this.value;
-		changeQuantity(change=1,cartId=this.value);
+	$(".increaseCartQuantity").click(function(){
+		changeCartQuantity(change=1,cartId=this.value);
+	});
+	$(".reduceProductQuantity").click(function(){
+		changeProductQuantity(change=-1);
+	});
+	$(".increaseProductQuantity").click(function(){
+		changeProductQuantity(change=1);
 	});
 });
 
-function changeQuantity(change,cartId){
+function changeCartQuantity(change,cartId){
 	$.ajax({
 		type:"POST",
 		url:"components/cart.cfc?method=updateCartQnty",
@@ -147,11 +151,11 @@ function changeQuantity(change,cartId){
 				quantityElement.val(changeQuantityResult.cartItemQuantity);
 				if(changeQuantityResult.cartItemQuantity==1){
 					// disabling reduce button
-					$("#quantityButton"+$.escapeSelector(cartId)).find(".reduceQuantity").prop("disabled",true);
+					$("#quantityButton"+$.escapeSelector(cartId)).find(".reduceCartQuantity").prop("disabled",true);
 				}
 				if(changeQuantityResult.cartItemQuantity==2){
 					// enabling reduce button
-					$("#quantityButton"+$.escapeSelector(cartId)).find(".reduceQuantity").prop("disabled",false);
+					$("#quantityButton"+$.escapeSelector(cartId)).find(".reduceCartQuantity").prop("disabled",false);
 				}
 			}
 			if(changeQuantityResult.success){
@@ -188,4 +192,35 @@ function changeQuantity(change,cartId){
 			alert("Error occured");
 		}
 	});
+}
+function changeProductQuantity(change){
+	quantityElement= $(".cartQuantity");
+	actualPriceElement = $('#actualPrice');
+	totalTaxElement = $('#totalTax');
+	totalPriceElement = $('#totalPrice');
+	unitPrice = parseFloat($(".itemPrice").first().text());
+	unitTax = parseFloat($(".itemTax").first().text());
+	
+	if(change == -1){
+		quantityElement.val(parseInt(quantityElement.val())-1)
+		updatedActualPrice = (parseFloat(actualPriceElement.text())-(unitPrice)).toFixed(2);
+		updatedTotalTax = (parseFloat(totalTaxElement.text())-(unitTax)).toFixed(2);
+	}else{
+		quantityElement.val(parseInt(quantityElement.val())+1)
+		updatedActualPrice = (parseFloat(actualPriceElement.text())+(unitPrice)).toFixed(2);
+		updatedTotalTax = (parseFloat(totalTaxElement.text())+(unitTax)).toFixed(2);
+	}
+	updatedTotalPrice = (parseFloat(updatedActualPrice) + parseFloat(updatedTotalTax)).toFixed(2);
+	
+	actualPriceElement.text(updatedActualPrice);
+	totalTaxElement.text(updatedTotalTax);
+	totalPriceElement.text(updatedTotalPrice);
+	if(quantityElement.val()==1){
+		// disabling reduce button
+		$(".reduceProductQuantity").first().prop("disabled",true);
+	}
+	if(quantityElement.val()==2){
+		// enabling reduce button
+		$(".reduceProductQuantity").first().prop("disabled",false);
+	}
 }

@@ -83,14 +83,13 @@
                             >
                                 ADD TO CART
                             </button>
-                            <button 
+                            <a 
                                 class="btn btn-primary"
                                 name="buyNow"
-                                id="buyNow"
-                                value="#url.productId#"
+                                href="orderPage.cfm?productId=#urlEncodedFormat(url.productId)#"
                             >
                                 BUY NOW
-                            </button>
+                            </a>
                             <input type="hidden" id="addToCartId">
                         </div>
                     </div>
